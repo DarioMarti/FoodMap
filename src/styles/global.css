@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-poppins: "Poppins", system-ui, sans-serif;
+  --color-primary: #EA2678;
+  --color-primary-hover: #F03989;
+  --color-primary-active: #C41863;
+  --color-primary-dark: #9A0F4A;
+  --color-secondary: #7C3AED;
+  --color-tertiary: #EA580C;
+  --color-error: #DC2626;
+  --color-success: #059669;
+  --color-warning: #D97706;
+  --color-info: #0891B2;
+  --color-text-main: #1A0A2E;
+  --color-text-secondary: #4A3B6B;
+  --color-text-tertiary: #7A6899;
+  --color-background: #F8F7FA;
+  --color-background-oscuro: #22222E;
+  --color-background-claro: #DDD8E8;
+  --color-input: #FFFFFF;
+  --color-borde: #E2DAF0;
+  --color-borde-dark: #C8BAE0;
+  --color-disabled: #B8A8CC;
+  --color-dark-tarjeta: #1A1A22;
+  --color-descripcion: #4A3B6B;
+
+}
+
+@layer base {
+  body {
+    @apply antialiased bg-background text-text-main transition-colors duration-300;
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-poppins;
+  }
+
+  p,
+  a {
+    @apply font-sans;
+  }
+
+
+}
