@@ -1,24 +1,30 @@
-import { useState } from 'react';
-import { Send, Smile } from 'lucide-react';
-import Boton_cuadrado from './Boton_cuadrado.jsx'
+import { useState, useRef } from 'react';
+import { Send } from 'lucide-react';
+import Boton_cuadrado from './Boton_cuadrado.jsx';
 
-export default function Chat_input() {
+export default function Chat_input({ onSend, className = "" }) {
+
 
 
     return (
-        <div className="flex items-center gap-3 px-4 py-3 border-t border-borde dark:border-borde-dark bg-input dark:bg-background-oscuro">
+        <div className={`flex items-center gap-4 px-4 py-3 ${className}`}>
 
-            <div className="flex-1 relative">
+            {/* Campo de texto con auto-resize */}
+            <div className="flex-1">
                 <textarea
+                    rows={1}
 
                     placeholder="Escribe un mensaje..."
-                    className="w-full resize-none bg-background dark:bg-dark-tarjeta text-text-main placeholder:text-text-tertiary border border-borde dark:border-borde-dark rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                    className="w-full resize-none overflow-y-auto text-xl bg-background-input dark:bg-dark-tarjeta text-text-main placeholder:text-text-tertiary
+                    border border-borde dark:border-borde-dark rounded-2xl px-4 py-[20px] text-sm leading-5 outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                 />
             </div>
 
-
-            <Boton_cuadrado className="bg-primary text-input size-14 dark:border dark:border-descripcion cursor-pointer" icon={<Send size={20} />} />
-
+            {/* Botón enviar */}
+            <Boton_cuadrado
+                className="bg-primary text-input size-16 rounded-full cursor-pointer flex-shrink-0 mb-[1px]"
+                icon={<Send size={24} />}
+            />
         </div>
     );
 }

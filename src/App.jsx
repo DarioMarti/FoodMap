@@ -4,6 +4,7 @@ import { BarraBusqueda } from './components/layout/BarraBusqueda';
 import { Moon, Sun } from 'lucide-react';
 //import Mapa from './paginas/Mapa';
 import Chat from './paginas/Chat';
+import Config from './paginas/Config';
 function App() {
   const [darkMode, setDarkMode] = useState(true);
 
@@ -18,7 +19,7 @@ function App() {
 
   return (
     <MainLayout>
-      <Chat />
+      <Config />
     </MainLayout>
   );
 }
