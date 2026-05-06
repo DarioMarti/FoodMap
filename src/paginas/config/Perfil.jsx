@@ -10,7 +10,7 @@ export default function Perfil() {
             <article className="p-10 flex-1 overflow-y-auto">
                 <div className="p-12 dark:bg-dark-tarjeta bg-background-tarjetas rounded-3xl relative dark:text-white text-text-main">
                     <div className="flex items-center gap-8">
-                        <img className="size-28 rounded-full bg-primary" src="" alt="" />
+                        <img className="size-28 rounded-full bg-primary" src={null} alt="Foto de perfil" />
                         <div>
                             <h2 className="text-2xl font-bold">Alex Martín</h2>
                             <p className="text-lg text-text-tertiary">@Alex_martin  · Madrid, España</p>

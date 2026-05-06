@@ -4,17 +4,7 @@ import { Sun, Moon, Monitor, Palette, Type } from 'lucide-react';
 import Toggle from "../../components/ui/Toggle";
 import Boton_main from "../../components/ui/Boton_main";
 
-export default function Apariencia() {
-    const [darkMode, setDarkMode] = useState(true);
-
-    // Apply dark mode class to html
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    }, [darkMode]);
+export default function Apariencia({ darkMode, setDarkMode }) {
 
 
 
