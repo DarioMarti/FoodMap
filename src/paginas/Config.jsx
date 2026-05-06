@@ -18,7 +18,7 @@ export default function Config() {
             <main className="w-full h-full flex min-w-0 bg-background dark:bg-background-oscuro outline-2 outline-3 outline-offset outline-borde ">
                 <section className="w-1/4 border-r-3 border-r-borde dark:border-r-borde-dark ">
                     <Bloque_config seccion="Cuenta">
-                        <Etiqueta_perfil icono={User} nombre="Perfil" active={false} />
+                        <Etiqueta_perfil icono={User} nombre="Perfil" active={true} />
                         <Etiqueta_perfil icono={Shield} nombre="Privacidad" active={false} />
                         <Etiqueta_perfil icono={Bell} nombre="Notificaciones" active={false} />
                     </Bloque_config>
@@ -29,12 +29,12 @@ export default function Config() {
                         <Etiqueta_perfil icono={Bot} nombre="Marcadores" active={false} />
                     </Bloque_config>
                     <Bloque_config seccion="más">
-                        <Etiqueta_perfil icono={Info} nombre="Ayuda" active={true} />
+                        <Etiqueta_perfil icono={Info} nombre="Ayuda" active={false} />
                         <Etiqueta_perfil icono={LogOut} nombre="Cerrar sesión" active={false} />
                     </Bloque_config>
                 </section>
                 <section className="w-3/4   ">
-                    <Apariencia />
+                    <Ayuda />
                 </section>
             </main>
         </div>
