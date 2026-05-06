@@ -25,10 +25,11 @@
   --color-borde: #E2DAF0;
   --color-borde-dark: #C8BAE0;
   --color-disabled: #B8A8CC;
-  --color-dark-tarjeta: #1A1A22;
+  --color-dark-tarjeta: #23223b;
   --color-descripcion: #4A3B6B;
-
 }
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   body {

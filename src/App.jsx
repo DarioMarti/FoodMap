@@ -6,16 +6,7 @@ import { Moon, Sun } from 'lucide-react';
 import Chat from './paginas/Chat';
 import Config from './paginas/Config';
 function App() {
-  const [darkMode, setDarkMode] = useState(true);
 
-  // Apply dark mode class to html
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
 
   return (
     <MainLayout>
