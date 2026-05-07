@@ -15,13 +15,13 @@ export function BarraBusqueda() {
           <input
             type="text"
             placeholder="Buscar lugares, marcadores..."
-            className="w-full h-14 rounded-2xl px-14 bg-background border border-borde dark:border-borde-dark text-text-main outline-none focus:ring-2 focus:ring-primary-hover shadow-sm transition-all"
+            className="w-full h-14 rounded-2xl px-14 bg-background dark:bg-dark-tarjeta border border-borde dark:border-descripcion text-text-main outline-none focus:ring-2 focus:ring-primary-hover shadow-sm transition-all"
           />
         </div>
 
         {/* Action Buttons */}
-        <Boton_cuadrado className="bg-input text-text-main size-14 border border-borde dark:border-borde-dark" icon={<Filter size={20} />} />
-        <Boton_cuadrado className="bg-primary text-input size-14 dark:border dark:border-descripcion" icon={<Send size={20} />} />
+        <Boton_cuadrado className="bg-input dark:bg-dark-tarjeta text-text-main dark:text-background size-14 border border-borde dark:border-descripcion dark:hover:bg-primary-hover" icon={<Filter size={20} />} />
+        <Boton_cuadrado className="bg-primary dark:bg-dark-tarjeta text-input dark:text-background size-14 border border-borde dark:border-descripcion dark:hover:bg-primary-hover" icon={<Send size={20} />} />
 
       </div>
     </div>

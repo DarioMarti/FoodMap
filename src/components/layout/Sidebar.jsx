@@ -5,7 +5,7 @@ import Logo from '../../assets/foodmap_logo_blanco.svg';
 
 export function Sidebar() {
   return (
-    <aside className="w-20 lg:w-24 h-full bg-background dark:bg-background-oscuro border-r border-borde dark:border-borde-oscuro flex flex-col items-center py-6 gap-8 z-50">
+    <aside className="w-20 lg:w-24 h-full bg-background dark:bg-dark-tarjeta border-r border-borde dark:border-descripcion flex flex-col items-center py-6 gap-8 z-50">
 
       {/* Logo */}
       <NavLink to="/mapa">
@@ -16,9 +16,9 @@ export function Sidebar() {
 
       {/* Navigation Links */}
       <nav className="flex-1 flex flex-col gap-6 w-full px-4">
-        <SidebarLink to="/mapa"   icon={<MapPin size={24} />} />
-        <SidebarLink to="/chat"   icon={<MessageSquare size={24} />} />
-        <SidebarLink to="/ia"     icon={<Bot size={24} />} />
+        <SidebarLink to="/mapa" icon={<MapPin size={24} />} />
+        <SidebarLink to="/chat" icon={<MessageSquare size={24} />} />
+        <SidebarLink to="/ia" icon={<Bot size={24} />} />
       </nav>
 
       {/* Bottom Actions */}
@@ -38,11 +38,10 @@ function SidebarLink({ to, icon }) {
     <NavLink to={to}>
       {({ isActive }) => (
         <button
-          className={`w-full aspect-square rounded-2xl flex items-center justify-center cursor-pointer transition-all ${
-            isActive
-              ? 'bg-primary/20 text-primary shadow-lg shadow-primary/20'
-              : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50'
-          }`}
+          className={`w-full aspect-square rounded-2xl flex items-center justify-center cursor-pointer transition-all ${isActive
+            ? 'bg-primary/20 text-primary shadow-lg shadow-primary/20'
+            : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50'
+            }`}
         >
           {icon}
         </button>
