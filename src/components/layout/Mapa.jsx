@@ -4,9 +4,9 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import Boton_cuadrado from '../ui/Boton_cuadrado';
-import { Plus, Star, Pencil } from 'lucide-react';
+import { Plus, Star, Pencil, Coffee } from 'lucide-react';
 import Tarjeta_foto_marcador, { Tarjeta_foto_marcador_añadir } from '../ui/tarjetas_fotos_marcador';
-
+import Marcador from '../ui/Marcador';
 import Etiqueta_marcador from '../ui/etiqueta_marcador';
 
 
@@ -18,6 +18,7 @@ let DefaultIcon = L.icon({
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
+
 
 
 export default function Mapa({ darkMode }) {
@@ -52,7 +53,7 @@ export default function Mapa({ darkMode }) {
                         },
                     }}
                 />
-
+                <Marcador position={posicionInicial} icono={<Coffee size={22} />} />
             </MapContainer>
 
 
