@@ -2,7 +2,7 @@ import { Marker } from 'react-leaflet';
 import L from 'leaflet';
 import { renderToString } from 'react-dom/server';
 
-export default function Marcador({ position, icono }) {
+export default function Marcador({ position, icono, eventHandlers }) {
 
     // 1. DISEÑO: Lo que quieres que se vea (Tu diseño de ahora)
     const iconoHtml = renderToString(
@@ -24,6 +24,6 @@ export default function Marcador({ position, icono }) {
 
     // 3. RESULTADO: Devolvemos el componente Marker de react-leaflet
     return (
-        <Marker position={position} icon={customIcon} />
+        <Marker position={position} icon={customIcon} eventHandlers={eventHandlers} />
     );
 }

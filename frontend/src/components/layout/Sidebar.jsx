@@ -3,7 +3,10 @@ import { NavLink } from 'react-router-dom';
 import { MapPin, MessageSquare, Bot, Settings } from 'lucide-react';
 import Logo from '../../assets/foodmap_logo_blanco.svg';
 
+
 export function Sidebar() {
+
+
   return (
     <aside className="w-20 lg:w-24 h-full bg-background dark:bg-dark-tarjeta border-r border-borde dark:border-descripcion flex flex-col items-center py-6 gap-8 z-50">
 
