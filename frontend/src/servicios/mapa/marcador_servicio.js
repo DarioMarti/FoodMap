@@ -93,3 +93,13 @@ export const agregarEtiqueta = async (id, nombre, principal, setEtiquetas, etiqu
     }
 }
 
+//Obtener todas las fotos del marcador
+export const obtenerFotografias = async (id) => {
+    try {
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_fotos_marcador.php?id_marcador=${id}`);
+        const datos = await respuesta.json();
+        return datos;
+    } catch (error) {
+        console.error("Error cargando fotos:", error);
+    }
+}

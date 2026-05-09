@@ -8,7 +8,7 @@ import * as lucideIcons from 'lucide-react';
 import Tarjeta_foto_marcador, { Tarjeta_foto_marcador_añadir } from '../ui/tarjetas_fotos_marcador';
 import Marcador from '../ui/Marcador';
 import Etiqueta_marcador from '../ui/etiqueta_marcador';
-import { agregarMarcador, alPincharMapa, DetectarCordenadas, obtenerMarcadores, manejarFormularioMarcador, agregarEtiqueta, obtenerTodasEtiquetas } from '../../servicios/mapa/marcador_servicio.js';
+import { agregarMarcador, alPincharMapa, DetectarCordenadas, obtenerMarcadores, manejarFormularioMarcador, agregarEtiqueta, obtenerTodasEtiquetas, obtenerFotografias } from '../../servicios/mapa/marcador_servicio.js';
 
 let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -37,6 +37,8 @@ export default function Mapa({ darkMode, mostrarNotificacion }) {
     const [esPrincipal, setEsPrincipal] = useState(false);
     const [etiquetaSeleccionada, setEtiquetaSeleccionada] = useState({ id: "1", nombre: "Cafetería" });
     const [etiquetasMarcador, setEtiquetasMarcador] = useState([]);
+    const [fotos, setFotos] = useState([]);
+    const [fotosMarcador, setFotosMarcador] = useState([]);
 
     const urlClaro = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     const urlOscuro = "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
@@ -49,7 +51,9 @@ export default function Mapa({ darkMode, mostrarNotificacion }) {
         e.preventDefault();
         const formData = new FormData(e.target);
         formData.append('etiquetas', JSON.stringify(etiquetas));
-
+        fotos.forEach((foto, index) => {
+            formData.append('fotos[]', foto);
+        });
         try {
             const resultado = await agregarMarcador(formData);
             mostrarNotificacion("¡Marcador guardado con éxito!", "success");
@@ -72,6 +76,12 @@ export default function Mapa({ darkMode, mostrarNotificacion }) {
         console.log(puntuacion)
         return estrellas;
     }
+
+    const alElegirFoto = (e) => {
+        const nuevosArchivos = Array.from(e.target.files);
+        setFotos([...fotos, ...nuevosArchivos]);
+    };
+
 
     useEffect(() => {
         obtenerMarcadores(setMarcadores);
@@ -145,6 +155,23 @@ export default function Mapa({ darkMode, mostrarNotificacion }) {
                     <input className='border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='latitud' name='latitud' value={posicionClick?.lat} />
                     <input className='border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='longitud' name='longitud' value={posicionClick?.lng} />
                 </div>
+                <label>Fotos:</label>
+                <div id="contenedor_fotos" className='flex gap-4 mb-4 flex-wrap'>
+                    {/* Input oculto que realmente hace el trabajo */}
+                    <input
+                        type="file" id="foto_input" name="fotos[]" multiple
+                        className="hidden" onChange={alElegirFoto}
+                    />
+
+                    {/* Previsualización de fotos seleccionadas */}
+                    {fotos.map((foto, index) => (
+                        <Tarjeta_foto_marcador key={index} foto={URL.createObjectURL(foto)} />
+                    ))}
+
+                    <div className='cursor-pointer' onClick={(e) => { e.stopPropagation(); document.getElementById('foto_input').click(); }}>
+                        <Tarjeta_foto_marcador_añadir />
+                    </div>
+                </div>
                 <button className="bg-primary dark:bg-primary  hover:bg-primary-hover dark:hover:bg-primary-hover text-background  uppercase rounded-xl p-4 cursor-pointer w-full">Agregar</button>
             </form>
 
@@ -163,7 +190,7 @@ export default function Mapa({ darkMode, mostrarNotificacion }) {
 
 
                 {marcadores.map((marcador) => (
-                    <Marcador key={marcador.id} position={[marcador.Latitud, marcador.Longitud]} color={marcador.Color} icono={<IconoDinamico nombre={marcador.Icono} size={22} />}
+                    <Marcador key={marcador.id} position={[marcador.Latitud, marcador.Longitud]} color={marcador.Color || '#EA2678'} icono={<IconoDinamico nombre={marcador.Icono || 'MapPin'} size={22} />}
                         eventHandlers={{
                             click: async () => {
                                 setLugarSeleccionado({
@@ -172,7 +199,9 @@ export default function Mapa({ darkMode, mostrarNotificacion }) {
                                     puntuacion: marcador.Puntuacion
                                 });
                                 const etiquetas = await obtenerTodasEtiquetas(marcador.id);
+                                const fotos = await obtenerFotografias(marcador.id)
                                 setEtiquetasMarcador(etiquetas || []);
+                                setFotosMarcador(fotos || [])
                             },
 
 
@@ -202,10 +231,14 @@ export default function Mapa({ darkMode, mostrarNotificacion }) {
                         </p>
 
                         <div id="contenedor_fotos" className='flex gap-4'>
-                            <Tarjeta_foto_marcador foto={lugarSeleccionado.imagen} />
-                            <Tarjeta_foto_marcador foto={lugarSeleccionado.imagen} />
-                            <Tarjeta_foto_marcador foto={lugarSeleccionado.imagen} />
-                            <Tarjeta_foto_marcador_añadir />
+                            <div id="contenedor_fotos" className='flex gap-4'>
+                                {fotosMarcador.map((foto, index) => (
+                                    <Tarjeta_foto_marcador
+                                        key={index}
+                                        foto={`http://localhost/foodmap/backend/uploads/img/${foto.Url_archivo}`}
+                                    />
+                                ))}
+                            </div>
                         </div>
 
                         <div className='flex gap-4'>
