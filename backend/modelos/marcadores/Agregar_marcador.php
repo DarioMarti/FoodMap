@@ -8,9 +8,11 @@ try {
     $nombre = $_POST['nombre'];
     $descripcion = $_POST['descripcion'];
     $puntuacion = $_POST['puntuacion'];
-    $etiquetas = $_POST['etiquetas'];
     $latitud = $_POST['latitud'];
     $longitud = $_POST['longitud'];
+    $etiquetas = $_POST['etiquetas'];
+    $etiquetas_array = json_decode($etiquetas, true);
+
 
     $id_usuario = 1;
     $id_mapa = 1;
@@ -22,7 +24,17 @@ try {
     $marcadorId = $conexion->lastInsertId();
 
     $stmtCategoria = $conexion->prepare("INSERT INTO marcador_categoria (Marcador_id, Categoria_id, Es_principal) VALUES (?, ?, ?)");
-    $stmtCategoria->execute([$marcadorId, $etiquetas, $es_principal]);
+
+    if (!empty($etiquetas_array)) {
+        foreach ($etiquetas_array as $etiqueta) {
+            $stmtCategoria->execute([
+                $marcadorId,
+                $etiqueta['id'],
+                $etiqueta['esPrincipal'] ? 1 : 0 // Convertimos true/false a 1/0 para la DB
+            ]);
+        }
+    }
+
 
     echo "Marcador agregado exitosamente.";
 } catch (PDOException $e) {
