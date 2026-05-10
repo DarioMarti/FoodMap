@@ -8,7 +8,7 @@ function obtener_todas_etiquetas()
 
     $conn = conectar();
     $stmt = $conn->prepare("
-    SELECT c.* 
+    SELECT c.*, mc.Es_principal AS EsPrincipal 
     FROM categoria c 
     JOIN marcador_categoria mc ON c.id = mc.Categoria_id 
     WHERE mc.Marcador_id = ?

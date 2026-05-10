@@ -45,9 +45,27 @@ export const obtenerMarcadores = async (setMarcadores) => {
     }
 };
 
-// Abre y cierra el formulario para crear marcadores
-export function manejarFormularioMarcador(estado, setFormularioActivo) {
-    setFormularioActivo(estado);
+
+
+// Abre y cierra el formulario para editar marcadores
+export function manejarFormularioMarcador(tipo, estado, estadoEditar, setFormularioEditarActivo, setFormularioActivo, setEtiquetas, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando) {
+
+    if (tipo === "crear") {
+        setFormularioActivo(estado);
+        setFormularioEditarActivo(estadoEditar);
+        setEtiquetas([]);
+        setEtiquetaSeleccionada({ id: "", nombre: "" });
+        setEsPrincipal(esPrincipal || false);
+        setIsEditando(false);
+    }
+
+    if (tipo === "editar") {
+        setFormularioEditarActivo(estadoEditar);
+        setFormularioActivo(estado);
+        setEtiquetaSeleccionada({ id: "", nombre: "" });
+        setEsPrincipal(esPrincipal || false);
+        setIsEditando(true);
+    }
 }
 
 //Obtener etiqueta
@@ -78,16 +96,20 @@ export const agregarEtiqueta = async (id, nombre, principal, setEtiquetas, etiqu
     const finalId = id || "1";
     const finalNombre = nombre || "Cafetería";
 
-    // Ponemos 'await' para esperar los datos reales de la base de datos
+    if (principal && etiquetas.some(e => e.esPrincipal || e.EsPrincipal)) {
+        alert("Ya existe una etiqueta principal para este marcador.");
+        return; // Salimos de la función sin añadir nada
+    }
+
     const datosEtiqueta = await obtenerEtiquetas(finalId);
 
     if (datosEtiqueta && datosEtiqueta[0]) {
         const nuevaEtiqueta = {
             id: finalId,
-            nombre: finalNombre,
+            Nombre: finalNombre,
             esPrincipal: principal,
-            color: datosEtiqueta[0].Color, // Ahora sí tendrá el valor (ej: #FF5733)
-            icono: datosEtiqueta[0].Icono
+            Color: datosEtiqueta[0].Color,
+            Icono: datosEtiqueta[0].Icono
         };
         setEtiquetas([...etiquetas, nuevaEtiqueta]);
     }

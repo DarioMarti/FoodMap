@@ -24,6 +24,7 @@ function App() {
   return (
     <MainLayout>
       <Routes>
+        <Route path="/" element={<Mapa darkMode={darkMode} />} />
         <Route path="/mapa" element={<Mapa darkMode={darkMode} />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/config" element={<Config darkMode={darkMode} setDarkMode={setDarkMode} />} />
