@@ -1,11 +1,34 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { MapPin, MessageSquare, Bot, Settings } from 'lucide-react';
 import Logo from '../../assets/foodmap_logo_blanco.svg';
-
+import { comprobar_sesion_usuario } from '../../servicios/usuario/comprobar_sesion_usuario';
 
 export function Sidebar() {
+  const [usuariologueado, setUsuariologueado] = useState(false);
+  const [usuario, setUsuario] = useState({});
+  const siglaInicial = usuario.nombre ? usuario.nombre.charAt(0).toUpperCase() : 'U';
 
+  const comprobar_sesion = async () => {
+    const respuesta = await comprobar_sesion_usuario();
+    if (respuesta.login) {
+      setUsuariologueado(true);
+      setUsuario(respuesta.usuario);
+      console.log(respuesta.usuario);
+      console.log('La sigla es: ' + siglaInicial);
+    } else {
+      setUsuariologueado(false);
+    }
+  };
+
+
+  useEffect(() => {
+    comprobar_sesion();
+  }, []);
+
+  useEffect(() => {
+  }, [usuariologueado]);
 
   return (
     <aside className="w-20 lg:w-24 h-full bg-background dark:bg-dark-tarjeta border-r border-borde dark:border-descripcion flex flex-col items-center py-6 gap-8 z-50">
@@ -28,7 +51,7 @@ export function Sidebar() {
       <div className="flex flex-col gap-6 w-full px-4 mt-auto">
         <SidebarLink to="/config" icon={<Settings size={24} />} />
         <button className="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-lg hover:bg-indigo-600 transition-colors mx-auto">
-          A
+          {siglaInicial}
         </button>
       </div>
     </aside>

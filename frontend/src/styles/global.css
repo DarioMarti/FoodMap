@@ -44,12 +44,15 @@
   h3,
   h4,
   h5,
-  h6 {
+  h6,
+  label,
+  button {
     @apply font-poppins;
   }
 
   p,
-  a {
+  a,
+  input {
     @apply font-sans;
   }
 

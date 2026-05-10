@@ -1,30 +1,45 @@
 <?php
-
-include __DIR__ . '/' . $_SERVER['DOCUMENT_ROOT'] . "/conexion.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 session_start();
 
-$conn = conectar();
+header("Access-Control-Allow-Origin: http://localhost:5180");
+header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
-
-$email = $_POST['email'];
-$password = $_POST['password'];
-
-$sql = "SELECT * FROM usuarios WHERE email = ? and password = ?";
-$stmt = $conn->prepare($sql);
-$stmt->execute([$email, $password]);
-$resultado = $stmt->get_result();
-$usuario = $resultado->fetch_assoc();
-
-
-if (!isset($_SESSION['usuario'])) {
-    $_SESSION["usuario"] = [
-        "id" => $usuario["id"],
-        "nombre" => $usuario["nombre"],
-        "email" => $usuario["email"],
-        "rol" => $usuario["rol"] ?? "User"
-    ];
-
-
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit;
 }
 
+header("Content-Type: application/json"); // Indicamos que la respuesta es JSON
+
+try {
+    $conn = conectar();
+
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $sql = "SELECT * FROM usuario WHERE Email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$email]);
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($usuario && password_verify($password, $usuario["Contrasena"])) {
+
+        $_SESSION["usuario"] = [
+            "id" => $usuario["id"],
+            "nombre" => $usuario["Nombre"],
+            "email" => $usuario["Email"],
+            "rol" => $usuario["Rol"] ?? "User",
+            "foto" => $usuario["Foto_perfil"] ?? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+        ];
+
+        echo json_encode(["ok" => true, "usuario" => $_SESSION["usuario"]]);
+    } else {
+        echo json_encode(["ok" => false, "error" => "Email o contraseña incorrectos"]);
+    }
+
+} catch (Exception $e) {
+    echo json_encode(["ok" => false, "error" => $e->getMessage()]);
+}
 ?>
