@@ -4,9 +4,15 @@ import { Sun, Moon, Monitor, Palette, Type } from 'lucide-react';
 import Toggle from "../../components/ui/Toggle";
 import Boton_main from "../../components/ui/Boton_main";
 
-export default function Apariencia({ darkMode, setDarkMode }) {
+export default function Apariencia({ darkMode, setDarkMode, setPrimaryColor, fontSize, setFontSize }) {
 
+    const coloresDisponibles = ['#EA2678', '#7C3AED', '#EA580C', '#059669'];
+    const [colorActual, setColorActual] = useState(localStorage.getItem('user-primary-color') || '#EA2678');
 
+    const handleColorClick = (color) => {
+        setColorActual(color);
+        setPrimaryColor(color);
+    };
 
     return (
         <div className="h-full flex flex-col overflow-hidden dark:bg-text-main bg-background">
@@ -46,10 +52,14 @@ export default function Apariencia({ darkMode, setDarkMode }) {
                             <p className="text-md text-text-tertiary">Personaliza el color principal de la aplicación</p>
                         </div>
                         <div className="flex gap-3">
-                            <div className="size-8 rounded-full bg-primary ring-2 ring-offset-2 ring-primary cursor-pointer"></div>
-                            <div className="size-8 rounded-full bg-blue-500 cursor-pointer"></div>
-                            <div className="size-8 rounded-full bg-purple-500 cursor-pointer"></div>
-                            <div className="size-8 rounded-full bg-rose-500 cursor-pointer"></div>
+                            {coloresDisponibles.map((color) => (
+                                <button
+                                    key={color}
+                                    onClick={() => handleColorClick(color)}
+                                    className={`size-8 rounded-full ${color} ${color === colorActual ? 'ring-2 ring-offset-2 ring-primary' : ''} cursor-pointer`}
+                                    style={{ backgroundColor: color }}
+                                />
+                            ))}
                         </div>
                     </div>
                     <span className=" h-1 bg-borde w-full dark:bg-text-tertiary"></span>
@@ -57,7 +67,7 @@ export default function Apariencia({ darkMode, setDarkMode }) {
                         <strong className="text-xl font-semibold">Tamaño de la fuente</strong>
                         <div className="flex items-center gap-4">
                             <span className="text-sm">A</span>
-                            <input type="range" className="w-32 accent-primary" />
+                            <input type="range" className="w-32 accent-primary" min="14" max="24" value={fontSize} onChange={(e) => setFontSize(e.target.value)} />
                             <span className="text-xl">A</span>
                         </div>
                     </div>

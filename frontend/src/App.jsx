@@ -8,10 +8,9 @@ import Login from './paginas/Login';
 import { comprobar_sesion_usuario } from './servicios/usuario/comprobar_sesion_usuario';
 
 function App() {
-  const [darkMode, setDarkMode] = useState(() => {
-    const temaGuardado = localStorage.getItem('theme');
-    return temaGuardado === 'dark';
-  });
+  const [darkMode, setDarkMode] = useState(() => { const temaGuardado = localStorage.getItem('theme'); return temaGuardado === 'dark'; });
+  const [primaryColor, setPrimaryColor] = useState(() => { return localStorage.getItem('user-primary-color') || '#EA2678'; });
+  const [fontSize, setFontSize] = useState(localStorage.getItem('user-font-size') || '16');
   const [usuario_logueado, set_usuario_logueado] = useState(false);
 
   useEffect(() => {
@@ -36,6 +35,16 @@ function App() {
     comprobar_sesion();
   }, []);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty('--color-primary', primaryColor);
+    localStorage.setItem('user-primary-color', primaryColor);
+  }, [primaryColor]);
+
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${fontSize}px`;
+    localStorage.setItem('user-font-size', fontSize);
+  }, [fontSize]);
+
   return (
     usuario_logueado ?
       <MainLayout>
@@ -43,7 +52,7 @@ function App() {
           <Route path="/" element={<Mapa darkMode={darkMode} />} />
           <Route path="/mapa" element={<Mapa darkMode={darkMode} />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/config" element={<Config darkMode={darkMode} setDarkMode={setDarkMode} />} />
+          <Route path="/config" element={<Config darkMode={darkMode} setDarkMode={setDarkMode} setPrimaryColor={setPrimaryColor} fontSize={fontSize} setFontSize={setFontSize} />} />
         </Routes>
       </MainLayout> : <Login />
   );

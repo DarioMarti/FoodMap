@@ -11,7 +11,7 @@ import Idioma from "./config/Idioma";
 import Marcadores from "./config/Marcadores";
 import Ayuda from "./config/Ayuda";
 
-export default function Config({ darkMode, setDarkMode }) {
+export default function Config({ darkMode, setDarkMode, setPrimaryColor, fontSize, setFontSize }) {
 
 
     const [seccion, setSeccion] = useState("Perfil");
@@ -47,7 +47,7 @@ export default function Config({ darkMode, setDarkMode }) {
                     {seccion === "Privacidad" && <Privacidad />}
                     {seccion === "Notidicaciones" && <Notidicaciones />}
                     {seccion === "Mapas_perfil" && <Mapas_perfil />}
-                    {seccion === "Apariencia" && <Apariencia darkMode={darkMode} setDarkMode={setDarkMode} />}
+                    {seccion === "Apariencia" && <Apariencia darkMode={darkMode} setDarkMode={setDarkMode} setPrimaryColor={setPrimaryColor} fontSize={fontSize} setFontSize={setFontSize} />}
                     {seccion === "Idioma" && <Idioma />}
                     {seccion === "Marcadores" && <Marcadores />}
                     {seccion === "Ayuda" && <Ayuda />}
