@@ -44,7 +44,7 @@ export function Sidebar() {
       <nav className="flex-1 flex flex-col gap-6 w-full px-4">
         <SidebarLink to="/mapa" icon={<MapPin size={24} />} />
         <SidebarLink to="/chat" icon={<MessageSquare size={24} />} />
-        <SidebarLink to="/ia" icon={<Bot size={24} />} />
+        <SidebarLink to="/asistente_ia" icon={<Bot size={24} />} />
       </nav>
 
       {/* Bottom Actions */}

@@ -6,7 +6,7 @@ import Chat_input from "../components/ui/Chat_input";
 import { useState, useEffect, useRef } from "react";
 import io from 'socket.io-client';
 import { iniciarChat, manejarNuevoMensaje, enviarMensaje as servicioEnviarMensaje, activarConversacion } from "../servicios/mapa/enviar_mensajes";
-import form_amistad from "../components/ui/form_amistad";
+import Form_amistad from "../components/ui/Form_amistad";
 
 // Conexión al servidor de chat (Node.js)
 const socket = io('http://localhost:4000');
@@ -17,12 +17,11 @@ export default function Chat() {
     const [contactos, setContactos] = useState({ amigos: [], grupos: [] });
     const [mensajes, setMensajes] = useState([]);
     const [miUsuario, setMiUsuario] = useState(null);
+    const [solicitudes, setSolicitudes] = useState(false);
     const scrollRef = useRef(null);
     const ultimoMensajeCualquiera = mensajes.length > 0 ? mensajes[mensajes.length - 1] : null;
     const mensajesSoloDelOtro = mensajes.filter(m => { const idEmisor = m.Usuario_id || m.emisor_id; return idEmisor != miUsuario?.id; });
-    const ultimoMensajeDelOtro = mensajesSoloDelOtro.length > 0
-        ? mensajesSoloDelOtro[mensajesSoloDelOtro.length - 1]
-        : null;
+    const ultimoMensajeDelOtro = mensajesSoloDelOtro.length > 0 ? mensajesSoloDelOtro[mensajesSoloDelOtro.length - 1] : null;
 
     // 1. Cargar mi sesión y los contactos al montar el componente
     useEffect(() => {
@@ -52,6 +51,12 @@ export default function Chat() {
         servicioEnviarMensaje(contenido, conversacion_activa, miUsuario, socket, setMensajes);
     };
 
+    const handleSolicitudes = () => {
+        setSolicitudes(!solicitudes);
+    };
+
+
+
     return (
         <div className="flex flex-col h-full w-full bg-background dark:bg-background-oscuro">
             <div className="flex  justify-between items-center pr-20  border-b border-borde dark:border-text-tertiary/20 ">
@@ -64,7 +69,7 @@ export default function Chat() {
                         <h3 className={`text-xl  font-semibold ${tipoConversacion === "Grupos" ? "text-text-main dark:text-background" : "text-text-tertiary"}`}>Grupos</h3>
                     </div>
                 </div>
-                <lucideIcons.UserPlus className="w-7 h-7 text-text-main dark:text-background cursor-pointer hover:text-primary dark:hover:text-primary-hover" />
+                <lucideIcons.Bell onClick={handleSolicitudes} className="w-7 h-7 text-text-main dark:text-background cursor-pointer hover:text-primary dark:hover:text-primary-hover" />
             </div>
 
             <main className="flex-1 flex min-h-0 bg-background dark:bg-background-oscuro">
@@ -97,8 +102,8 @@ export default function Chat() {
                 </section>
 
                 <section className="w-3/4 relative  h-full overflow-hidden">
-
                     {conversacion_activa ? (
+
                         <div className="flex flex-col w-full">
                             <div className="px-12 py-6 border-b border-borde dark:border-text-tertiary/20">
                                 <span className="flex items-center gap-6">
@@ -123,11 +128,13 @@ export default function Chat() {
                                 </div>
                                 <Chat_input onSend={handleEnviar} className="w-full absolute bottom-10 left-0" />
                             </div>
-                            <form_amistad />
                         </div>
                     ) : (
-                        <div className="flex-1 flex items-center justify-center text-text-tertiary text-2xl">
+
+                        <div className="flex-1 flex items-center justify-center text-text-tertiary text-2xl relative  top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <Form_amistad estado={solicitudes} />
                             Selecciona una conversación para empezar
+
                         </div>
                     )}
                 </section>

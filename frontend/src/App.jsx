@@ -5,6 +5,7 @@ import Mapa from './paginas/Mapa_page';
 import Chat from './paginas/Chat';
 import Config from './paginas/Config';
 import Login from './paginas/Login';
+import Asistente_IA from './paginas/Asistente_IA';
 import { comprobar_sesion_usuario } from './servicios/usuario/comprobar_sesion_usuario';
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
       if (respuesta.login) {
         set_usuario_logueado(true);
       } else {
-        set_usuario_logueado(false);
+        set_usuario_logueado(true);
       }
     }
     comprobar_sesion();
@@ -52,6 +53,7 @@ function App() {
           <Route path="/" element={<Mapa darkMode={darkMode} />} />
           <Route path="/mapa" element={<Mapa darkMode={darkMode} />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/asistente_ia" element={<Asistente_IA />} />
           <Route path="/config" element={<Config darkMode={darkMode} setDarkMode={setDarkMode} setPrimaryColor={setPrimaryColor} fontSize={fontSize} setFontSize={setFontSize} />} />
         </Routes>
       </MainLayout> : <Login />

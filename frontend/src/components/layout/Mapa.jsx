@@ -136,7 +136,7 @@ export default function Mapa({ darkMode, mostrarNotificacion }) {
                     <label htmlFor="etiquetas">Etiquetas:</label>
                     <div className='flex gap-4 w-full items-center justify-between'>
                         <select value={etiquetaSeleccionada.id} onChange={(e) => setEtiquetaSeleccionada({ id: e.target.value, nombre: e.target.options[e.target.selectedIndex].text })}
-                            className='border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl w-full' id="etiquetas" name="etiquetas">
+                            className='border-2 border-borde dark:border-descripcion dark:text-input bg-background dark:bg-dark-tarjeta p-2 rounded-xl w-full' id="etiquetas" name="etiquetas">
                             <option value="1">Cafetería</option>
                             <option value="2">Hamburguesería</option>
                             <option value="3">Restaurante</option>
