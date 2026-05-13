@@ -15,15 +15,18 @@ $mi_id = $_SESSION["usuario"]["id"];
 
 try {
     $conn = conectar();
-    $sql_amigos = "SELECT u.id, u.Nombre, u.Foto_perfil 
-                   FROM amistades a
-                   JOIN usuario u ON (u.id = a.Usuario_solicita_id OR u.id = a.Usuario_receptor_id)
-                   WHERE (a.Usuario_solicita_id = ? OR a.Usuario_receptor_id = ?)
-                   AND u.id != ? 
-                   AND a.Estado = 'aceptado'";
+    $sql_amigos = "SELECT u.id, u.Nombre, u.Foto_perfil FROM amistades a 
+    JOIN usuario u ON (u.id = a.Usuario_solicita_id OR u.id = a.Usuario_receptor_id) 
+    LEFT JOIN bloqueos b ON (
+    (b.Usuario_bloqueador_id = ? AND b.Usuario_bloqueado_id = u.id)
+    OR
+    (b.Usuario_bloqueado_id = ? AND b.Usuario_bloqueador_id = u.id)
+)
+WHERE (a.Usuario_solicita_id = ? OR a.Usuario_receptor_id = ?)
+AND u.id != ? AND a.Estado = 'aceptado' AND b.id IS NULL";
 
     $stmt = $conn->prepare($sql_amigos);
-    $stmt->execute([$mi_id, $mi_id, $mi_id]);
+    $stmt->execute([$mi_id, $mi_id, $mi_id, $mi_id, $mi_id]);
     $amigos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Sentencia para obtener los grupos
