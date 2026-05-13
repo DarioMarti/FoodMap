@@ -30,7 +30,7 @@ function App() {
       if (respuesta.login) {
         set_usuario_logueado(true);
       } else {
-        set_usuario_logueado(true);
+        set_usuario_logueado(false);
       }
     }
     comprobar_sesion();

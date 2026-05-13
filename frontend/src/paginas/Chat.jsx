@@ -5,10 +5,10 @@ import * as lucideIcons from 'lucide-react';
 import Chat_input from "../components/ui/Chat_input";
 import { useState, useEffect, useRef } from "react";
 import io from 'socket.io-client';
-import { iniciarChat, manejarNuevoMensaje, enviarMensaje as servicioEnviarMensaje, activarConversacion } from "../servicios/mapa/enviar_mensajes";
+import { iniciarChat, manejarNuevoMensaje, enviarMensaje as servicioEnviarMensaje, activarConversacion } from "../servicios/chat/enviar_mensajes";
 import Form_amistad from "../components/ui/Form_amistad";
+import Notificacion from "../components/ui/Notificacion.jsx";
 
-// Conexión al servidor de chat (Node.js)
 const socket = io('http://localhost:4000');
 
 export default function Chat() {
@@ -22,13 +22,12 @@ export default function Chat() {
     const ultimoMensajeCualquiera = mensajes.length > 0 ? mensajes[mensajes.length - 1] : null;
     const mensajesSoloDelOtro = mensajes.filter(m => { const idEmisor = m.Usuario_id || m.emisor_id; return idEmisor != miUsuario?.id; });
     const ultimoMensajeDelOtro = mensajesSoloDelOtro.length > 0 ? mensajesSoloDelOtro[mensajesSoloDelOtro.length - 1] : null;
+    const [notificacion, setNotificacion] = useState({ visible: false, mensaje: "", tipo: "" });
 
-    // 1. Cargar mi sesión y los contactos al montar el componente
     useEffect(() => {
         iniciarChat(setMiUsuario, setContactos, socket);
     }, []);
 
-    // 2. Escuchar nuevos mensajes del socket
     useEffect(() => {
         const callbackMensajes = (mensaje) => {
             manejarNuevoMensaje(mensaje, conversacion_activa, miUsuario, setMensajes);
@@ -56,9 +55,26 @@ export default function Chat() {
     };
 
 
+    const mostrarNotificacion = (mensaje, tipo) => {
+        setNotificacion({ visible: true, mensaje, tipo });
+
+        setTimeout(() => {
+            setNotificacion({ ...notificacion, visible: false });
+        }, 3000);
+    };
+
+    const actualizarContactos = () => {
+        iniciarChat(setMiUsuario, setContactos, socket);
+    };
+
 
     return (
         <div className="flex flex-col h-full w-full bg-background dark:bg-background-oscuro">
+            <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[3000] pointer-events-none">
+                {notificacion.visible && (
+                    <Notificacion mensaje={notificacion.mensaje} tipo={notificacion.tipo} />
+                )}
+            </div>
             <div className="flex  justify-between items-center pr-20  border-b border-borde dark:border-text-tertiary/20 ">
                 <div className="h-18 flex w-1/4  ">
                     <div onClick={() => cambiarTipoConversacion("Amigos")} className={`w-1/2 min-w-[150px] text-text-main flex ${tipoConversacion === "Amigos" ? "dark:bg-secondary/25 border-b-6 border-primary text-background dark:text-background-oscuro" : "border-none border-text-tertiary"} justify-center items-center cursor-pointer`}>
@@ -132,7 +148,7 @@ export default function Chat() {
                     ) : (
 
                         <div className="flex-1 flex items-center justify-center text-text-tertiary text-2xl relative  top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <Form_amistad estado={solicitudes} />
+                            <Form_amistad estado={solicitudes} miUsuario={miUsuario} mostrarNotificacion={mostrarNotificacion} actualizarContactos={actualizarContactos} />
                             Selecciona una conversación para empezar
 
                         </div>

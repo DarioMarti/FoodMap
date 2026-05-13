@@ -20,6 +20,17 @@ export default function Config({ darkMode, setDarkMode, setPrimaryColor, fontSiz
         setSeccion(seccion);
     }
 
+    async function cerrarSesion() {
+        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/sesion/cerrar_sesion.php", {
+            credentials: 'include'
+        });
+
+        const data = await respuesta.json();
+
+        if (data.ok) {
+            window.location.href = "/";
+        }
+    }
 
     return (
         <div className="h-full w-full">
@@ -39,7 +50,7 @@ export default function Config({ darkMode, setDarkMode, setPrimaryColor, fontSiz
                     </Bloque_config>
                     <Bloque_config seccion="más">
                         <Etiqueta_perfil icono={Info} nombre="Ayuda" active={seccion === "Ayuda"} onClick={() => cambiarSeccion("Ayuda")} />
-                        <Etiqueta_perfil icono={LogOut} nombre="Cerrar sesión" active={false} />
+                        <Etiqueta_perfil onClick={cerrarSesion} icono={LogOut} nombre="Cerrar sesión" active={false} />
                     </Bloque_config>
                 </section>
                 <section className="w-3/4   ">
