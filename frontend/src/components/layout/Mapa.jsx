@@ -8,8 +8,9 @@ import * as lucideIcons from 'lucide-react';
 import Tarjeta_foto_marcador, { Tarjeta_foto_marcador_añadir } from '../ui/tarjetas_fotos_marcador';
 import Marcador from '../ui/Marcador';
 import Etiqueta_marcador from '../ui/etiqueta_marcador';
-import { agregarMarcador, alPincharMapa, DetectarCordenadas, obtenerMarcadores, manejarFormularioMarcador, agregarEtiqueta, obtenerTodasEtiquetas, obtenerFotografias } from '../../servicios/mapa/marcador_servicio.js';
+import { agregarMarcador, alPincharMapa, DetectarCordenadas, obtenerMarcadores, manejarFormularioMarcador, agregarEtiqueta, obtenerTodasEtiquetas, obtenerFotografias, eliminarMarcador } from '../../servicios/mapa/marcador_servicio.js';
 import { LocalizacionUsuario } from '../../servicios/mapa/localizar_usuario.jsx';
+import TarjetaConfirmacion from '../ui/tarjeta_confirmacion';
 
 let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -43,6 +44,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) 
     const [fotosMarcador, setFotosMarcador] = useState([]);
     const [isEditando, setIsEditando] = useState(false);
     const [usuarioUbicacion, setUsuarioUbicacion] = useState([40.4167, -3.7032]);
+    const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
     const urlClaro = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     const urlOscuro = "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
@@ -92,6 +94,23 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) 
         }
         console.log(puntuacion)
         return estrellas;
+    }
+
+    const manejarEliminarMarcador = () => {
+        setMostrarConfirmacion(!mostrarConfirmacion);
+    };
+    const elimiarMarcador = async (id) => {
+        const respuesta = await eliminarMarcador(id);
+
+        if (respuesta?.ok) {
+            mostrarNotificacion(respuesta.message, "success");
+            setFormularioEditarActivo(false);
+            setLugarSeleccionado(null);
+            obtenerMarcadores(setMarcadores, nombreBusqueda);
+            manejarEliminarMarcador();
+        } else {
+            mostrarNotificacion("Error al eliminar el marcador", "error");
+        }
     }
 
     const alElegirFoto = (e) => {
@@ -245,8 +264,6 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) 
                 ))}
             </MapContainer>
 
-
-
             {
                 lugarSeleccionado && (
                     <div className="max-h-[50vh] overflow-y-auto absolute bottom-0 left-0 right-0 z-[1001] bg-background dark:bg-dark-tarjeta p-6 rounded-t-xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300">
@@ -375,7 +392,9 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) 
                     </div>
                 </div>
                 <button className="bg-primary dark:bg-primary  hover:bg-primary-hover dark:hover:bg-primary-hover text-background  uppercase rounded-xl p-4 cursor-pointer w-full">Agregar</button>
+                <span className="text-center font-bold hover:text-primary  cursor-pointer text-error text-md   rounded-xl p-2 w-full" onClick={() => { setMostrarConfirmacion(true); }}>Eliminar marcador</span>
             </form>
+            {mostrarConfirmacion && <TarjetaConfirmacion cancelar={manejarEliminarMarcador} confirmar={() => elimiarMarcador(lugarSeleccionado?.id)} mensaje="¿Está seguro de que desea eliminar este marcador?" />}
         </main >
     );
 }

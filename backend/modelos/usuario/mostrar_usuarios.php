@@ -21,7 +21,7 @@ try {
             )
             WHERE u.Nombre LIKE ? 
             AND u.id != ? 
-            AND b.id IS NULL"; 
+            AND b.id IS NULL";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([$mi_id, $mi_id, "%$nombre%", $mi_id]);

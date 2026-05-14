@@ -125,3 +125,14 @@ export const obtenerFotografias = async (id) => {
         console.error("Error cargando fotos:", error);
     }
 }
+
+//Eliminar marcador
+export const eliminarMarcador = async (id) => {
+    try {
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/eliminar_marcador.php?id_marcador=${id}`);
+        const datos = await respuesta.json();
+        return datos;
+    } catch (error) {
+        console.error("Error eliminando marcador:", error);
+    }
+}
