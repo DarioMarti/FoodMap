@@ -148,7 +148,7 @@ export default function Chat() {
                     ) : (
 
                         <div className="flex-1 flex items-center justify-center text-text-tertiary text-2xl relative  top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <Form_amistad estado={solicitudes} miUsuario={miUsuario} mostrarNotificacion={mostrarNotificacion} actualizarContactos={actualizarContactos} />
+                            <Form_amistad estado={solicitudes} miUsuario={miUsuario} mostrarNotificacion={mostrarNotificacion} actualizarContactos={actualizarContactos} contactos={contactos} />
                             Selecciona una conversación para empezar
 
                         </div>

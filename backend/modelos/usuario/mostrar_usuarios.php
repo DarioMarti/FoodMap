@@ -22,7 +22,7 @@ try {
             )
             WHERE u.Nombre LIKE ? 
             AND u.id != ? 
-            AND b.id IS NULL"; // <-- Solo los que NO tienen bloqueo
+            AND b.id IS NULL"; 
 
     $stmt = $conn->prepare($sql);
     // Pasamos: mi_id (para b1), mi_id (para b2), nombre buscador, mi_id (para u.id !=)

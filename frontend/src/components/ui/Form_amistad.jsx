@@ -2,7 +2,7 @@ import * as lucideIcons from 'lucide-react';
 import Boton_cuadrado from './Boton_cuadrado';
 import { useState, useEffect } from 'react';
 
-export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, actualizarContactos }) {
+export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, actualizarContactos, contactos }) {
     const [tabActiva, setTabActiva] = useState("buscar");
     const [nombre_usuario, setNombre_usuario] = useState("");
     const [usuarios, setUsuarios] = useState([]);
@@ -131,11 +131,21 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                         )
                     }
                 </button>
+                <button
+                    onClick={() => setTabActiva("Contactos")}
+                    title="Mis Amigos"
+                    className={`p-4 rounded-l-2xl transition-all cursor-pointer flex items-center justify-center h-20 border-borde/10 ${tabActiva === "Contactos"
+                        ? "bg-dark-tarjeta text-primary shadow-[-20px_10px_30px_rgba(0,0,0,0.3)] border-r-0 border-l-4 border-l-primary w-16 z-10"
+                        : "bg-dark-tarjeta text-primary-dark/60 shadow-[-20px_10px_30px_rgba(0,0,0,0.3)] border-r-0 border-l-4 border-l-primary-dark/60 w-14 z-10 "
+                        }`}
+                >
+                    <lucideIcons.Contact className="size-6" />
+                </button>
             </div>
 
             <div className="bg-dark-tarjeta p-8 rounded-2xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] min-w-[700px]  min-h-120 ">
 
-                {tabActiva === "buscar" ? (
+                {tabActiva === "buscar" && (
                     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                         <h1 className="text-2xl font-bold text-text-main dark:text-background mb-6 flex items-center gap-3">
                             Buscar Amigos
@@ -158,7 +168,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
 
                             {usuarios?.map((usuario) => (
                                 (usuario.id !== miUsuario?.id) ?
-                                    (<div className={`flex items-center justify-between py-4 px-6 text-text-main dark:text-background hover:bg-primary/5 transition-colors`}>
+                                    (<div key={usuario.id} className={`flex items-center justify-between py-4 px-6 text-text-main dark:text-background hover:bg-primary/5 transition-colors`}>
                                         <div className="flex items-center gap-4">
                                             <div className="size-10 text-lg rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold">
                                                 {usuario.Nombre.toUpperCase()[0]}
@@ -183,14 +193,16 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                             ))}
                         </div>
                     </div>
-                ) : (
+                )}
+
+                {tabActiva === "solicitudes" && (
                     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                         <h1 className="text-2xl font-bold text-text-main dark:text-background mb-6 flex items-center gap-3">
                             Solicitudes Pendientes
                         </h1>
 
                         {solicitudes.length === 0 ? (
-                            <div className="flex items-center justify-center py-20 text-text-tertiary">
+                            <div className="flex flex-col items-center justify-center py-20 text-text-tertiary">
                                 <lucideIcons.Inbox className="size-16 mb-4 opacity-20" />
                                 <p className="text-xl">No tienes solicitudes nuevas</p>
                             </div>
@@ -227,7 +239,41 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                         )}
                     </div>
                 )}
+
+                {tabActiva === "Contactos" && (
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                        <h1 className="text-2xl font-bold text-text-main dark:text-background mb-6 flex items-center gap-3">
+                            Mis Amigos
+                        </h1>
+
+                        {contactos?.amigos?.length > 0 ? (
+                            <div className="flex flex-col gap-1 overflow-hidden rounded-xl">
+                                {contactos.amigos.map((amigo) => (
+                                    <div key={amigo.id} className="flex items-center justify-between py-4 px-6 text-text-main dark:text-background hover:bg-primary/5 transition-colors">
+                                        <div className="flex items-center gap-4">
+                                            <div className="size-10 text-lg rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold">
+                                                {amigo.Nombre.toUpperCase()[0]}
+                                            </div>
+                                            <strong className="font-medium text-2xl">{amigo.Nombre}</strong>
+                                        </div>
+                                        <Boton_cuadrado
+                                            className="bg-primary/20 text-primary hover:bg-primary hover:text-white size-11 border border-primary/30"
+                                            icon={<lucideIcons.MessageCircle className="size-5" />}
+                                            title="Chatear"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-20 text-text-tertiary">
+                                <lucideIcons.Users className="size-16 mb-4 opacity-20" />
+                                <p className="text-xl">Aún no tienes amigos agregados</p>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
+
 
         </div>
     );

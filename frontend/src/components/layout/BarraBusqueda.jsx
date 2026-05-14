@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { Search, Filter, Send } from 'lucide-react';
 import Boton_cuadrado from '../ui/Boton_cuadrado';
 import NavItem from '../ui/NavItem';
