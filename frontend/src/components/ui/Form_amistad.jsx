@@ -75,6 +75,24 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
         }
     };
 
+    const bloquear_usuario = async (id_amigo) => {
+        const formData = new FormData();
+        formData.append("id", id_amigo);
+        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/chat/bloquear_usuario.php", {
+            credentials: 'include',
+            method: "POST",
+            body: formData,
+        });
+
+        if (respuesta.ok) {
+            obtener_solicitudes();
+            mostrarNotificacion("Usuario bloqueado exitosamente", "success");
+            actualizarContactos();
+        } else {
+            mostrarNotificacion("Error al bloquear al usuario", "error");
+        }
+    };
+
 
     useEffect(() => {
         obtener_solicitudes();
@@ -105,6 +123,13 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                         }`}
                 >
                     <lucideIcons.Bell className="size-6" />
+                    {
+                        solicitudes?.length > 0 && (
+                            <span className="absolute top-4 right-12 bg-primary text-white rounded-full px-2 py-1 text-xs">
+                                {solicitudes.length}
+                            </span>
+                        )
+                    }
                 </button>
             </div>
 
@@ -148,6 +173,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                                                 title="Enviar solicitud"
                                             />
                                             <Boton_cuadrado
+                                                onClick={() => bloquear_usuario(usuario.id)}
                                                 className="bg-error/20 text-error hover:bg-error hover:text-white size-11 border border-error/30"
                                                 icon={<lucideIcons.MessageCircleOff className="size-5" />}
                                                 title="Bloquear"
