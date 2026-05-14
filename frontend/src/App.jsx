@@ -10,9 +10,26 @@ import { comprobar_sesion_usuario } from './servicios/usuario/comprobar_sesion_u
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => { const temaGuardado = localStorage.getItem('theme'); return temaGuardado === 'dark'; });
-  const [primaryColor, setPrimaryColor] = useState(() => { return localStorage.getItem('user-primary-color') || '#EA2678'; });
-  const [fontSize, setFontSize] = useState(localStorage.getItem('user-font-size') || '16');
+
+  const paletaPorDefecto = {
+    primary: '#EA2678',
+    hover: '#F03989',
+    active: '#C41863',
+    dark: '#9A0F4A',
+    light: '#FFDEEF'
+  };
+
+  const [primaryColor, setPrimaryColor] = useState(() => {
+    const guardado = localStorage.getItem('user-theme-palette');
+    try {
+      return guardado ? JSON.parse(guardado) : paletaPorDefecto;
+    } catch (e) {
+      return paletaPorDefecto;
+    }
+  }); const [fontSize, setFontSize] = useState(localStorage.getItem('user-font-size') || '16');
   const [usuario_logueado, set_usuario_logueado] = useState(false);
+
+
 
   useEffect(() => {
     if (darkMode) {
@@ -37,8 +54,14 @@ function App() {
   }, []);
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--color-primary', primaryColor);
-    localStorage.setItem('user-primary-color', primaryColor);
+    const root = document.documentElement;
+    root.style.setProperty('--color-primary', primaryColor.primary);
+    root.style.setProperty('--color-primary-hover', primaryColor.hover);
+    root.style.setProperty('--color-primary-active', primaryColor.active);
+    root.style.setProperty('--color-primary-dark', primaryColor.dark);
+    root.style.setProperty('--color-primary-light', primaryColor.light);
+
+    localStorage.setItem('user-theme-palette', JSON.stringify(primaryColor));
   }, [primaryColor]);
 
   useEffect(() => {

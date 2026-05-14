@@ -27,7 +27,7 @@ const IconoDinamico = ({ nombre, ...props }) => {
     return <IconoComponente {...props} />;
 };
 
-export default function Mapa({ darkMode, mostrarNotificacion }) {
+export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) {
     const [lugarSeleccionado, setLugarSeleccionado] = useState(null);
     const [formularioActivo, setFormularioActivo] = useState(false);
     const [formularioActivo_editar, setFormularioEditarActivo] = useState(false);
@@ -102,11 +102,13 @@ export default function Mapa({ darkMode, mostrarNotificacion }) {
         setFotosMarcador([...fotosMarcador, ...nuevosArchivos]);
     };
 
-
     useEffect(() => {
         LocalizacionUsuario(setUsuarioUbicacion);
-        obtenerMarcadores(setMarcadores);
     }, []);
+
+    useEffect(() => {
+        obtenerMarcadores(setMarcadores, nombreBusqueda);
+    }, [nombreBusqueda]);
 
     return (
         <main className="flex-1 flex flex-col min-w-0 h-full z-0 relative">

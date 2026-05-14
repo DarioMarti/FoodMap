@@ -6,6 +6,7 @@ import { useState } from "react";
 export default function MapaPage({ darkMode }) {
 
     const [notificacion, setNotificacion] = useState({ visible: false, mensaje: "", tipo: "" });
+    const [nombreBusqueda, setNombreBusqueda] = useState("");
 
     const mostrarNotificacion = (mensaje, tipo) => {
         setNotificacion({ visible: true, mensaje, tipo });
@@ -15,7 +16,9 @@ export default function MapaPage({ darkMode }) {
         }, 3000);
     };
 
-
+    const buscarMarcadores = (nombre) => {
+        setNombreBusqueda(nombre);
+    };
 
     return (
         <main id="mapa_contenedor" className="flex-1 flex flex-col min-w-0 h-full">
@@ -24,8 +27,8 @@ export default function MapaPage({ darkMode }) {
                     <Notificacion mensaje={notificacion.mensaje} tipo={notificacion.tipo} />
                 )}
             </div>
-            <BarraBusqueda />
-            <Mapa darkMode={darkMode} mostrarNotificacion={mostrarNotificacion} />
+            <BarraBusqueda buscarMarcadores={buscarMarcadores} />
+            <Mapa darkMode={darkMode} mostrarNotificacion={mostrarNotificacion} nombreBusqueda={nombreBusqueda} />
         </main>
     );
 }

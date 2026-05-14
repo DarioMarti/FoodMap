@@ -35,9 +35,9 @@ export const alPincharMapa = (latlng, formularioActivo, setPosicionClick) => {
 };
 
 // Muestra los marcadores en el mapa
-export const obtenerMarcadores = async (setMarcadores) => {
+export const obtenerMarcadores = async (setMarcadores, nombre = null) => {
     try {
-        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/marcadores/mostrar_marcador.php");
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/mostrar_marcador.php?nombre=${nombre}`);
         const datos = await respuesta.json();
         setMarcadores(datos);
     } catch (error) {

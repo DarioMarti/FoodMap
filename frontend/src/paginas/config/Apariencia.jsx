@@ -6,12 +6,32 @@ import Boton_main from "../../components/ui/Boton_main";
 
 export default function Apariencia({ darkMode, setDarkMode, setPrimaryColor, fontSize, setFontSize }) {
 
-    const coloresDisponibles = ['#EA2678', '#7C3AED', '#EA580C', '#059669'];
-    const [colorActual, setColorActual] = useState(localStorage.getItem('user-primary-color') || '#EA2678');
+    const paletasDisponibles = [
+        {
+            id: 'rosa',
+            primary: '#EA2678', hover: '#F03989', active: '#C41863', dark: '#9A0F4A', light: '#FFDEEF'
+        },
+        {
+            id: 'morado',
+            primary: '#7C3AED', hover: '#8B5CF6', active: '#6D28D9', dark: '#4C1D95', light: '#EDE9FE'
+        },
+        {
+            id: 'naranja',
+            primary: '#EA580C', hover: '#F97316', active: '#C2410C', dark: '#7C2D12', light: '#FFEDD5'
+        },
+        {
+            id: 'verde',
+            primary: '#059669', hover: '#10B981', active: '#047857', dark: '#064E3B', light: '#D1FAE5'
+        }
+    ];
+    const [colorActual, setColorActual] = useState(() => {
+        const guardado = localStorage.getItem('user-theme-palette');
+        return guardado ? JSON.parse(guardado).primary : '#EA2678';
+    });
 
-    const handleColorClick = (color) => {
-        setColorActual(color);
-        setPrimaryColor(color);
+    const handleColorClick = (paleta) => {
+        setColorActual(paleta.primary);
+        setPrimaryColor(paleta);
     };
 
     return (
@@ -52,14 +72,15 @@ export default function Apariencia({ darkMode, setDarkMode, setPrimaryColor, fon
                             <p className="text-md text-text-tertiary">Personaliza el color principal de la aplicación</p>
                         </div>
                         <div className="flex gap-3">
-                            {coloresDisponibles.map((color) => (
+                            {paletasDisponibles.map((paleta) => (
                                 <button
-                                    key={color}
-                                    onClick={() => handleColorClick(color)}
-                                    className={`size-8 rounded-full ${color} ${color === colorActual ? 'ring-2 ring-offset-2 ring-primary' : ''} cursor-pointer`}
-                                    style={{ backgroundColor: color }}
+                                    key={paleta.id}
+                                    onClick={() => handleColorClick(paleta)}
+                                    className={`size-8 rounded-full ${paleta.primary === colorActual ? 'ring-2 ring-offset-2 ring-primary' : ''} cursor-pointer transition-transform hover:scale-110`}
+                                    style={{ backgroundColor: paleta.primary }}
                                 />
                             ))}
+
                         </div>
                     </div>
                     <span className=" h-1 bg-borde w-full dark:bg-text-tertiary"></span>
