@@ -6,13 +6,12 @@ header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
-$mi_id = $_SESSION['usuario']['id'] ?? 0; // Sacamos tu ID de la sesión
+$mi_id = $_SESSION['usuario']['id'] ?? 0;
 $nombre = $_POST['nombre'] ?? "";
 
 try {
     $conn = conectar();
 
-    // Modificamos el SQL para que oculte a los bloqueados (en ambas direcciones)
     $sql = "SELECT u.id, u.Nombre, u.Foto_perfil 
             FROM usuario u
             LEFT JOIN bloqueos b ON (
@@ -25,7 +24,6 @@ try {
             AND b.id IS NULL"; 
 
     $stmt = $conn->prepare($sql);
-    // Pasamos: mi_id (para b1), mi_id (para b2), nombre buscador, mi_id (para u.id !=)
     $stmt->execute([$mi_id, $mi_id, "%$nombre%", $mi_id]);
 
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

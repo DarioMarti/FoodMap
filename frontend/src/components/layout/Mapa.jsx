@@ -35,6 +35,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) 
     const [puntuacion, setPuntuacion] = useState(0);
     const [marcadores, setMarcadores] = useState([]);
     const [etiquetas, setEtiquetas] = useState([]);
+    const [categoriasBD, setCategoriasBD] = useState([]);
     const [esPrincipal, setEsPrincipal] = useState(false);
     const [etiquetaSeleccionada, setEtiquetaSeleccionada] = useState({ id: "1", nombre: "Cafetería" });
     const [etiquetasMarcador, setEtiquetasMarcador] = useState([]);
@@ -104,6 +105,15 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) 
 
     useEffect(() => {
         LocalizacionUsuario(setUsuarioUbicacion);
+
+        fetch("http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php")
+            .then(res => res.json())
+            .then(data => {
+                setCategoriasBD(data);
+                if (data.length > 0) {
+                    setEtiquetaSeleccionada({ id: data[0].id, nombre: data[0].Nombre });
+                }
+            });
     }, []);
 
     useEffect(() => {
@@ -139,9 +149,11 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) 
                     <div className='flex gap-4 w-full items-center justify-between'>
                         <select value={etiquetaSeleccionada.id} onChange={(e) => setEtiquetaSeleccionada({ id: e.target.value, nombre: e.target.options[e.target.selectedIndex].text })}
                             className='border-2 border-borde dark:border-descripcion dark:text-input bg-background dark:bg-dark-tarjeta p-2 rounded-xl w-full' id="etiquetas" name="etiquetas">
-                            <option value="1">Cafetería</option>
-                            <option value="2">Hamburguesería</option>
-                            <option value="3">Restaurante</option>
+                            {
+                                categoriasBD.map((categoria) => (
+                                    <option key={categoria.id} value={categoria.id}>{categoria.Nombre}</option>
+                                ))
+                            }
                         </select>
                         <button type='button'
                             onClick={() => { agregarEtiqueta(etiquetaSeleccionada.id, etiquetaSeleccionada.nombre, esPrincipal, setEtiquetas, etiquetas); setEsPrincipal(false); }}
