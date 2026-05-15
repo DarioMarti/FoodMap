@@ -18,7 +18,7 @@ export default function Perfil() {
                 <div className="p-12 dark:bg-dark-tarjeta bg-background-tarjetas rounded-3xl relative dark:text-white text-text-main shadow-xl border border-white/10">
                     <div className="flex items-center gap-8">
                         <div className="relative group">
-                            <img className="size-32 rounded-full object-cover ring-4 ring-primary shadow-2xl transition-transform duration-300 group-hover:scale-105" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&h=200&auto=format&fit=crop" alt="Foto de perfil" />
+                            <img className="size-32 rounded-full object-cover ring-4 ring-primary shadow-2xl  duration-300" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&h=200&auto=format&fit=crop" alt="Foto de perfil" />
                             <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                                 <Pen className="text-white size-6" />
                             </div>
@@ -46,7 +46,7 @@ export default function Perfil() {
                     </div>
                     <Boton_cuadrado
                         onClick={() => setEditando(true)}
-                        className="absolute right-8 top-8 bg-primary hover:bg-primary-hover text-white size-14 shadow-lg shadow-primary/30 transition-all active:scale-95"
+                        className="absolute right-8 top-8 bg-primary hover:bg-primary-hover text-white size-14 shadow-lg shadow-primary/30 transition-all "
                         icon={<Pen size={24} />}
                     />
                 </div>
@@ -190,7 +190,7 @@ export default function Perfil() {
                                 <button
                                     type="button"
                                     onClick={() => setEditando(false)}
-                                    className="flex-1 cursor-pointer text-lg font-bold py-5 px-8 bg-text-tertiary/10 dark:text-white text-text-main rounded-2xl hover:bg-text-tertiary/20 transition-all active:scale-[0.98]"
+                                    className="flex-1 cursor-pointer text-lg font-bold py-5 px-8 bg-text-tertiary/10 dark:text-white text-text-main rounded-2xl hover:bg-text-tertiary/20 transition-all "
                                 >
                                     Cancelar
                                 </button>
