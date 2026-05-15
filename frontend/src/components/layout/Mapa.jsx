@@ -28,7 +28,7 @@ const IconoDinamico = ({ nombre, ...props }) => {
     return <IconoComponente {...props} />;
 };
 
-export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) {
+export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, categoriasFiltro }) {
     const [lugarSeleccionado, setLugarSeleccionado] = useState(null);
     const [formularioActivo, setFormularioActivo] = useState(false);
     const [formularioActivo_editar, setFormularioEditarActivo] = useState(false);
@@ -246,7 +246,9 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda }) 
 
                 <ZoomControl position="bottomright" />
 
-                {marcadores.map((marcador) => (
+                {marcadores
+                    .filter(m => categoriasFiltro?.length === 0 || categoriasFiltro?.includes(m.Categoria_id))
+                    .map((marcador) => (
                     <Marcador key={marcador.id} position={[marcador.Latitud, marcador.Longitud]} color={marcador.Color || '#EA2678'} icono={<IconoDinamico nombre={marcador.Icono || 'MapPin'} size={22} />}
                         eventHandlers={{
                             click: async () => {

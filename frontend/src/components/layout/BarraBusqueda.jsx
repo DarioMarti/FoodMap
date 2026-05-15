@@ -3,7 +3,7 @@ import { Search, Filter, Send } from 'lucide-react';
 import Boton_cuadrado from '../ui/Boton_cuadrado';
 import NavItem from '../ui/NavItem';
 
-export function BarraBusqueda({ buscarMarcadores }) {
+export function BarraBusqueda({ buscarMarcadores, toggleFiltros }) {
 
   const [nombre, setNombre] = useState("");
 
@@ -31,10 +31,11 @@ export function BarraBusqueda({ buscarMarcadores }) {
         </div>
 
         {/* Action Buttons */}
-        <Boton_cuadrado className="bg-input dark:bg-dark-tarjeta text-text-main dark:text-background size-14 border border-borde dark:border-descripcion dark:hover:bg-primary-hover" icon={<Filter size={20} />} />
+        <Boton_cuadrado onClick={toggleFiltros} className="bg-input dark:bg-dark-tarjeta text-text-main dark:text-background size-14 border border-borde dark:border-descripcion dark:hover:bg-primary-hover" icon={<Filter size={20} />} />
         <Boton_cuadrado onClick={activarBusqueda} className="bg-primary dark:bg-dark-tarjeta text-input dark:text-background size-14 border border-borde dark:border-descripcion dark:hover:bg-primary-hover" icon={<Send size={20} />} />
 
       </div>
     </div>
   );
 }
+
