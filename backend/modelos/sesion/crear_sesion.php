@@ -12,13 +12,10 @@ if (!isset($_SESSION['usuario'])) {
     $_SESSION["usuario"] = [
         "id" => $usuario["id"],
         "nombre" => $usuario["nombre"],
-        "apellidos" => $usuario["apellidos"] ?? "",
+        "nick" => $usuario["nick"],
         "email" => $usuario["email"],
         "rol" => $usuario["rol"] ?? "cliente",
-        "telefono" => $usuario["telefono"] ?? "",
-        "direccion" => $usuario["direccion"] ?? "",
-        "fecha_creacion" => $usuario["fecha_creacion"] ?? "",
-        "activo" => $usuario["activo"] ?? ""
+        "ciudad" => $usuario["ciudad"] ?? ""
     ];
 
 

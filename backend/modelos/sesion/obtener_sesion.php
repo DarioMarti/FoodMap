@@ -6,11 +6,15 @@ header("Access-Control-Allow-Origin: http://localhost:5175");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
-$conn = conectar();
-
-$stmt = $conn->prepare("SELECT * FROM categoria");
-$stmt->execute();
-$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-echo json_encode($result);
+if (isset($_SESSION['usuario'])) {
+    echo json_encode([
+        "logged" => true,
+        "usuario" => $_SESSION['usuario']
+    ]);
+} else {
+    echo json_encode([
+        "logged" => false,
+        "error" => "Sesión no iniciada"
+    ]);
+}
 ?>

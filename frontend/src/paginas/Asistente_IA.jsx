@@ -16,11 +16,17 @@ export default function Asistente_IA() {
     useEffect(() => {
         socket.on('respuesta_asistente', (data) => {
             setCargando(false);
+            
+            const fechaValida = data.fecha ? new Date(data.fecha) : new Date();
+            const horaFormateada = isNaN(fechaValida.getTime())
+                ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : fechaValida.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
             setMensajes(prev => [...prev, {
                 texto: data.texto,
                 isBot: true,
                 isMe: false,
-                hora: new Date(data.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                hora: horaFormateada
             }]);
         });
         return () => socket.off('respuesta_asistente');

@@ -15,7 +15,12 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: [
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://localhost:5175",
+            "http://localhost:5176"
+        ],
         methods: ["GET", "POST"]
     }
 });
@@ -84,6 +89,7 @@ io.on('connection', (socket) => {
             console.error("Error en Gemini:", error);
             socket.emit('respuesta_asistente', {
                 texto: "Ups, mi cerebro de IA está un poco cansado. Inténtalo de nuevo.",
+                fecha: new Date().toISOString(),
                 error: true
             });
         }

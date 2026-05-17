@@ -1,8 +1,8 @@
 
-export async function comprobar_sesion_usuario() {
+export async function obtener_sesion_usuario() {
     try {
 
-        const peticion = await fetch("http://localhost/foodmap/backend/modelos/sesion/comprobar_sesion.php", {
+        const peticion = await fetch("http://localhost/foodmap/backend/modelos/sesion/obtener_sesion.php", {
             method: "POST",
             credentials: 'include'
         });

@@ -1,11 +1,38 @@
 import Boton_cuadrado from "../../components/ui/Boton_cuadrado";
-import { Pen, User, Mail, MapPin, X } from 'lucide-react';
+import { Pen, User, Mail, MapPin, X, AtSign } from 'lucide-react';
 import Toggle from "../../components/ui/Toggle";
 import InputGeneral from "../../components/ui/input_general";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { obtener_sesion_usuario } from "../../servicios/usuario/obtener_sesion_usuario";
 
 export default function Perfil() {
     const [editando, setEditando] = useState(false);
+    const [usuario, setUsuario] = useState(null);
+
+    const editar_usuario = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch("http://localhost/foodmap/backend/modelos/usuario/editar_usuario.php", {
+                method: "POST",
+                credentials: 'include',
+                body: new FormData(e.target)
+            });
+            const respuesta = await res.json();
+            setUsuario(respuesta.usuario);
+            setEditando(false);
+        } catch (error) {
+            console.error("Error al editar usuario:", error);
+        }
+    }
+
+    useEffect(() => {
+        const obtenerSesionUsuario = async () => {
+            const res = await obtener_sesion_usuario();
+            setUsuario(res.usuario);
+
+        };
+        obtenerSesionUsuario();
+    }, []);
 
     return (
         <div className="h-full flex flex-col overflow-hidden dark:bg-text-main bg-background relative">
@@ -26,7 +53,9 @@ export default function Perfil() {
 
                         </div>
                         <div>
-                            <h2 className="text-3xl font-bold">Alex Martín</h2>
+                            <h2 className="text-3xl font-bold">
+                                {usuario?.nombre.charAt(0).toUpperCase() + usuario?.nombre.slice(1)}
+                            </h2>
                             <p className="text-lg text-text-tertiary flex items-center gap-2 mt-1">
                                 <span className="text-primary font-medium">@Alex_martin</span>
                                 <span className="opacity-30">·</span>
@@ -61,7 +90,16 @@ export default function Perfil() {
                         <div className="flex justify-between p-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Nombre completo</span>
-                                <strong className="text-xl font-medium dark:text-white text-text-main">Alex Martín</strong>
+                                <strong className="text-xl font-medium dark:text-white text-text-main">
+                                    {usuario?.nombre.charAt(0).toUpperCase() + usuario?.nombre.slice(1)}
+                                </strong>
+                            </div>
+                            <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Editar</button>
+                        </div>
+                        <div className="flex justify-between p-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                            <div className="flex flex-col">
+                                <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Nick de usuario</span>
+                                <strong className="text-xl font-medium dark:text-white text-text-main">{usuario?.nick ? "@" + usuario.nick : "No especificado"}</strong>
                             </div>
                             <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Editar</button>
                         </div>
@@ -69,7 +107,7 @@ export default function Perfil() {
                         <div className="flex justify-between p-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Email</span>
-                                <strong className="text-xl font-medium dark:text-white text-text-main">Alexmartín@gmail.com</strong>
+                                <strong className="text-xl font-medium dark:text-white text-text-main">{usuario?.email}</strong>
                             </div>
                             <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Cambiar</button>
                         </div>
@@ -77,7 +115,7 @@ export default function Perfil() {
                         <div className="flex justify-between p-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Ciudad</span>
-                                <strong className="text-xl font-medium dark:text-white text-text-main">Madrid</strong>
+                                <strong className="text-xl font-medium dark:text-white text-text-main">{usuario?.ciudad ? usuario.ciudad : "No especificado"}</strong>
                             </div>
                             <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Editar</button>
                         </div>
@@ -127,7 +165,7 @@ export default function Perfil() {
                         <button
                             type="button"
                             onClick={() => setEditando(false)}
-                            className="absolute top-8 right-8 text-text-tertiary hover:text-text-main dark:hover:text-white transition-colors"
+                            className="absolute top-8 right-8 text-text-tertiary hover:text-text-main dark:hover:text-primary transition-colors cursor-pointer"
                         >
                             <X size={28} />
                         </button>
@@ -148,7 +186,7 @@ export default function Perfil() {
                                         className="pl-14 h-16 bg-background dark:bg-dark-tarjeta/50 border-transparent focus:ring-2 focus:ring-primary/20"
                                         placeholder="Nombre completo"
                                         type="text"
-                                        defaultValue="Alex Martín"
+                                        value={usuario?.nombre}
                                         name="nombre"
                                     />
                                 </div>
@@ -158,14 +196,14 @@ export default function Perfil() {
                                 <label className="text-xs font-bold uppercase tracking-widest text-primary ml-1">Correo electrónico</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-text-tertiary group-focus-within:text-primary transition-colors">
-                                        <Mail size={20} />
+                                        <AtSign size={20} />
                                     </div>
                                     <InputGeneral
                                         className="pl-14 h-16 bg-background dark:bg-dark-tarjeta/50 border-transparent focus:ring-2 focus:ring-primary/20"
-                                        placeholder="Email"
-                                        type="email"
-                                        defaultValue="Alexmartín@gmail.com"
-                                        name="email"
+                                        placeholder="nick"
+                                        type="text"
+                                        value={usuario?.nick}
+                                        name="nick"
                                     />
                                 </div>
                             </div>
@@ -180,7 +218,7 @@ export default function Perfil() {
                                         className="pl-14 h-16 bg-background dark:bg-dark-tarjeta/50 border-transparent focus:ring-2 focus:ring-primary/20"
                                         placeholder="Ciudad"
                                         type="text"
-                                        defaultValue="Madrid"
+                                        value={usuario?.ciudad}
                                         name="ciudad"
                                     />
                                 </div>
@@ -195,7 +233,8 @@ export default function Perfil() {
                                     Cancelar
                                 </button>
                                 <button
-                                    type="submit"
+                                    type="button"
+                                    onClick={() => editar_usuario()}
                                     className="flex-1 cursor-pointer text-lg font-bold py-5 px-8 bg-primary text-white rounded-2xl hover:bg-primary-hover shadow-xl shadow-primary/30 transition-all"
                                 >
                                     Guardar Cambios
