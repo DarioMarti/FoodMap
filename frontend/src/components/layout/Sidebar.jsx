@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { MapPin, MessageSquare, Bot, Settings } from 'lucide-react';
+import { MapPin, MessageSquare, Bot, Settings, NotebookText } from 'lucide-react';
 import Logo from '../../assets/foodmap_logo_blanco.svg';
 import { comprobar_sesion_usuario } from '../../servicios/usuario/comprobar_sesion_usuario';
 
@@ -45,6 +45,7 @@ export function Sidebar() {
         <SidebarLink to="/mapa" icon={<MapPin size={24} />} />
         <SidebarLink to="/chat" icon={<MessageSquare size={24} />} />
         <SidebarLink to="/asistente_ia" icon={<Bot size={24} />} />
+        <SidebarLink to="/administrador" icon={<NotebookText size={24} />} />
       </nav>
 
       {/* Bottom Actions */}
@@ -54,6 +55,7 @@ export function Sidebar() {
           {siglaInicial}
         </button>
       </div>
+
     </aside>
   );
 }

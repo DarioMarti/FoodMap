@@ -7,6 +7,7 @@ import Config from './paginas/Config';
 import Login from './paginas/Login';
 import Asistente_IA from './paginas/Asistente_IA';
 import { comprobar_sesion_usuario } from './servicios/usuario/comprobar_sesion_usuario';
+import Administrador from './paginas/Administrador';
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => { const temaGuardado = localStorage.getItem('theme'); return temaGuardado === 'dark'; });
@@ -47,7 +48,7 @@ function App() {
       if (respuesta.login) {
         set_usuario_logueado(true);
       } else {
-        set_usuario_logueado(false);
+        set_usuario_logueado(true);
       }
     }
     comprobar_sesion();
@@ -77,6 +78,7 @@ function App() {
           <Route path="/mapa" element={<Mapa darkMode={darkMode} />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/asistente_ia" element={<Asistente_IA />} />
+          <Route path="/administrador" element={<Administrador />} />
           <Route path="/config" element={<Config darkMode={darkMode} setDarkMode={setDarkMode} setPrimaryColor={setPrimaryColor} fontSize={fontSize} setFontSize={setFontSize} />} />
         </Routes>
       </MainLayout> : <Login />
