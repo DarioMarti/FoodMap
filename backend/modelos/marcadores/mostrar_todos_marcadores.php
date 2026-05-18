@@ -9,7 +9,12 @@ header("Content-Type: application/json");
 
 try {
     $conn = conectar();
-    $stmt = $conn->prepare("SELECT * FROM categoria");
+    $sql = "SELECT m.*, c.Nombre, mc.Es_principal AS Categoria_EsPrincipal, c.Color AS Categoria_Color, c.Icono AS Categoria_Icono
+    FROM marcador m
+    LEFT JOIN marcador_categoria mc ON m.id = mc.Marcador_id AND mc.Es_principal = 1
+    LEFT JOIN categoria c ON mc.Categoria_id = c.id
+    GROUP BY m.id;";
+    $stmt = $conn->prepare($sql);
     $stmt->execute();
 
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

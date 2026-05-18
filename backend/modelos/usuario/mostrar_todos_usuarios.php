@@ -9,7 +9,7 @@ header("Content-Type: application/json");
 
 try {
     $conn = conectar();
-    $stmt = $conn->prepare("SELECT * FROM categoria");
+    $stmt = $conn->prepare("SELECT * FROM usuario");
     $stmt->execute();
 
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

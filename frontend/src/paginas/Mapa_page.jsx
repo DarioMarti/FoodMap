@@ -3,6 +3,7 @@ import Mapa from "../components/layout/Mapa";
 import Notificacion from "../components/ui/Notificacion.jsx";
 import { useState } from "react";
 import Ventana_filtros from "../components/layout/ventana_filtros.jsx";
+import { mostrarNotificacion } from "../servicios/mostrar_notificacion.js";
 
 export default function MapaPage({ darkMode }) {
 
@@ -11,13 +12,8 @@ export default function MapaPage({ darkMode }) {
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
     const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState([]);
 
-    const mostrarNotificacion = (mensaje, tipo) => {
-        setNotificacion({ visible: true, mensaje, tipo });
 
-        setTimeout(() => {
-            setNotificacion({ ...notificacion, visible: false });
-        }, 3000);
-    };
+
 
     const buscarMarcadores = (nombre) => {
         setNombreBusqueda(nombre);
@@ -32,7 +28,7 @@ export default function MapaPage({ darkMode }) {
             </div>
             <BarraBusqueda buscarMarcadores={buscarMarcadores} toggleFiltros={() => setMostrarFiltros(!mostrarFiltros)} />
             <Ventana_filtros estado={mostrarFiltros} onFilterChange={setCategoriasSeleccionadas} />
-            <Mapa darkMode={darkMode} mostrarNotificacion={mostrarNotificacion} nombreBusqueda={nombreBusqueda} categoriasFiltro={categoriasSeleccionadas} />
+            <Mapa darkMode={darkMode} mostrarNotificacion={(mensaje, tipo) => mostrarNotificacion(mensaje, tipo, notificacion, setNotificacion)} nombreBusqueda={nombreBusqueda} categoriasFiltro={categoriasSeleccionadas} />
         </main>
     );
 }

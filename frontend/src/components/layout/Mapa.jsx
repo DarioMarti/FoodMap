@@ -249,21 +249,21 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 {marcadores
                     .filter(m => categoriasFiltro?.length === 0 || categoriasFiltro?.includes(m.Categoria_id))
                     .map((marcador) => (
-                    <Marcador key={marcador.id} position={[marcador.Latitud, marcador.Longitud]} color={marcador.Color || '#EA2678'} icono={<IconoDinamico nombre={marcador.Icono || 'MapPin'} size={22} />}
-                        eventHandlers={{
-                            click: async () => {
-                                setLugarSeleccionado(marcador);
-                                const etiquetas = await obtenerTodasEtiquetas(marcador.id);
-                                const fotos = await obtenerFotografias(marcador.id)
-                                setEtiquetasMarcador(etiquetas || []);
-                                setFotosMarcador(fotos || [])
+                        <Marcador key={marcador.id} position={[marcador.Latitud, marcador.Longitud]} color={marcador.Color || '#EA2678'} icono={<IconoDinamico nombre={marcador.Icono || 'MapPin'} size={22} />}
+                            eventHandlers={{
+                                click: async () => {
+                                    setLugarSeleccionado(marcador);
+                                    const etiquetas = await obtenerTodasEtiquetas(marcador.id);
+                                    const fotos = await obtenerFotografias(marcador.id)
+                                    setEtiquetasMarcador(etiquetas || []);
+                                    setFotosMarcador(fotos || [])
 
-                            },
+                                },
 
 
-                        }}
-                    />
-                ))}
+                            }}
+                        />
+                    ))}
             </MapContainer>
 
             {

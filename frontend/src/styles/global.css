@@ -46,13 +46,15 @@
   h5,
   h6,
   label,
-  button {
+  button,
+  th {
     @apply font-poppins;
   }
 
   p,
   a,
-  input {
+  input,
+  td {
     @apply font-sans;
   }
 

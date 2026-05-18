@@ -21,22 +21,17 @@ try {
         exit;
     }
 
-    $usuarioId = $_SESSION['usuario']['id'];
-    $nombre = $_POST['nombre'] ?? null;
-    $ciudad = $_POST['ciudad'] ?? null;
-    $nick = $_POST['nick'] ?? null;
+    $usuario_id = $_GET['id'];
 
-    $sql = "UPDATE usuario SET Nombre = ? WHERE id = ?";
+    $sql = "UPDATE FROM usuario set Activo=1 WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$nombre, $usuarioId]);
+    $stmt->execute([$usuario_id]);
 
-    $_SESSION['usuario']['nombre'] = $nombre;
-    $_SESSION['usuario']['ciudad'] = $ciudad;
-    $_SESSION['usuario']['nick'] = $nick;
 
-    echo json_encode(['usuario' => $_SESSION['usuario'], 'success' => true, 'message' => 'Usuario actualizado correctamente']);
+
+    echo json_encode(['success' => true, 'message' => 'Usuario reactivado correctamente']);
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Error al actualizar el usuario']);
+    echo json_encode(['success' => false, 'message' => 'Error al reactivar el usuario']);
 }
 
 ?>

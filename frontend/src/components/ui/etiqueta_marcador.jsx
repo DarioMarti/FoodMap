@@ -1,6 +1,6 @@
 import { Crown } from 'lucide-react';
 
-export default function Etiqueta_marcador({ icon, texto, color_borde, color_fondo, style, className = "...", esPrincipal }) {
+export default function Etiqueta_marcador({ icon = "Crown", texto = "Underfined", color_borde = "#000000", color_fondo = "#ffffff", style = {}, className = "...", esPrincipal = false }) {
     return (
         <button style={style} className={`${className} dark:bg-${color_fondo}/30 dark:text-${color_borde} py-3 px-6 rounded-full  shadow-sm  transition-all flex items-center gap-2 relative`}>
             {icon}
