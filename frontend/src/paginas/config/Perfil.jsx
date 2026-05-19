@@ -18,8 +18,11 @@ export default function Perfil() {
                 body: new FormData(e.target)
             });
             const respuesta = await res.json();
-            setUsuario(respuesta.usuario);
-            setEditando(false);
+            if (respuesta.usuario) {
+                setUsuario(respuesta.usuario);
+                setEditando(false);
+                window.dispatchEvent(new Event("actualizar_sesion"));
+            }
         } catch (error) {
             console.error("Error al editar usuario:", error);
         }
@@ -34,6 +37,17 @@ export default function Perfil() {
         obtenerSesionUsuario();
     }, []);
 
+    if (!usuario) {
+        return (
+            <div className="h-full flex items-center justify-center bg-background dark:bg-text-main text-text-main dark:text-white font-['Outfit']">
+                <div className="text-center space-y-4">
+                    <div className="size-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p className="text-sm font-bold tracking-wider uppercase text-text-tertiary">Cargando perfil...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="h-full flex flex-col overflow-hidden dark:bg-text-main bg-background relative">
             <div className="border-b-3 border-borde dark:border-borde-dark py-5 px-10 flex-shrink-0">
@@ -45,7 +59,11 @@ export default function Perfil() {
                 <div className="p-12 dark:bg-dark-tarjeta bg-background-tarjetas rounded-3xl relative dark:text-white text-text-main shadow-xl border border-white/10">
                     <div className="flex items-center gap-8">
                         <div className="relative group">
-                            <img className="size-32 rounded-full object-cover ring-4 ring-primary shadow-2xl  duration-300" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&h=200&auto=format&fit=crop" alt="Foto de perfil" />
+                            <img
+                                className="size-32 rounded-full object-cover ring-4 ring-primary shadow-2xl duration-300"
+                                src={usuario?.foto?.startsWith('http') ? usuario.foto : `http://localhost/foodmap/backend/uploads/img/${usuario?.foto}`}
+                                alt="Foto de perfil"
+                            />
                             <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                                 <Pen className="text-white size-6" />
                             </div>
@@ -57,9 +75,9 @@ export default function Perfil() {
                                 {usuario?.nombre.charAt(0).toUpperCase() + usuario?.nombre.slice(1)}
                             </h2>
                             <p className="text-lg text-text-tertiary flex items-center gap-2 mt-1">
-                                <span className="text-primary font-medium">@Alex_martin</span>
+                                <span className="text-primary font-medium">@{usuario.nick ? usuario.nick : "undefined"}</span>
                                 <span className="opacity-30">·</span>
-                                <span className="flex items-center gap-1"><MapPin size={16} /> Madrid, España</span>
+                                <span className="flex items-center gap-1"><MapPin size={16} /> {usuario?.ciudad ? usuario.ciudad : "undefined"}</span>
                             </p>
                             <div className="flex gap-10 mt-6">
                                 <div className="flex flex-col">
@@ -157,10 +175,7 @@ export default function Perfil() {
 
                     <form
                         className="relative w-full max-w-xl bg-white dark:bg-background-oscuro p-10 rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-white/10 animate-in zoom-in-95 duration-300"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            setEditando(false);
-                        }}
+                        onSubmit={editar_usuario}
                     >
                         <button
                             type="button"
@@ -186,7 +201,7 @@ export default function Perfil() {
                                         className="pl-14 h-16 bg-background dark:bg-dark-tarjeta/50 border-transparent focus:ring-2 focus:ring-primary/20"
                                         placeholder="Nombre completo"
                                         type="text"
-                                        value={usuario?.nombre}
+                                        defaultValue={usuario?.nombre}
                                         name="nombre"
                                     />
                                 </div>
@@ -202,7 +217,7 @@ export default function Perfil() {
                                         className="pl-14 h-16 bg-background dark:bg-dark-tarjeta/50 border-transparent focus:ring-2 focus:ring-primary/20"
                                         placeholder="nick"
                                         type="text"
-                                        value={usuario?.nick}
+                                        defaultValue={usuario?.nick}
                                         name="nick"
                                     />
                                 </div>
@@ -218,7 +233,7 @@ export default function Perfil() {
                                         className="pl-14 h-16 bg-background dark:bg-dark-tarjeta/50 border-transparent focus:ring-2 focus:ring-primary/20"
                                         placeholder="Ciudad"
                                         type="text"
-                                        value={usuario?.ciudad}
+                                        defaultValue={usuario?.ciudad}
                                         name="ciudad"
                                     />
                                 </div>
@@ -233,8 +248,7 @@ export default function Perfil() {
                                     Cancelar
                                 </button>
                                 <button
-                                    type="button"
-                                    onClick={() => editar_usuario()}
+                                    type="submit"
                                     className="flex-1 cursor-pointer text-lg font-bold py-5 px-8 bg-primary text-white rounded-2xl hover:bg-primary-hover shadow-xl shadow-primary/30 transition-all"
                                 >
                                     Guardar Cambios

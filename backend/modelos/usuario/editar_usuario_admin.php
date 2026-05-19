@@ -17,7 +17,7 @@ try {
     header("Content-Type: application/json");
 
     if (!isset($_SESSION['usuario'])) {
-        echo json_encode(['success' => false, 'message' => 'No estás autenticado']);
+        echo json_encode(['success' => false, 'mensaje' => 'No estás autenticado']);
         exit;
     }
 
@@ -27,25 +27,57 @@ try {
     $password = $_POST['password'] ?? null;
     $rol = $_POST['rol'] ?? null;
 
-    if ($password) {
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Contrasena = ?, Rol = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$nombre, $ciudad, $hash, $rol, $usuarioId]);
-    } else {
-        $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Rol = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$nombre, $ciudad, $rol, $usuarioId]);
+    // 1. Procesar la foto de perfil si se ha seleccionado una nueva
+    $nombreFoto = null;
+    if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+        $extension = pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION);
+        $nombreFoto = "avatar_" . time() . "_" . uniqid() . "." . $extension;
+
+        $directorioDestino = $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/uploads/img/';
+        if (!is_dir($directorioDestino)) {
+            mkdir($directorioDestino, 0777, true);
+        }
+
+        $rutaDestino = $directorioDestino . $nombreFoto;
+        if (!move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $rutaDestino)) {
+            $nombreFoto = null;
+        }
     }
 
+    if ($password) {
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        if ($nombreFoto) {
+            $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Contrasena = ?, Rol = ?, Foto_perfil = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$nombre, $ciudad, $hash, $rol, $nombreFoto, $usuarioId]);
+        } else {
+            $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Contrasena = ?, Rol = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$nombre, $ciudad, $hash, $rol, $usuarioId]);
+        }
+    } else {
+        if ($nombreFoto) {
+            $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Rol = ?, Foto_perfil = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$nombre, $ciudad, $rol, $nombreFoto, $usuarioId]);
+        } else {
+            $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Rol = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$nombre, $ciudad, $rol, $usuarioId]);
+        }
+    }
 
-    $_SESSION['usuario']['nombre'] = $nombre;
-    $_SESSION['usuario']['ciudad'] = $ciudad;
-    $_SESSION['usuario']['Rol'] = $rol;
+    if ($_SESSION['usuario']['id'] == $usuarioId) {
+        $_SESSION['usuario']['nombre'] = $nombre;
+        $_SESSION['usuario']['ciudad'] = $ciudad;
+        $_SESSION['usuario']['rol'] = $rol;
+        if ($nombreFoto) {
+            $_SESSION['usuario']['foto'] = $nombreFoto;
+        }
+    }
 
     echo json_encode(['usuario' => $_SESSION['usuario'], 'success' => true, 'mensaje' => 'Usuario actualizado correctamente']);
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'mensaje' => 'Error al actualizar el usuario']);
+    echo json_encode(['success' => false, 'mensaje' => 'Error al actualizar el usuario: ' . $e->getMessage()]);
 }
-
 ?>

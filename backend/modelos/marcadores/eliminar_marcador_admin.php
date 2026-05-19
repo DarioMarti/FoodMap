@@ -14,26 +14,22 @@ header("Content-Type: application/json");
 
 try {
     $conn = conectar();
-
     if (!isset($_SESSION['usuario'])) {
         echo json_encode(['success' => false, 'mensaje' => 'No estás autenticado']);
         exit;
     }
-
-    $usuarioId = $_POST['id'] ?? null;
-
-    if (!$usuarioId) {
-        echo json_encode(['success' => false, 'mensaje' => 'ID de usuario no proporcionado']);
+    $id = $_POST['id'] ?? null;
+    if (!$id) {
+        echo json_encode(['success' => false, 'mensaje' => 'ID no proporcionado']);
         exit;
     }
 
-    $sql = "UPDATE usuario SET Activo = 0 WHERE id = ?";
+    $sql = "DELETE FROM marcador WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$usuarioId]);
+    $stmt->execute([$id]);
 
-    echo json_encode(['success' => true, 'mensaje' => 'Usuario eliminado correctamente']);
-
+    echo json_encode(['success' => true, 'mensaje' => 'Marcador eliminado correctamente']);
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'mensaje' => 'Error al eliminar el usuario']);
+    echo json_encode(['success' => false, 'mensaje' => 'Error al eliminar marcador']);
 }
 ?>

@@ -25,6 +25,10 @@ export function Sidebar() {
 
   useEffect(() => {
     comprobar_sesion();
+    window.addEventListener("actualizar_sesion", comprobar_sesion);
+    return () => {
+      window.removeEventListener("actualizar_sesion", comprobar_sesion);
+    };
   }, []);
 
   useEffect(() => {
@@ -51,10 +55,21 @@ export function Sidebar() {
       {/* Bottom Actions */}
       <div className="flex flex-col gap-6 w-full px-4 mt-auto">
         <SidebarLink to="/config" icon={<Settings size={24} />} />
-        <button className="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-lg hover:bg-indigo-600 transition-colors mx-auto">
-          {siglaInicial}
-        </button>
+
+        {usuario.foto ? (
+          <img
+            src={usuario.foto.startsWith('http') ? usuario.foto : `http://localhost/foodmap/backend/uploads/img/${usuario.foto}`}
+            alt="Foto de perfil"
+            className="w-12 h-12 rounded-full object-cover"
+          />
+        ) : (
+          <span className="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-lg hover:bg-indigo-600 transition-colors mx-auto">
+            {siglaInicial}
+          </span>
+        )}
+
       </div>
+
 
     </aside>
   );

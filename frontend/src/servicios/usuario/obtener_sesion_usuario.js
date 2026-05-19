@@ -1,4 +1,4 @@
-/*
+
 export async function obtener_sesion_usuario() {
     try {
 
@@ -14,17 +14,4 @@ export async function obtener_sesion_usuario() {
         console.error("Error al comprobar la sesión:", error);
         return { login: false };
     }
-}*/
-export async function obtener_sesion_usuario() {
-    return {
-        login: true,
-        usuario: {
-            id: 1,
-            nombre: "Albertinho",
-            nick: "Alex_martin",
-            email: "usuario@gmail.com",
-            ciudad: "Madrid, España",
-            rol: "Admin"
-        }
-    };
 }

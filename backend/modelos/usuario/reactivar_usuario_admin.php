@@ -2,36 +2,38 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 session_start();
 
-header("Access-Control-Allow-Origin: http://localhost:5175");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit;
+}
+header("Content-Type: application/json");
 
 try {
     $conn = conectar();
 
-    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-        exit;
-    }
-
-    header("Content-Type: application/json");
-
     if (!isset($_SESSION['usuario'])) {
-        echo json_encode(['success' => false, 'message' => 'No estás autenticado']);
+        echo json_encode(['success' => false, 'mensaje' => 'No estás autenticado']);
         exit;
     }
 
-    $usuario_id = $_GET['id'];
+    $usuarioId = $_POST['id'] ?? null;
 
-    $sql = "UPDATE FROM usuario set Activo=1 WHERE id = ?";
+    if (!$usuarioId) {
+        echo json_encode(['success' => false, 'mensaje' => 'ID de usuario no proporcionado']);
+        exit;
+    }
+
+    $sql = "UPDATE usuario SET Activo = 1 WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$usuario_id]);
+    $stmt->execute([$usuarioId]);
 
+    echo json_encode(['success' => true, 'mensaje' => 'Usuario eliminado correctamente']);
 
-
-    echo json_encode(['success' => true, 'message' => 'Usuario reactivado correctamente']);
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Error al reactivar el usuario']);
+    echo json_encode(['success' => false, 'mensaje' => 'Error al eliminar el usuario']);
 }
-
 ?>

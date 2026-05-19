@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 session_start();
 
-header("Access-Control-Allow-Origin: http://localhost:5175");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -26,9 +26,9 @@ try {
     $ciudad = $_POST['ciudad'] ?? null;
     $nick = $_POST['nick'] ?? null;
 
-    $sql = "UPDATE usuario SET Nombre = ? WHERE id = ?";
+    $sql = "UPDATE usuario SET Nombre = ?, Nick = ?, Ciudad = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$nombre, $usuarioId]);
+    $stmt->execute([$nombre, $nick, $ciudad, $usuarioId]);
 
     $_SESSION['usuario']['nombre'] = $nombre;
     $_SESSION['usuario']['ciudad'] = $ciudad;

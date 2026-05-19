@@ -8,7 +8,9 @@ export function BarraBusqueda({ buscarMarcadores, toggleFiltros }) {
   const [nombre, setNombre] = useState("");
 
   const buscarMarcadoresPorNombre = (e) => {
+
     setNombre(e.target.value);
+
   };
   const activarBusqueda = () => {
     buscarMarcadores(nombre);
@@ -25,8 +27,9 @@ export function BarraBusqueda({ buscarMarcadores, toggleFiltros }) {
           <input
             type="text"
             placeholder="Buscar lugares, marcadores..."
-            className="w-full h-14 rounded-2xl px-14 bg-background dark:bg-dark-tarjeta border border-borde dark:border-descripcion text-text-main outline-none focus:ring-2 focus:ring-primary-hover shadow-sm transition-all"
+            className="w-full h-14 rounded-2xl px-14 bg-background dark:bg-dark-tarjeta border border-borde dark:border-descripcion text-text-main dark:text-background outline-none focus:ring-2 focus:ring-primary-hover shadow-sm transition-all"
             onChange={buscarMarcadoresPorNombre}
+            onKeyDown={(e) => { if (e.key === "Enter") { activarBusqueda(); } }}
           />
         </div>
 

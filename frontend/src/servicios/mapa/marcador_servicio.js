@@ -37,13 +37,18 @@ export const alPincharMapa = (latlng, formularioActivo, setPosicionClick) => {
 // Muestra los marcadores en el mapa
 export const obtenerMarcadores = async (setMarcadores, nombre = null) => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/mostrar_marcador.php?nombre=${nombre}`);
+        const url = (nombre && nombre !== "null" && nombre !== "undefined")
+            ? `http://localhost/foodmap/backend/modelos/marcadores/mostrar_marcador.php?nombre=${nombre}`
+            : `http://localhost/foodmap/backend/modelos/marcadores/mostrar_marcador.php`;
+
+        const respuesta = await fetch(url);
         const datos = await respuesta.json();
         setMarcadores(datos);
     } catch (error) {
         console.error("Error cargando marcadores:", error);
     }
 };
+
 
 
 

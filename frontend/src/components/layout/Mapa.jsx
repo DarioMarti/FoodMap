@@ -84,7 +84,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
         } catch (error) {
             mostrarNotificacion("Error al guardar el marcador", "error");
         }
-        obtenerMarcadores(setMarcadores);
+        obtenerMarcadores(setMarcadores, nombreBusqueda);
     };
 
     const darPuntuacion = (puntuacion) => {

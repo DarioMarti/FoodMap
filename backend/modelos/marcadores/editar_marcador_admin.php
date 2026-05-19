@@ -1,0 +1,72 @@
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
+session_start();
+
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit;
+}
+header("Content-Type: application/json");
+
+try {
+    $conn = conectar();
+    if (!isset($_SESSION['usuario'])) {
+        echo json_encode(['success' => false, 'mensaje' => 'No estás autenticado']);
+        exit;
+    }
+
+    $id = $_POST['id'] ?? null;
+    $nombre = $_POST['nombre'] ?? '';
+    $descripcion = $_POST['descripcion'] ?? '';
+    $puntuacion = $_POST['puntuacion'] ?? '';
+    $latitud = $_POST['latitud'] ?? '';
+    $longitud = $_POST['longitud'] ?? '';
+    $direccion = $_POST['direccion'] ?? '';
+
+    if (!$id) {
+        echo json_encode(['success' => false, 'mensaje' => 'Faltan datos']);
+        exit;
+    }
+
+    $conn->beginTransaction();
+
+    $sql = "UPDATE marcador SET Titulo = ?, Descripcion = ?, Puntuacion = ?, Latitud = ?, Longitud = ?, Direccion = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$nombre, $descripcion, $puntuacion, $latitud, $longitud, $direccion, $id]);
+
+    $etiquetasJson = $_POST['etiquetas'] ?? '[]';
+    $etiquetas = json_decode($etiquetasJson, true);
+
+    if (is_array($etiquetas)) {
+        $sqlDelete = "DELETE FROM marcador_categoria WHERE Marcador_id = ?";
+        $stmtDelete = $conn->prepare($sqlDelete);
+        $stmtDelete->execute([$id]);
+
+        if (count($etiquetas) > 0) {
+            $sqlInsert = "INSERT INTO marcador_categoria (Marcador_id, Categoria_id, Es_principal) VALUES (?, ?, ?)";
+            $stmtInsert = $conn->prepare($sqlInsert);
+
+            foreach ($etiquetas as $etiqueta) {
+                $catId = $etiqueta['id'] ?? $etiqueta['Categoria_id'];
+                $esPrin = (!empty($etiqueta['esPrincipal']) || !empty($etiqueta['EsPrincipal'])) ? 1 : 0;
+
+                if ($catId) {
+                    $stmtInsert->execute([$id, $catId, $esPrin]);
+                }
+            }
+        }
+    }
+
+    $conn->commit();
+    echo json_encode(['success' => true, 'mensaje' => 'Marcador actualizado correctamente']);
+} catch (Exception $e) {
+    if (isset($conn) && $conn->inTransaction()) {
+        $conn->rollBack();
+    }
+    echo json_encode(['success' => false, 'mensaje' => 'Error al editar marcador: ' . $e->getMessage()]);
+}
+?>

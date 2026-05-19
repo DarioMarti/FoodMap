@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Users, MapPin, Search, Plus, Trash2, Edit, Check, Star, Shield, X, AlertCircle, UserCheck, BookmarkCheck, TagIcon } from 'lucide-react';
-import { obtenerTodosUsuarios, obtenerTodasEtiquetas, obtenerTodosMarcadores } from '../servicios/administrador/crud_admin';
+import { obtenerTodosUsuarios, obtenerTodasEtiquetas, obtenerTodosMarcadores, desactivarUsuarioAdmin, reactivarUsuarioAdmin, eliminarMarcadorAdmin, actualizarMarcadorAdmin, actualizarCategoriaAdmin, eliminarCategoriaAdmin } from '../servicios/administrador/crud_admin';
 import Etiqueta_marcador from '../components/ui/etiqueta_marcador';
 import * as lucideIcons from 'lucide-react';
 import Formulario_admin_edit from '../components/ui/Form_usuario_admin';
 import Notificacion from '../components/ui/Notificacion';
 import { mostrarNotificacion } from '../servicios/mostrar_notificacion';
+import TarjetaConfirmacion from '../components/ui/tarjeta_confirmacion';
+import Formulario_marcador_edit from '../components/ui/Form_marcador_admin';
+import Formulario_categoria_edit from '../components/ui/Form_categoria_admin';
+
+
 
 
 export default function Administrador() {
@@ -25,6 +30,100 @@ export default function Administrador() {
     // ---- ESTADOS DE MODALES ----
     const [formularioEditarActivo, setFormularioEditarActivo] = useState(false);
     const [notificacion, setNotificacion] = useState({ visible: false, mensaje: "", tipo: "" });
+    const [mostrarConfirmacionEliminar, setMostrarConfirmacionEliminar] = useState(false);
+    const [idUsuarioAEliminar, setIdUsuarioAEliminar] = useState(null);
+    const [marcadorSeleccionado, setMarcadorSeleccionado] = useState(null);
+    const [formularioMarcadorActivo, setFormularioMarcadorActivo] = useState(false);
+    const [mostrarConfirmacionEliminarMarcador, setMostrarConfirmacionEliminarMarcador] = useState(false);
+    const [idMarcadorAEliminar, setIdMarcadorAEliminar] = useState(null);
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
+    const [formularioCategoriaActivo, setFormularioCategoriaActivo] = useState(false);
+    const [mostrarConfirmacionEliminarCategoria, setMostrarConfirmacionEliminarCategoria] = useState(false);
+    const [idCategoriaAEliminar, setIdCategoriaAEliminar] = useState(null);
+
+
+
+    const abrirConfirmacionEliminar = (id) => {
+        const usuario = usuarios.find(u => u.id === id);
+        setUsuarioSeleccionado(usuario);
+        setMostrarConfirmacionEliminar(true);
+    };
+
+
+    const confirmarEliminarUsuario = async () => {
+        const respuesta = await desactivarUsuarioAdmin(usuarioSeleccionado.id);
+        if (respuesta?.success) {
+            mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
+            mostrarUsuarios();
+        } else {
+            mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
+        }
+        setMostrarConfirmacionEliminar(false);
+        setIdUsuarioAEliminar(null);
+    };
+
+    const manejarReactivarUsuario = async (id) => {
+        const respuesta = await reactivarUsuarioAdmin(id); // <-- Le pasamos el ID directamente
+        if (respuesta?.success) {
+            mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
+            mostrarUsuarios(); // Recarga la tabla
+        } else {
+            mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
+        }
+    };
+
+    const manejarFormularioEditarMarcador = (id) => {
+        const marcador = marcadores.find(m => m.id === id);
+        setMarcadorSeleccionado(marcador);
+        setFormularioMarcadorActivo(true);
+    };
+
+    const abrirConfirmacionEliminarMarcador = (id) => {
+        setIdMarcadorAEliminar(id);
+        setMostrarConfirmacionEliminarMarcador(true);
+    };
+
+    const abrirFormularioCrearMarcador = () => {
+        setMarcadorSeleccionado(null);
+        setFormularioMarcadorActivo(true);
+    };
+
+    const confirmarEliminarMarcador = async () => {
+        const respuesta = await eliminarMarcadorAdmin(idMarcadorAEliminar);
+        if (respuesta?.success) {
+            mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
+            mostrarMarcadores();
+        } else {
+            mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
+        }
+        setMostrarConfirmacionEliminarMarcador(false);
+        setIdMarcadorAEliminar(null);
+    };
+
+    const manejarFormularioEditarCategoria = (id) => {
+        const categoria = etiquetas.find(c => c.id === id);
+        setCategoriaSeleccionada(categoria);
+        setFormularioCategoriaActivo(true);
+    };
+
+    const abrirConfirmacionEliminarCategoria = (id) => {
+        setIdCategoriaAEliminar(id);
+        setMostrarConfirmacionEliminarCategoria(true);
+    };
+
+    const confirmarEliminarCategoria = async () => {
+        const respuesta = await eliminarCategoriaAdmin(idCategoriaAEliminar);
+        if (respuesta?.success) {
+            mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
+            mostrarEtiquetas(); // Llama a la función que ya tenías para recargar las categorías
+        } else {
+            mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
+        }
+        setMostrarConfirmacionEliminarCategoria(false);
+        setIdCategoriaAEliminar(null);
+    };
+
+
 
     const IconoDinamico = ({ nombre, ...props }) => {
         const nombreReal = nombre === "Hamburger" ? "Burger" : nombre;
@@ -50,10 +149,20 @@ export default function Administrador() {
     }
 
     const manejarFormularioEditar = (id) => {
-        const usuario = usuarios.find(u => u.id === id);
+        const usuario = usuariosFiltrados.find(u => u.id === id);
         setUsuarioSeleccionado(usuario);
         setFormularioEditarActivo(!formularioEditarActivo);
     }
+
+    const abrirFormularioCrearUsuario = () => {
+        setUsuarioSeleccionado(null);
+        setFormularioEditarActivo(true);
+    };
+
+    const abrirFormularioCrearCategoria = () => {
+        setCategoriaSeleccionada(null); // Null significa que es nueva
+        setFormularioCategoriaActivo(true);
+    };
 
 
     useEffect(() => {
@@ -62,34 +171,29 @@ export default function Administrador() {
         mostrarEtiquetas();
     }, []);
 
-    //Filtros de secciones
+    //Filtros de secciones robustos y seguros (evitan crashes por campos nulos, números o indefinidos)
     const usuariosFiltrados = usuarios.filter(u =>
-        u.Nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-        u.Email.toLowerCase().includes(busqueda.toLowerCase()) ||
-        u.Ciudad.toLowerCase().includes(busqueda.toLowerCase()) ||
-        u.Activo.toLowerCase().includes(busqueda.toLowerCase()) ||
-        u.Rol.toLowerCase().includes(busqueda.toLowerCase())
+        (u.Nombre || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+        (u.Email || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+        (u.Ciudad || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+        (u.Rol || '').toLowerCase().includes(busqueda.toLowerCase())
     );
 
     const marcadoresFiltrados = marcadores.filter(m =>
-        m.Titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
-        m.Descripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
-        m.Direccion.toLowerCase().includes(busqueda.toLowerCase()) ||
-        m.Puntuacion.toLowerCase().includes(busqueda.toLowerCase()) ||
-        m.creador.toLowerCase().includes(busqueda.toLowerCase())
+        (m.Titulo || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+        (m.Descripcion || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+        (m.Direccion || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+        String(m.Puntuacion || '').includes(busqueda)
     );
 
     const etiquetasFiltradas = etiquetas.filter(e =>
-        e.Nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-        e.Descripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
-        e.Ciudad.toLowerCase().includes(busqueda.toLowerCase()) ||
-        e.Activo.toLowerCase().includes(busqueda.toLowerCase()) ||
-        e.Rol.toLowerCase().includes(busqueda.toLowerCase())
+        (e.Nombre || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+        (e.Color || '').toLowerCase().includes(busqueda.toLowerCase())
     );
 
     return (
         <div className="h-full flex flex-col overflow-hidden bg-background dark:bg-text-main text-text-main dark:text-white font-['Outfit'] relative">
-            <header className="border-b-3 border-borde dark:border-borde-dark py-6 px-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 flex-shrink-0 bg-white dark:bg-dark-tarjeta/30">
+            <header className="border-b-2 border-borde dark:border-text-tertiary/30 py-6 px-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 flex-shrink-0 bg-white dark:bg-dark-tarjeta/30">
                 <div>
                     <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-3">
                         Panel de Administración
@@ -98,9 +202,18 @@ export default function Administrador() {
 
                 <div className="flex items-center gap-3 w-full md:w-auto">
                     <button
+                        onClick={() => {
+                            if (pestanaActiva === "usuarios") {
+                                abrirFormularioCrearUsuario();
+                            } else if (pestanaActiva === "marcadores") {
+                                abrirFormularioCrearMarcador();
+                            } else if (pestanaActiva === "categorias") {
+                                abrirFormularioCrearCategoria();
+                            }
+                        }}
                         className="bg-primary hover:bg-primary-hover active:bg-primary-active text-white px-5 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-[1.03] cursor-pointer">
                         <Plus size={20} />
-                        {pestanaActiva === "usuarios" ? "Añadir Usuario" : "Añadir Marcador"}
+                        {pestanaActiva}
                     </button>
                 </div>
             </header>
@@ -251,8 +364,9 @@ export default function Administrador() {
                                                             title="Editar Usuario">
                                                             <Edit size={18} />
                                                         </button>
-                                                        {u.Activo === 1 ? (
+                                                        {u.Activo === 0 ? (
                                                             <button
+                                                                onClick={() => manejarReactivarUsuario(u.id)}
                                                                 className="p-2 hover:bg-success/10 hover:text-success rounded-xl text-text-tertiary transition-colors cursor-pointer"
                                                                 title="Reactivar Usuario"
                                                             >
@@ -260,6 +374,7 @@ export default function Administrador() {
                                                             </button>
                                                         ) : (
                                                             <button
+                                                                onClick={() => abrirConfirmacionEliminar(u.id)}
                                                                 className="p-2 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl text-text-tertiary transition-colors cursor-pointer"
                                                                 title="Eliminar Usuario"
                                                             >
@@ -321,12 +436,14 @@ export default function Administrador() {
                                                 <td className="py-4 px-6 text-center">
                                                     <div className="flex items-center justify-center gap-2">
                                                         <button
+                                                            onClick={() => manejarFormularioEditarMarcador(m.id)}
                                                             className="p-2 hover:bg-primary/10 hover:text-primary rounded-xl text-text-tertiary transition-colors cursor-pointer"
                                                             title="Editar Marcador"
                                                         >
                                                             <Edit size={18} />
                                                         </button>
                                                         <button
+                                                            onClick={() => abrirConfirmacionEliminarMarcador(m.id)}
                                                             className="p-2 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl text-text-tertiary transition-colors cursor-pointer"
                                                             title="Eliminar Marcador"
                                                         >
@@ -367,12 +484,14 @@ export default function Administrador() {
                                                 <td className="py-4 px-6 text-center">
                                                     <div className="flex items-center justify-center gap-2">
                                                         <button
+                                                            onClick={() => manejarFormularioEditarCategoria(e.id)}
                                                             className="p-2 hover:bg-primary/10 hover:text-primary rounded-xl text-text-tertiary transition-colors cursor-pointer"
                                                             title="Editar Usuario"
                                                         >
                                                             <Edit size={18} />
                                                         </button>
                                                         <button
+                                                            onClick={() => abrirConfirmacionEliminarCategoria(e.id)}
                                                             className="p-2 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl text-text-tertiary transition-colors cursor-pointer"
                                                             title="Eliminar Usuario"
                                                         >
@@ -394,12 +513,31 @@ export default function Administrador() {
                 </section>
             </main>
 
-            <Formulario_admin_edit usuarioSeleccionado={usuarioSeleccionado} className={formularioEditarActivo ? "block" : "hidden"} />
-            {formularioEditarActivo && usuarioSeleccionado && (
+            {formularioEditarActivo && (
                 <Formulario_admin_edit
                     usuarioSeleccionado={usuarioSeleccionado}
                     setFormularioEditarActivo={setFormularioEditarActivo}
                     mostrarNotificacion={(mensaje, tipo) => mostrarNotificacion(mensaje, tipo, notificacion, setNotificacion)}
+                    recargarTabla={mostrarUsuarios}
+                />
+            )}
+
+            {formularioMarcadorActivo && (
+                <Formulario_marcador_edit
+                    marcadorSeleccionado={marcadorSeleccionado}
+                    setFormularioMarcadorActivo={setFormularioMarcadorActivo}
+                    mostrarNotificacion={(mensaje, tipo) => mostrarNotificacion(mensaje, tipo, notificacion, setNotificacion)}
+                    recargarTabla={mostrarMarcadores}
+                    categoriasBD={etiquetas}
+                />
+            )}
+
+            {formularioCategoriaActivo && (
+                <Formulario_categoria_edit
+                    categoriaSeleccionada={categoriaSeleccionada}
+                    setFormularioCategoriaActivo={setFormularioCategoriaActivo}
+                    mostrarNotificacion={(mensaje, tipo) => mostrarNotificacion(mensaje, tipo, notificacion, setNotificacion)}
+                    recargarTabla={mostrarEtiquetas}
                 />
             )}
 
@@ -408,6 +546,31 @@ export default function Administrador() {
                     <Notificacion mensaje={notificacion.mensaje} tipo={notificacion.tipo} />
                 )}
             </div>
+
+            {mostrarConfirmacionEliminarMarcador && (
+                <TarjetaConfirmacion
+                    cancelar={() => setMostrarConfirmacionEliminarMarcador(false)}
+                    confirmar={confirmarEliminarMarcador}
+                    mensaje="¿Está seguro de que desea eliminar permanentemente este marcador?"
+                />
+            )}
+
+            {mostrarConfirmacionEliminar && (
+                <TarjetaConfirmacion
+                    cancelar={() => setMostrarConfirmacionEliminar(false)}
+                    confirmar={confirmarEliminarUsuario}
+                    mensaje="¿Está seguro de que desea desactivar este usuario?"
+                />
+            )}
+
+            {mostrarConfirmacionEliminarCategoria && (
+                <TarjetaConfirmacion
+                    cancelar={() => setMostrarConfirmacionEliminarCategoria(false)}
+                    confirmar={confirmarEliminarCategoria}
+                    mensaje="¿Está seguro de que desea eliminar esta categoría? Si lo haces, los marcadores asociados a ella podrían verse afectados."
+                />
+            )}
+
 
         </div>
     );
