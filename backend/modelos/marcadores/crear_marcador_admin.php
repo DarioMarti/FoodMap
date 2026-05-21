@@ -26,6 +26,12 @@ try {
     $longitud = $_POST['longitud'] ?? '';
     $direccion = $_POST['direccion'] ?? '';
 
+if ($latitud === '' || $longitud === '' || !is_numeric($latitud) || !is_numeric($longitud)) {
+    echo json_encode(['success' => false, 'mensaje' => 'Las coordenadas de latitud y longitud son obligatorias y deben ser números válidos.']);
+    exit;
+}
+
+
     $id_usuario = $_SESSION['usuario']['id'] ?? 1;
     $id_mapa = 1;
 

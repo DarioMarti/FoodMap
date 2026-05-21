@@ -2,11 +2,10 @@ import * as lucideIcons from 'lucide-react';
 import Boton_cuadrado from './Boton_cuadrado';
 import { useState, useEffect } from 'react';
 
-export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, actualizarContactos, contactos }) {
+export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, actualizarContactos, contactos, solicitudes, obtener_solicitudes, handleSolicitudes, handleSeleccionarChat }) {
     const [tabActiva, setTabActiva] = useState("buscar");
     const [nombre_usuario, setNombre_usuario] = useState("");
     const [usuarios, setUsuarios] = useState([]);
-    const [solicitudes, setSolicitudes] = useState([]);
 
     const buscar_usuarios = async (e) => {
         e.preventDefault();
@@ -26,17 +25,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
 
     };
 
-    const obtener_solicitudes = async () => {
-        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/chat/obtener_solicitud.php", {
-            credentials: 'include'
-        });
 
-        if (respuesta.ok) {
-            const data = await respuesta.json();
-            setSolicitudes(data.solicitudes);
-            console.log(solicitudes);
-        }
-    };
 
     const aceptar_solicitud = async (amigo_id) => {
         const formData = new FormData();
@@ -69,6 +58,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
             const data = await respuesta.json();
             if (data.ok) {
                 mostrarNotificacion(data.mensaje, "success");
+                setUsuarios(prev => prev.map(u => u.id === amigo_id ? { ...u, solicitud_enviada: 1 } : u));
             } else {
                 mostrarNotificacion(data.error || "Error al enviar", "error");
             }
@@ -88,8 +78,26 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
             obtener_solicitudes();
             mostrarNotificacion("Usuario bloqueado exitosamente", "success");
             actualizarContactos();
+            setUsuarios(prev => prev.map(u => u.id === id_amigo ? { ...u, yo_lo_bloquee: 1, ya_amigos: 0, solicitud_enviada: 0, solicitud_recibida: 0 } : u));
         } else {
             mostrarNotificacion("Error al bloquear al usuario", "error");
+        }
+    };
+
+    const desbloquear_usuario = async (id_amigo) => {
+        const formData = new FormData();
+        formData.append("id", id_amigo);
+        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/chat/desbloquear_usuario.php", {
+            credentials: 'include',
+            method: "POST",
+            body: formData,
+        });
+
+        if (respuesta.ok) {
+            mostrarNotificacion("Usuario desbloqueado exitosamente", "success");
+            setUsuarios(prev => prev.map(u => u.id === id_amigo ? { ...u, yo_lo_bloquee: 0 } : u));
+        } else {
+            mostrarNotificacion("Error al desbloquear al usuario", "error");
         }
     };
 
@@ -100,7 +108,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
 
 
     return (
-        <div className={`absolute top-0 -mt-[10%] left-1/2 -translate-x-1/2 flex items-start z-1500 ${estado ? 'block' : 'hidden'}`}>
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-start z-1500 ${estado ? 'block' : 'hidden'}`}>
 
             <div className="flex flex-col gap-1 items-end ">
                 <button
@@ -124,11 +132,11 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                 >
                     <lucideIcons.Bell className="size-6" />
                     {
-                        solicitudes?.length > 0 && (
-                            <span className="absolute top-4 right-12 bg-primary text-white rounded-full px-2 py-1 text-xs">
-                                {solicitudes.length}
-                            </span>
-                        )
+
+                        <span onClick={handleSolicitudes} className="absolute flex items-center justify-center size-8 top-4 right-6 bg-error hover:bg-error/80 transition-colors cursor-pointer text-white rounded-full  text-xs">
+
+                            <lucideIcons.X className="size-4" />
+                        </span>
                     }
                 </button>
                 <button
@@ -178,16 +186,47 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                                         <div className="flex items-center gap-2">
                                             <Boton_cuadrado
                                                 onClick={() => enviar_solicitud(usuario.id)}
-                                                className="bg-success/20 text-success hover:bg-success hover:text-white size-11 border border-success/30"
-                                                icon={<lucideIcons.UserPlus className="size-5" />}
-                                                title="Enviar solicitud"
+                                                className={usuario.ya_amigos == 1
+                                                    ? "bg-primary/20 text-primary size-11 border border-primary/30"
+                                                    : usuario.solicitud_enviada == 1
+                                                        ? "bg-slate-500/20 text-slate-500 size-11 border border-slate-500/30"
+                                                        : usuario.solicitud_recibida == 1
+                                                            ? "bg-amber-500/20 text-amber-600 size-11 border border-amber-500/30"
+                                                            : "bg-success/20 text-success hover:bg-success hover:text-white size-11 border border-success/30"
+                                                }
+                                                icon={usuario.ya_amigos == 1
+                                                    ? <lucideIcons.Users className="size-5" />
+                                                    : usuario.solicitud_enviada == 1
+                                                        ? <lucideIcons.UserCheck className="size-5" />
+                                                        : usuario.solicitud_recibida == 1
+                                                            ? <lucideIcons.BellRing className="size-5" />
+                                                            : <lucideIcons.UserPlus className="size-5" />
+                                                }
+                                                title={usuario.ya_amigos == 1
+                                                    ? "Ya son amigos"
+                                                    : usuario.solicitud_enviada == 1
+                                                        ? "Solicitud enviada"
+                                                        : usuario.solicitud_recibida == 1
+                                                            ? "Te ha enviado una solicitud"
+                                                            : "Enviar solicitud"
+                                                }
+                                                disabled={usuario.ya_amigos == 1 || usuario.solicitud_enviada == 1 || usuario.solicitud_recibida == 1 || usuario.yo_lo_bloquee == 1}
                                             />
-                                            <Boton_cuadrado
-                                                onClick={() => bloquear_usuario(usuario.id)}
-                                                className="bg-error/20 text-error hover:bg-error hover:text-white size-11 border border-error/30"
-                                                icon={<lucideIcons.MessageCircleOff className="size-5" />}
-                                                title="Bloquear"
-                                            />
+                                            {usuario.yo_lo_bloquee == 1 ? (
+                                                <Boton_cuadrado
+                                                    onClick={() => desbloquear_usuario(usuario.id)}
+                                                    className="bg-primary/20 text-primary hover:bg-primary hover:text-white size-11 border border-primary/30"
+                                                    icon={<lucideIcons.Unlock className="size-5" />}
+                                                    title="Desbloquear"
+                                                />
+                                            ) : (
+                                                <Boton_cuadrado
+                                                    onClick={() => bloquear_usuario(usuario.id)}
+                                                    className="bg-error/20 text-error hover:bg-error hover:text-white size-11 border border-error/30"
+                                                    icon={<lucideIcons.Ban className="size-5" />}
+                                                    title="Bloquear"
+                                                />
+                                            )}
                                         </div>
                                     </div>) : null
                             ))}
@@ -258,6 +297,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                                         </div>
                                         <Boton_cuadrado
                                             className="bg-primary/20 text-primary hover:bg-primary hover:text-white size-11 border border-primary/30"
+                                            onClick={() => handleSeleccionarChat(amigo, false)}
                                             icon={<lucideIcons.MessageCircle className="size-5" />}
                                             title="Chatear"
                                         />

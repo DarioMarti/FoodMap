@@ -28,7 +28,7 @@ const IconoDinamico = ({ nombre, ...props }) => {
     return <IconoComponente {...props} />;
 };
 
-export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, categoriasFiltro }) {
+export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, categoriasFiltro, puntuacionMinima }) {
     const [lugarSeleccionado, setLugarSeleccionado] = useState(null);
     const [formularioActivo, setFormularioActivo] = useState(false);
     const [formularioActivo_editar, setFormularioEditarActivo] = useState(false);
@@ -66,6 +66,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
             formData.append('etiquetas', JSON.stringify(etiquetasMarcador));
             fotosMarcador.forEach((foto, index) => {
                 formData.append('fotos[]', foto);
+
             });
         } else {
             formData.append('etiquetas', JSON.stringify(etiquetas));
@@ -73,12 +74,21 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 formData.append('fotos[]', foto);
             });
         }
+
+        if (!isEditando && !posicionClick) {
+            mostrarNotificacion("Debes hacer clic en el mapa para ubicar el marcador.", "error");
+            return;
+        }
+
         try {
             const resultado = await agregarMarcador(formData);
             mostrarNotificacion("¡Marcador guardado con éxito!", "success");
             e.target.reset();
             setEtiquetas([]);
+            setFotos([]);
             setFormularioActivo(false);
+            setFormularioEditarActivo(false);
+            setLugarSeleccionado(null);
             setPuntuacion(0);
             setPosicionClick(null);
         } catch (error) {
@@ -117,9 +127,15 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
         const nuevosArchivos = Array.from(e.target.files);
         setFotos([...fotos, ...nuevosArchivos]);
     };
+    const alEliminarFoto = (indexAEliminar) => {
+        setFotos(prev => prev.filter((_, index) => index !== indexAEliminar));
+    };
     const alElegirFotoEditar = (e) => {
         const nuevosArchivos = Array.from(e.target.files);
         setFotosMarcador([...fotosMarcador, ...nuevosArchivos]);
+    };
+    const alEliminarFotoEditar = (indexAEliminar) => {
+        setFotosMarcador(prev => prev.filter((_, index) => index !== indexAEliminar));
     };
 
     useEffect(() => {
@@ -142,13 +158,23 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
     return (
         <main className="flex-1 flex flex-col min-w-0 h-full z-0 relative">
             <Boton_cuadrado
-                onClick={() => manejarFormularioMarcador("crear", true, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetas, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando)}
+                onClick={() => {
+                    manejarFormularioMarcador("crear", true, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetas, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando);
+                    setFotos([]);
+                    const inputFoto = document.getElementById('foto_input');
+                    if (inputFoto) inputFoto.value = '';
+                }}
                 className="bg-primary-light dark:bg-primary-dark/30 border-2 border-primary hover:bg-primary/100 dark:hover:bg-primary-hover hover:text-background  text-primary size-14 absolute top-26 left-8 z-1000" icon={<lucideIcons.Plus size={26} />} />
 
             <form onSubmit={manejarEnvio} className={`absolute w-150 top-26 left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta  dark:border-text-main p-6 rounded-xl dark:text-background
                 shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-1200 ${formularioActivo ? 'block' : 'hidden'}`}>
                 <button
-                    onClick={() => manejarFormularioMarcador("crear", false, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetas, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando)}
+                    onClick={() => {
+                        manejarFormularioMarcador("crear", false, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetas, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando);
+                        setFotos([]);
+                        const inputFoto = document.getElementById('foto_input');
+                        if (inputFoto) inputFoto.value = '';
+                    }}
                     className='bg-primary rounded-full size-8 flex items-center justify-center absolute top-4 right-4 hover:bg-primary-hover dark:hover:bg-primary-hover cursor-pointer' type="button">{<lucideIcons.XIcon size={26} color='white' />}</button>
 
                 <label className='mt-4' htmlFor="nombre">Nombre:</label>
@@ -175,7 +201,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                             }
                         </select>
                         <button type='button'
-                            onClick={() => { agregarEtiqueta(etiquetaSeleccionada.id, etiquetaSeleccionada.nombre, esPrincipal, setEtiquetas, etiquetas); setEsPrincipal(false); }}
+                            onClick={() => { agregarEtiqueta(etiquetaSeleccionada.id, etiquetaSeleccionada.nombre, esPrincipal, setEtiquetas, etiquetas, mostrarNotificacion); setEsPrincipal(false); }}
                             className='px-4 py-2 bg-primary dark:bg-primary hover:bg-primary-hover dark:hover:bg-primary-hover text-background uppercase rounded-xl cursor-pointer'>
 
                             Agregar
@@ -191,8 +217,12 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                         {etiquetas.map((item, index) => (
                             <div key={index} className="flex items-center gap-1">
                                 <Etiqueta_marcador
+                                    type="button"
+                                    title="Hacer clic para eliminar"
+                                    onClick={() => setEtiquetas(etiquetas.filter(e => String(e.id) !== String(item.id) && String(e.Categoria_id) !== String(item.id)))}
+                                    className="cursor-pointer hover:opacity-80 transition-opacity"
                                     style={{
-                                        backgroundColor: `${item.Color}33`, // El '33' al final añade transparencia (20%)
+                                        backgroundColor: `${item.Color}33`,
                                         borderColor: item.Color,
                                         color: item.Color
                                     }}
@@ -213,13 +243,17 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 <div id="contenedor_fotos" className='flex gap-4 mb-4 flex-wrap'>
                     {/* Input oculto que realmente hace el trabajo */}
                     <input
-                        type="file" id="foto_input" name="fotos[]" multiple
+                        type="file" id="foto_input" multiple
                         className="hidden" onChange={alElegirFoto}
                     />
 
                     {/* Previsualización de fotos seleccionadas */}
                     {fotos.map((foto, index) => (
-                        <Tarjeta_foto_marcador key={index} foto={URL.createObjectURL(foto)} />
+                        <Tarjeta_foto_marcador
+                            key={index}
+                            foto={URL.createObjectURL(foto)}
+                            onDelete={() => alEliminarFoto(index)}
+                        />
                     ))}
 
                     <div className='cursor-pointer' onClick={(e) => { e.stopPropagation(); document.getElementById('foto_input').click(); }}>
@@ -248,6 +282,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
 
                 {marcadores
                     .filter(m => categoriasFiltro?.length === 0 || categoriasFiltro?.includes(m.Categoria_id))
+                    .filter(m => !puntuacionMinima || (parseFloat(m.Puntuacion) || 0) >= puntuacionMinima)
                     .map((marcador) => (
                         <Marcador key={marcador.id} position={[marcador.Latitud, marcador.Longitud]} color={marcador.Color || '#EA2678'} icono={<IconoDinamico nombre={marcador.Icono || 'MapPin'} size={22} />}
                             eventHandlers={{
@@ -270,8 +305,8 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 lugarSeleccionado && (
                     <div className="max-h-[50vh] overflow-y-auto absolute bottom-0 left-0 right-0 z-[1001] bg-background dark:bg-dark-tarjeta p-6 rounded-t-xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300">
                         <div className="flex gap-2 absolute top-4 right-4 z-1000">
-                            <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => manejarFormularioMarcador("editar", false, true, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando)} icon={<lucideIcons.Pencil size={26} />} />
-                            <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => setLugarSeleccionado(null)} icon={<lucideIcons.XIcon size={26} />} />
+                            <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:border-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => manejarFormularioMarcador("editar", false, true, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando)} icon={<lucideIcons.Pencil size={26} />} />
+                            <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:border-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => setLugarSeleccionado(null)} icon={<lucideIcons.XIcon size={26} />} />
 
 
                         </div>
@@ -318,7 +353,12 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
             <form onSubmit={manejarEnvio} className={`absolute w-150 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta  dark:border-text-main p-6 rounded-xl dark:text-background
                 shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-1100 ${formularioActivo_editar ? 'block' : 'hidden'}`}>
                 <button
-                    onClick={() => manejarFormularioMarcador("editar", false, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando)}
+                    onClick={() => {
+                        manejarFormularioMarcador("editar", false, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando);
+                        setFotosMarcador([]);
+                        const inputFoto = document.getElementById('foto_input_editar');
+                        if (inputFoto) inputFoto.value = '';
+                    }}
                     className='bg-primary rounded-full size-8 flex items-center justify-center absolute top-4 right-4 hover:bg-primary-hover dark:hover:bg-primary-hover cursor-pointer' type="button">{<lucideIcons.XIcon size={26} color='white' />}</button>
 
                 <label className='mt-4' htmlFor="nombre">Nombre:</label>
@@ -343,7 +383,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                             <option value="3">Restaurante</option>
                         </select>
                         <button type='button'
-                            onClick={() => { agregarEtiqueta(etiquetaSeleccionada.id, etiquetaSeleccionada.nombre, esPrincipal, setEtiquetasMarcador, etiquetasMarcador); setEsPrincipal(false); }}
+                            onClick={() => { agregarEtiqueta(etiquetaSeleccionada.id, etiquetaSeleccionada.nombre, esPrincipal, setEtiquetasMarcador, etiquetasMarcador, mostrarNotificacion); setEsPrincipal(false); }}
                             className='px-4 py-2 bg-primary dark:bg-primary hover:bg-primary-hover dark:hover:bg-primary-hover text-background uppercase rounded-xl cursor-pointer'
                         >
                             Agregar
@@ -359,6 +399,10 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                         {etiquetasMarcador.map((item, index) => (
                             <div key={index} className="flex items-center gap-1">
                                 <Etiqueta_marcador
+                                    type="button"
+                                    title="Hacer clic para eliminar"
+                                    onClick={() => setEtiquetasMarcador(etiquetasMarcador.filter(e => String(e.id) !== String(item.id) && String(e.Categoria_id) !== String(item.id)))}
+                                    className="cursor-pointer hover:opacity-80 transition-opacity"
                                     style={{
                                         backgroundColor: `${item.Color}33`, // El '33' al final añade transparencia (20%)
                                         borderColor: item.Color,
@@ -380,14 +424,20 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 <label>Fotos:</label>
                 <div id="contenedor_fotos_editar" className='flex gap-4 mb-4 flex-wrap'>
                     <input
-                        type="file" id="foto_input_editar" name="fotos[]" multiple
+                        type="file" id="foto_input_editar" multiple
                         className="hidden" onChange={alElegirFotoEditar}
                     />
                     {fotosMarcador.map((foto, index) => {
                         const urlFoto = foto.Url_archivo
                             ? `http://localhost/foodmap/backend/uploads/img/${foto.Url_archivo}`
                             : URL.createObjectURL(foto);
-                        return <Tarjeta_foto_marcador key={index} foto={urlFoto} />;
+                        return (
+                            <Tarjeta_foto_marcador
+                                key={index}
+                                foto={urlFoto}
+                                onDelete={() => alEliminarFotoEditar(index)}
+                            />
+                        );
                     })}
                     <div className='cursor-pointer' onClick={(e) => { e.stopPropagation(); document.getElementById('foto_input_editar').click(); }}>
                         <Tarjeta_foto_marcador_añadir />

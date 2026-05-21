@@ -19,6 +19,13 @@ try {
     $es_principal = isset($_POST['es_principal']) ? 1 : 0;
 
 
+    if ($latitud === '' || $longitud === '' || !is_numeric($latitud) || !is_numeric($longitud)) {
+    http_response_code(400);
+    echo "Error: Las coordenadas de latitud y longitud son obligatorias y deben ser números válidos.";
+    exit;
+}
+
+
     //Agregar el marcador
     $stmt = $conexion->prepare("INSERT INTO marcador (Titulo, Puntuacion ,Descripcion, Latitud, Longitud, Mapa_id, Usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$nombre, $puntuacion, $descripcion, $latitud, $longitud, $id_mapa, $id_usuario]);
@@ -37,6 +44,7 @@ try {
             ]);
         }
     }
+    
 
     //Agregar las fotos del marcador
     if (isset($_FILES['fotos'])) {

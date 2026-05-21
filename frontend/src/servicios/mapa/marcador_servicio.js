@@ -6,7 +6,8 @@ import * as lucideIcons from 'lucide-react';
 export const agregarMarcador = async (formData) => {
     const respuesta = await fetch(`${API_URL}modelos/marcadores/Agregar_marcador.php`, {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include'
     });
 
     if (!respuesta.ok) {
@@ -41,7 +42,7 @@ export const obtenerMarcadores = async (setMarcadores, nombre = null) => {
             ? `http://localhost/foodmap/backend/modelos/marcadores/mostrar_marcador.php?nombre=${nombre}`
             : `http://localhost/foodmap/backend/modelos/marcadores/mostrar_marcador.php`;
 
-        const respuesta = await fetch(url);
+        const respuesta = await fetch(url, { credentials: 'include' });
         const datos = await respuesta.json();
         setMarcadores(datos);
     } catch (error) {
@@ -97,12 +98,25 @@ export const obtenerTodasEtiquetas = async (id) => {
 
 
 //Agregar etiquetas
-export const agregarEtiqueta = async (id, nombre, principal, setEtiquetas, etiquetas) => {
+export const agregarEtiqueta = async (id, nombre, principal, setEtiquetas, etiquetas, mostrarNotificacion) => {
     const finalId = id || "1";
     const finalNombre = nombre || "Cafetería";
 
+    if (etiquetas.some(e => String(e.id) === String(finalId) || String(e.Categoria_id) === String(finalId))) {
+        if (mostrarNotificacion) {
+            mostrarNotificacion("Esta categoría ya ha sido agregada a este marcador.", "error");
+        } else {
+            alert("Esta categoría ya ha sido agregada a este marcador.");
+        }
+        return;
+    }
+
     if (principal && etiquetas.some(e => e.esPrincipal || e.EsPrincipal)) {
-        alert("Ya existe una etiqueta principal para este marcador.");
+        if (mostrarNotificacion) {
+            mostrarNotificacion("Ya existe una etiqueta principal para este marcador.", "error");
+        } else {
+            alert("Ya existe una etiqueta principal para este marcador.");
+        }
         return; // Salimos de la función sin añadir nada
     }
 

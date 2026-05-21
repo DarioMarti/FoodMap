@@ -44,7 +44,7 @@ const Login = () => {
     }
 
     return (
-        <div className="flex items-end justify-center w-full h-screen bg-gradient-to-br from-[#EA2678] via-[#ff4d94] to-[#ff80b3] font-['Outfit']">
+        <div className="flex items-end justify-center w-full h-screen bg-gradient-to-br from-primary/90 via-primary/70 to-primary/60 font-['Outfit']">
             <main className="flex w-[90%] max-w-[1400px] justify-around items-center">
 
                 {/* Bloque izquierdo */}

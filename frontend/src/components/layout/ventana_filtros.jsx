@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import * as lucideIcons from "lucide-react";
 
-export default function Ventana_filtros({ estado, marcadores, onFilterChange }) {
+export default function Ventana_filtros({ estado, marcadores, onFilterChange, puntuacionMinima = 0, setPuntuacionMinima }) {
     const [categorias, setCategorias] = useState([]);
     const [seleccionadas, setSeleccionadas] = useState([]);
 
@@ -26,13 +26,14 @@ export default function Ventana_filtros({ estado, marcadores, onFilterChange }) 
     const limpiarFiltros = () => {
         setSeleccionadas([]);
         onFilterChange([]);
+        if (setPuntuacionMinima) setPuntuacionMinima(0);
     };
 
     return (
         <div
-            className={`w-[350px] bg-white dark:bg-dark-tarjeta rounded-3xl shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] border border-borde dark:border-descripcion/30 overflow-hidden absolute top-20 right-4 z-[2000] ${estado
-                    ? "opacity-100 translate-y-0 scale-100"
-                    : "opacity-0 -translate-y-10 scale-95 pointer-events-none"
+            className={`w-[350px] bg-white dark:bg-dark-tarjeta rounded-3xl shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] border border-borde dark:border-descripcion/30 overflow-hidden absolute top-26 right-26 z-[2000] ${estado
+                ? "opacity-100 translate-y-0 scale-100"
+                : "opacity-0 -translate-y-10 scale-95 pointer-events-none"
                 }`}
         >
             {/* Header */}
@@ -45,12 +46,12 @@ export default function Ventana_filtros({ estado, marcadores, onFilterChange }) 
                         Filtros
                     </h2>
                 </div>
-                {seleccionadas.length > 0 && (
+                {(seleccionadas.length > 0 || puntuacionMinima > 0) && (
                     <button
                         onClick={limpiarFiltros}
-                        className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors px-3 py-1 bg-primary/10 rounded-full"
+                        className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors px-3 py-1 bg-primary/10 rounded-full cursor-pointer"
                     >
-                        Limpiar ({seleccionadas.length})
+                        Limpiar ({seleccionadas.length + (puntuacionMinima > 0 ? 1 : 0)})
                     </button>
                 )}
             </div>
@@ -69,15 +70,15 @@ export default function Ventana_filtros({ estado, marcadores, onFilterChange }) 
                             <button
                                 key={cat.id}
                                 onClick={() => toggleCategoria(cat.id)}
-                                className={`flex items-center gap-3 p-3 rounded-2xl border transition-all duration-300 group ${isSelected
-                                        ? "bg-primary border-primary text-white shadow-lg shadow-primary/30"
-                                        : "bg-background-input/50 dark:bg-background-oscuro/40 border-transparent hover:border-primary/50 text-text-secondary dark:text-background/70"
+                                className={`flex items-center gap-3 p-3 rounded-2xl border transition-all duration-300 group cursor-pointer ${isSelected
+                                    ? "bg-primary border-primary text-white shadow-lg shadow-primary/30"
+                                    : "bg-background-input/50 dark:bg-background-oscuro/40 border-transparent hover:border-primary/50 text-text-secondary dark:text-background/70"
                                     }`}
                             >
                                 <div
                                     className={`p-1.5 rounded-lg transition-colors ${isSelected
-                                            ? "bg-white/20"
-                                            : "bg-white dark:bg-dark-tarjeta group-hover:bg-primary/10"
+                                        ? "bg-white/20"
+                                        : "bg-white dark:bg-dark-tarjeta group-hover:bg-primary/10"
                                         }`}
                                 >
                                     <Icono
@@ -94,18 +95,35 @@ export default function Ventana_filtros({ estado, marcadores, onFilterChange }) 
                 </div>
             </div>
 
-            {/* Footer / Info */}
-            <div className="p-6 bg-background-oscuro/5 dark:bg-white/5 flex flex-col gap-3">
-                <div className="flex items-center justify-between text-xs text-text-tertiary">
-                    <span>Filtra por tipo de establecimiento</span>
-                    {seleccionadas.length > 0 && (
-                        <span className="flex items-center gap-1 text-primary">
-                            <lucideIcons.CheckCircle2 className="size-3" />
-                            Filtros activos
-                        </span>
-                    )}
+            <div className="p-6 border-t border-borde dark:border-descripcion/20">
+                <h3 className="text-sm font-semibold text-text-tertiary mb-4 uppercase tracking-wider">
+                    Puntuación mínima
+                </h3>
+                <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((val) => {
+                        const isActive = val <= puntuacionMinima;
+                        return (
+                            <button
+                                key={val}
+                                type="button"
+                                onClick={() => setPuntuacionMinima && setPuntuacionMinima(puntuacionMinima === val ? 0 : val)}
+                                className="p-1 rounded-lg  transition-colors cursor-pointer group"
+                                title={`Filtrar por ${val} estrellas o más`}
+                            >
+                                <lucideIcons.Star
+                                    className={`size-8 transition-transform ${isActive
+                                        ? "text-yellow-500 fill-yellow-500"
+                                        : "text-gray-300 dark:text-descripcion fill-descripcion hover:fill-background-claro/20 hover:text-background-claro/20"
+                                        }`}
+                                />
+                            </button>
+                        );
+                    })}
+
                 </div>
             </div>
+
+
         </div>
     );
 }

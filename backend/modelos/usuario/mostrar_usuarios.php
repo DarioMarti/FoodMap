@@ -12,19 +12,30 @@ $nombre = $_POST['nombre'] ?? "";
 try {
     $conn = conectar();
 
-    $sql = "SELECT u.id, u.Nombre, u.Foto_perfil 
+    $sql = "SELECT u.id, u.Nombre, u.Foto_perfil,
+                CASE WHEN s.id IS NOT NULL THEN 1 ELSE 0 END AS solicitud_enviada,
+                CASE WHEN r.id IS NOT NULL THEN 1 ELSE 0 END AS solicitud_recibida,
+                CASE WHEN a.id IS NOT NULL THEN 1 ELSE 0 END AS ya_amigos,
+                CASE WHEN b1.id IS NOT NULL THEN 1 ELSE 0 END AS yo_lo_bloquee
             FROM usuario u
-            LEFT JOIN bloqueos b ON (
-                (b.Usuario_bloqueador_id = ? AND b.Usuario_bloqueado_id = u.id)
-                OR
-                (b.Usuario_bloqueado_id = ? AND b.Usuario_bloqueador_id = u.id)
+            LEFT JOIN bloqueos b1 ON (b1.Usuario_bloqueador_id = ? AND b1.Usuario_bloqueado_id = u.id)
+            LEFT JOIN bloqueos b2 ON (b2.Usuario_bloqueado_id = ? AND b2.Usuario_bloqueador_id = u.id)
+            LEFT JOIN amistades s ON (
+                s.Usuario_solicita_id = ? AND s.Usuario_receptor_id = u.id AND s.Estado = 'pendiente'
+            )
+            LEFT JOIN amistades r ON (
+                r.Usuario_solicita_id = u.id AND r.Usuario_receptor_id = ? AND r.Estado = 'pendiente'
+            )
+            LEFT JOIN amistades a ON (
+                ((a.Usuario_solicita_id = ? AND a.Usuario_receptor_id = u.id) OR (a.Usuario_solicita_id = u.id AND a.Usuario_receptor_id = ?))
+                AND a.Estado = 'aceptado'
             )
             WHERE u.Nombre LIKE ? 
             AND u.id != ? 
-            AND b.id IS NULL";
+            AND b2.id IS NULL";
 
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$mi_id, $mi_id, "%$nombre%", $mi_id]);
+    $stmt->execute([$mi_id, $mi_id, $mi_id, $mi_id, $mi_id, $mi_id, "%$nombre%", $mi_id]);
 
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($result);

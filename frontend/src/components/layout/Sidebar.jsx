@@ -9,6 +9,7 @@ export function Sidebar() {
   const [usuariologueado, setUsuariologueado] = useState(false);
   const [usuario, setUsuario] = useState({});
   const siglaInicial = usuario.nombre ? usuario.nombre.charAt(0).toUpperCase() : 'U';
+  const esFotoDefault = usuario.foto === "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
   const comprobar_sesion = async () => {
     const respuesta = await comprobar_sesion_usuario();
@@ -56,14 +57,14 @@ export function Sidebar() {
       <div className="flex flex-col gap-6 w-full px-4 mt-auto">
         <SidebarLink to="/config" icon={<Settings size={24} />} />
 
-        {usuario.foto ? (
+        {usuario.foto && !esFotoDefault ? (
           <img
             src={usuario.foto.startsWith('http') ? usuario.foto : `http://localhost/foodmap/backend/uploads/img/${usuario.foto}`}
             alt="Foto de perfil"
             className="w-12 h-12 rounded-full object-cover"
           />
         ) : (
-          <span className="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-lg hover:bg-indigo-600 transition-colors mx-auto">
+          <span className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg  transition-colors mx-auto">
             {siglaInicial}
           </span>
         )}

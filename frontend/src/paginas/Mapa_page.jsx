@@ -11,9 +11,7 @@ export default function MapaPage({ darkMode }) {
     const [nombreBusqueda, setNombreBusqueda] = useState("");
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
     const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState([]);
-
-
-
+    const [puntuacionMinima, setPuntuacionMinima] = useState(0);
 
     const buscarMarcadores = (nombre) => {
         setNombreBusqueda(nombre);
@@ -27,8 +25,8 @@ export default function MapaPage({ darkMode }) {
                 )}
             </div>
             <BarraBusqueda buscarMarcadores={buscarMarcadores} toggleFiltros={() => setMostrarFiltros(!mostrarFiltros)} />
-            <Ventana_filtros estado={mostrarFiltros} onFilterChange={setCategoriasSeleccionadas} />
-            <Mapa darkMode={darkMode} mostrarNotificacion={(mensaje, tipo) => mostrarNotificacion(mensaje, tipo, notificacion, setNotificacion)} nombreBusqueda={nombreBusqueda} categoriasFiltro={categoriasSeleccionadas} />
+            <Ventana_filtros estado={mostrarFiltros} onFilterChange={setCategoriasSeleccionadas} puntuacionMinima={puntuacionMinima} setPuntuacionMinima={setPuntuacionMinima} />
+            <Mapa darkMode={darkMode} mostrarNotificacion={(mensaje, tipo) => mostrarNotificacion(mensaje, tipo, notificacion, setNotificacion)} nombreBusqueda={nombreBusqueda} categoriasFiltro={categoriasSeleccionadas} puntuacionMinima={puntuacionMinima} />
         </main>
     );
 }

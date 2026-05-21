@@ -1,7 +1,22 @@
-import { Plus } from 'lucide-react';
-export default function Tarjeta_foto_marcador({ foto }) {
+import { Plus, X } from 'lucide-react';
+export default function Tarjeta_foto_marcador({ foto, onDelete }) {
     return (
-        <img className='w-40 h-30 bg-primary rounded-xl' src={foto} alt="" />
+        <div className='relative w-40 h-30 group rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300'>
+            <img className='w-full h-full object-cover bg-primary rounded-xl' src={foto} alt="" />
+            {onDelete && (
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete();
+                    }}
+                    className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-red-500 text-white rounded-full p-1 flex items-center justify-center cursor-pointer shadow-md backdrop-blur-sm transition-all duration-200 hover:scale-110 active:scale-95"
+                    title="Eliminar foto"
+                >
+                    <X size={14} />
+                </button>
+            )}
+        </div>
     );
 }
 

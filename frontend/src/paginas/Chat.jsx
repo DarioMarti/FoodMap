@@ -18,14 +18,30 @@ export default function Chat() {
     const [mensajes, setMensajes] = useState([]);
     const [miUsuario, setMiUsuario] = useState(null);
     const [solicitudes, setSolicitudes] = useState(false);
+    const [solicitudesLista, setSolicitudesLista] = useState([]);
     const scrollRef = useRef(null);
     const ultimoMensajeCualquiera = mensajes.length > 0 ? mensajes[mensajes.length - 1] : null;
     const mensajesSoloDelOtro = mensajes.filter(m => { const idEmisor = m.Usuario_id || m.emisor_id; return idEmisor != miUsuario?.id; });
     const ultimoMensajeDelOtro = mensajesSoloDelOtro.length > 0 ? mensajesSoloDelOtro[mensajesSoloDelOtro.length - 1] : null;
     const [notificacion, setNotificacion] = useState({ visible: false, mensaje: "", tipo: "" });
 
+    const obtener_solicitudes = async () => {
+        try {
+            const respuesta = await fetch("http://localhost/foodmap/backend/modelos/chat/obtener_solicitud.php", {
+                credentials: 'include'
+            });
+            if (respuesta.ok) {
+                const data = await respuesta.json();
+                setSolicitudesLista(data.solicitudes || []);
+            }
+        } catch (error) {
+            console.error("Error al obtener solicitudes:", error);
+        }
+    };
+
     useEffect(() => {
         iniciarChat(setMiUsuario, setContactos, socket);
+        obtener_solicitudes();
     }, []);
 
     useEffect(() => {
@@ -85,7 +101,14 @@ export default function Chat() {
                         <h3 className={`text-xl  font-semibold ${tipoConversacion === "Grupos" ? "text-text-main dark:text-background" : "text-text-tertiary"}`}>Grupos</h3>
                     </div>
                 </div>
-                <lucideIcons.Bell onClick={handleSolicitudes} className="w-7 h-7 text-text-main dark:text-background cursor-pointer hover:text-primary dark:hover:text-primary-hover" />
+                <div className="relative">
+                    <lucideIcons.Bell onClick={handleSolicitudes} className="w-7 h-7 text-text-main dark:text-background cursor-pointer hover:text-primary dark:hover:text-primary-hover" />
+                    {solicitudesLista?.length > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 bg-primary text-white rounded-full min-w-5 h-5 flex items-center justify-center text-[10px] font-bold px-1 pointer-events-none">
+                            {solicitudesLista.length}
+                        </span>
+                    )}
+                </div>
             </div>
 
             <main className="flex-1 flex min-h-0 bg-background dark:bg-background-oscuro">
@@ -148,11 +171,12 @@ export default function Chat() {
                     ) : (
 
                         <div className="flex-1 flex items-center justify-center text-text-tertiary text-2xl relative  top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <Form_amistad estado={solicitudes} miUsuario={miUsuario} mostrarNotificacion={mostrarNotificacion} actualizarContactos={actualizarContactos} contactos={contactos} />
                             Selecciona una conversación para empezar
 
                         </div>
                     )}
+                    <Form_amistad className="absolute bottom-10 left-0 right-0 mx-auto" estado={solicitudes} miUsuario={miUsuario} mostrarNotificacion={mostrarNotificacion} actualizarContactos={actualizarContactos} contactos={contactos} solicitudes={solicitudesLista} obtener_solicitudes={obtener_solicitudes} handleSolicitudes={handleSolicitudes} handleSeleccionarChat={handleSeleccionarChat} />
+
                 </section>
             </main>
 
