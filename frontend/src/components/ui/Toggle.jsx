@@ -1,8 +1,14 @@
-export default function Toggle() {
+export default function Toggle({ id, checked, onChange }) {
     return (
         <div>
             <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" className="sr-only peer" />
+                <input 
+                    type="checkbox" 
+                    id={id}
+                    className="sr-only peer" 
+                    checked={checked} 
+                    onChange={onChange} 
+                />
                 <div className="
                     relative w-20 h-10
                     bg-background border-2 border-borde-dark

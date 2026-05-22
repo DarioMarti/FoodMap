@@ -139,7 +139,13 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
     };
 
     useEffect(() => {
-        LocalizacionUsuario(setUsuarioUbicacion);
+        const compartir = localStorage.getItem("compartir-ubicacion") !== "false";
+        if (compartir) {
+            LocalizacionUsuario(setUsuarioUbicacion);
+        } else {
+            // Usamos las coordenadas por defecto si compartir está desactivado
+            setUsuarioUbicacion([40.4167, -3.7032]);
+        }
 
         fetch("http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php")
             .then(res => res.json())

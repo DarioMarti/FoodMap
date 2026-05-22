@@ -33,7 +33,8 @@ try {
             "email" => $usuario["Email"],
             "ciudad" => $usuario["Ciudad"] ?? "undefined",
             "rol" => $usuario["Rol"] ?? "User",
-            "foto" => $usuario["Foto_perfil"] ?? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+            "foto" => $usuario["Foto_perfil"] ?? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+            "perfil_publico" => (int)($usuario["Perfil_publico"] ?? 1)
         ];
 
         echo json_encode(["ok" => true, "usuario" => $_SESSION["usuario"]]);

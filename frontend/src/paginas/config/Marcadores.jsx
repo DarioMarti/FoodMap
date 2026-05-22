@@ -1,24 +1,52 @@
-import { Bookmark, MapPin, Settings, Plus, Utensils, Coffee, Beer, TreePine } from 'lucide-react';
+import * as lucideIcons from 'lucide-react';
 import Toggle from "../../components/ui/Toggle";
 import Boton_main from "../../components/ui/Boton_main";
+import { useEffect, useState } from 'react';
+import { obtener_sesion_usuario } from '../../servicios/usuario/obtener_sesion_usuario';
+import CategoriaBoton from "../../components/ui/Categoria_boton";
+
+// Icono dinamico
+const IconoDinamico = ({ nombre, ...props }) => {
+    const IconoComponente = lucideIcons[nombre];
+    if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
+    return <IconoComponente {...props} />;
+};
+
+
 
 export default function Marcadores() {
-    const categorias = [
-        { nombre: 'Restaurantes', count: 12, color: 'orange', icono: Utensils },
-        { nombre: 'Cafeterías', count: 5, color: 'amber', icono: Coffee },
-        { nombre: 'Bares', count: 8, color: 'red', icono: Beer },
-        { nombre: 'Parques', count: 2, color: 'green', icono: TreePine },
-        { nombre: 'Cines', count: 3, color: 'blue', icono: MapPin },
-        { nombre: 'Tiendas', count: 15, color: 'purple', icono: MapPin },
-    ];
 
-    const colorClasses = {
-        orange: { text: 'text-orange-500', hoverBg: 'hover:bg-orange-500', hoverBorder: 'hover:border-orange-600' },
-        amber: { text: 'text-amber-500', hoverBg: 'hover:bg-amber-500', hoverBorder: 'hover:border-amber-600' },
-        red: { text: 'text-red-500', hoverBg: 'hover:bg-red-500', hoverBorder: 'hover:border-red-600' },
-        green: { text: 'text-green-500', hoverBg: 'hover:bg-green-500', hoverBorder: 'hover:border-green-600' },
-        blue: { text: 'text-blue-500', hoverBg: 'hover:bg-blue-500', hoverBorder: 'hover:border-blue-600' },
-        purple: { text: 'text-purple-500', hoverBg: 'hover:bg-purple-500', hoverBorder: 'hover:border-purple-600' },
+    const [usuario, setUsuario] = useState({});
+    const [categorias, setCategorias] = useState([]);
+
+    // Estados para los ajustes visuales, guardados en el navegador
+    const [mostrarEtiquetas, setMostrarEtiquetas] = useState(() => {
+        return localStorage.getItem("mostrar-etiquetas") !== "false";
+    });
+    const [marcadoresGrandes, setMarcadoresGrandes] = useState(() => {
+        return localStorage.getItem("marcadores-grandes") === "true";
+    });
+    const [mostrarIconos, setMostrarIcono] = useState(() => {
+        return localStorage.getItem("mostrar-iconos") === "true";
+    });
+
+    useEffect(() => {
+        const obtenerSesionUsuario = async () => {
+            const res = await obtener_sesion_usuario();
+            if (res.usuario) {
+                setUsuario(res.usuario);
+                cargarCategorias(res.usuario.id);
+            }
+        };
+        obtenerSesionUsuario();
+    }, []);
+
+    const cargarCategorias = async (userId) => {
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php?usuario_id=${userId}`, {
+            credentials: 'include'
+        });
+        const data = await respuesta.json();
+        setCategorias(data);
     };
 
     return (
@@ -30,56 +58,62 @@ export default function Marcadores() {
 
                 <div className="flex justify-between items-center py-6 px-2">
                     <h2 className="text-2xl font-bold dark:text-white text-text-main">Mis categorías</h2>
-                    <button className="flex items-center gap-2 text-primary font-semibold hover:underline cursor-pointer">
-                        <Plus size={20} />
-                        Nueva
-                    </button>
                 </div>
                 <div className="flex flex-wrap gap-3 mb-10">
                     {categorias.map((cat) => (
-                        <button key={cat.nombre} className={`flex items-center gap-3 px-4 py-2.5 bg-background dark:bg-dark-tarjeta border-2 border-borde dark:border-borde-dark rounded-2xl transition-all cursor-pointer group ${colorClasses[cat.color].hoverBg} ${colorClasses[cat.color].hoverBorder} shadow-sm hover:shadow-md`}>
-                            <div className={`${colorClasses[cat.color].text} group-hover:text-white group-hover:scale-110 transition-all`}>
-                                <cat.icono size={20} />
-                            </div>
-                            <strong className="text-md font-semibold text-text-main dark:text-white group-hover:text-white transition-colors">{cat.nombre}</strong>
-                            <span className="ml-1 px-2 py-0.5 bg-slate-100 dark:bg-background text-text-tertiary dark:text-text-tertiary text-[10px] font-bold rounded-full border border-borde dark:border-borde-dark group-hover:bg-primary group-hover:text-white group-hover:border-transparent transition-all duration-300 shadow-inner">
-                                {cat.count}
-                            </span>
-                        </button>
+                        <CategoriaBoton
+                            key={cat.id}
+                            cat={cat}
+                            IconoDinamico={IconoDinamico}
+                            mostrarEtiquetas={mostrarEtiquetas}
+                            marcadoresGrandes={marcadoresGrandes}
+                            mostrarIconos={mostrarIconos}
+                        />
                     ))}
-
                 </div>
 
                 <h2 className="text-2xl font-bold py-10 px-2 dark:text-white text-text-main">Ajustes visuales</h2>
-                <div className="flex flex-col gap-6 bg-background dark:bg-dark-tarjeta border-3 border-borde dark:border-text-tertiary py-8 rounded-3xl ">
+                <div className="flex flex-col gap-6 bg-background dark:bg-dark-tarjeta border-3 border-borde dark:border-white/10 py-8 rounded-3xl ">
                     <div className="flex justify-between px-10 items-center">
                         <strong className="text-xl font-semibold dark:text-white text-text-main">Mostrar etiquetas de nombre</strong>
-                        <Toggle id="mostrar-etiquetas" />
+                        <Toggle
+                            id="mostrar-etiquetas"
+                            checked={mostrarEtiquetas}
+                            onChange={(e) => {
+                                const val = e.target.checked;
+                                setMostrarEtiquetas(val);
+                                localStorage.setItem("mostrar-etiquetas", val);
+                            }}
+                        />
                     </div>
-                    <span className=" h-1 bg-borde w-full dark:bg-text-tertiary"></span>
+                    <span className=" h-1 bg-borde w-full dark:bg-white/10"></span>
                     <div className="flex justify-between px-10 items-center">
                         <strong className="text-xl font-semibold dark:text-white text-text-main">Marcadores grandes</strong>
-                        <Toggle id="marcadores-grandes" />
+                        <Toggle
+                            id="marcadores-grandes"
+                            checked={marcadoresGrandes}
+                            onChange={(e) => {
+                                const val = e.target.checked;
+                                setMarcadoresGrandes(val);
+                                localStorage.setItem("marcadores-grandes", val);
+                            }}
+                        />
                     </div>
-                    <span className=" h-1 bg-borde w-full dark:bg-text-tertiary"></span>
+                    <span className=" h-1 bg-borde w-full dark:bg-white/10"></span>
                     <div className="flex justify-between px-10 items-center">
-                        <strong className="text-xl font-semibold dark:text-white text-text-main">Agrupar por color</strong>
-                        <Toggle id="agrupar-color" />
+                        <strong className="text-xl font-semibold dark:text-white text-text-main">Mostrar Icono</strong>
+                        <Toggle
+                            id="mostrar-icono"
+                            checked={mostrarIconos}
+                            onChange={(e) => {
+                                const val = e.target.checked;
+                                setMostrarIcono(val);
+                                localStorage.setItem("mostrar-icono", val);
+                            }}
+                        />
                     </div>
                 </div>
 
-                <h2 className="text-2xl font-bold py-10 px-2 dark:text-white text-text-main">Gestión</h2>
-                <div className="flex flex-col gap-6 bg-background dark:bg-dark-tarjeta border-3 border-borde dark:border-text-tertiary py-8 rounded-3xl ">
-                    <div className="flex justify-between px-10 items-center">
-                        <strong className="text-xl font-semibold dark:text-white text-text-main">Exportar marcadores (.json)</strong>
-                        <Boton_main nombre="Exportar" />
-                    </div>
-                    <span className=" h-1 bg-borde w-full dark:bg-text-tertiary "></span>
-                    <div className="flex justify-between px-10 items-center">
-                        <strong className="text-xl font-semibold dark:text-white text-text-main">Importar desde archivo</strong>
-                        <Boton_main nombre="Importar" />
-                    </div>
-                </div>
 
             </article >
         </div>

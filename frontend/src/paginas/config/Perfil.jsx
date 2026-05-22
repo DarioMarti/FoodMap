@@ -9,6 +9,7 @@ export default function Perfil() {
     const [editando, setEditando] = useState(false);
     const [usuario, setUsuario] = useState(null);
 
+
     const editar_usuario = async (e) => {
         e.preventDefault();
         try {
@@ -32,7 +33,6 @@ export default function Perfil() {
         const obtenerSesionUsuario = async () => {
             const res = await obtener_sesion_usuario();
             setUsuario(res.usuario);
-
         };
         obtenerSesionUsuario();
     }, []);
@@ -49,14 +49,14 @@ export default function Perfil() {
     }
 
     return (
-        <div className="h-full flex flex-col overflow-hidden dark:bg-text-main bg-background relative">
-            <div className="border-b-3 border-borde dark:border-borde-dark py-5 px-10 flex-shrink-0">
+        <div className="h-full flex flex-col overflow-hidden dark:bg-background-oscuro bg-background relative">
+            <div className="border-b-3 border-borde dark:border-text-tertiary py-5 px-10 flex-shrink-0">
                 <h1 className="text-3xl font-semibold dark:text-white text-text-main">Perfil</h1>
             </div>
 
             <article className="p-10 flex-1 overflow-y-auto">
                 {/* Profile Card */}
-                <div className="p-12 dark:bg-dark-tarjeta bg-background-tarjetas rounded-3xl relative dark:text-white text-text-main shadow-xl border border-white/10">
+                <div className="p-12 dark:bg-dark-tarjeta bg-background-tarjetas rounded-3xl relative dark:text-white text-text-main shadow-xl border dark:border-white/10">
                     <div className="flex items-center gap-8">
                         <div className="relative group">
                             <img
@@ -127,7 +127,6 @@ export default function Perfil() {
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Email</span>
                                 <strong className="text-xl font-medium dark:text-white text-text-main">{usuario?.email}</strong>
                             </div>
-                            <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Cambiar</button>
                         </div>
                         <div className="h-px bg-borde dark:bg-white/5 w-full"></div>
                         <div className="flex justify-between p-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
@@ -140,29 +139,7 @@ export default function Perfil() {
                     </div>
                 </div>
 
-                {/* Privacy Settings */}
-                <div className="mt-12 mb-10">
-                    <h2 className="text-2xl font-bold mb-6 px-2 dark:text-white text-text-main flex items-center gap-3">
-                        <Pen className="text-primary" size={24} />
-                        Privacidad del perfil
-                    </h2>
-                    <div className="flex flex-col dark:bg-dark-tarjeta bg-white border border-borde dark:border-white/5 rounded-3xl overflow-hidden shadow-sm">
-                        <div className="flex justify-between p-8 items-center">
-                            <strong className="text-xl font-medium dark:text-white text-text-main">Perfil público</strong>
-                            <Toggle id="perfil-publico" />
-                        </div>
-                        <div className="h-px bg-borde dark:bg-white/5 w-full"></div>
-                        <div className="flex justify-between p-8 items-center">
-                            <strong className="text-xl font-medium dark:text-white text-text-main">Compartir ubicación</strong>
-                            <Toggle id="compartir-ubicacion" />
-                        </div>
-                        <div className="h-px bg-borde dark:bg-white/5 w-full"></div>
-                        <div className="flex justify-between p-8 items-center">
-                            <strong className="text-xl font-medium dark:text-white text-text-main">Mostrar marcadores</strong>
-                            <Toggle id="mostrar-valoraciones" />
-                        </div>
-                    </div>
-                </div>
+
             </article>
 
             {/* Edit Profile Overlay/Form */}
@@ -187,7 +164,6 @@ export default function Perfil() {
 
                         <div className="mb-10">
                             <h2 className="text-3xl font-bold dark:text-white text-text-main mb-2">Editar Perfil</h2>
-                            <p className="text-text-tertiary">Actualiza tu información personal para que otros puedan conocerte mejor.</p>
                         </div>
 
                         <div className="flex flex-col gap-8">
@@ -208,7 +184,7 @@ export default function Perfil() {
                             </div>
 
                             <div className="space-y-4">
-                                <label className="text-xs font-bold uppercase tracking-widest text-primary ml-1">Correo electrónico</label>
+                                <label className="text-xs font-bold uppercase tracking-widest text-primary ml-1">Nick</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-text-tertiary group-focus-within:text-primary transition-colors">
                                         <AtSign size={20} />

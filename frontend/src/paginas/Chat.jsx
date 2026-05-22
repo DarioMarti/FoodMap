@@ -20,9 +20,6 @@ export default function Chat() {
     const [solicitudes, setSolicitudes] = useState(false);
     const [solicitudesLista, setSolicitudesLista] = useState([]);
     const scrollRef = useRef(null);
-    const ultimoMensajeCualquiera = mensajes.length > 0 ? mensajes[mensajes.length - 1] : null;
-    const mensajesSoloDelOtro = mensajes.filter(m => { const idEmisor = m.Usuario_id || m.emisor_id; return idEmisor != miUsuario?.id; });
-    const ultimoMensajeDelOtro = mensajesSoloDelOtro.length > 0 ? mensajesSoloDelOtro[mensajesSoloDelOtro.length - 1] : null;
     const [notificacion, setNotificacion] = useState({ visible: false, mensaje: "", tipo: "" });
 
     const obtener_solicitudes = async () => {
@@ -44,9 +41,31 @@ export default function Chat() {
         obtener_solicitudes();
     }, []);
 
+
     useEffect(() => {
         const callbackMensajes = (mensaje) => {
             manejarNuevoMensaje(mensaje, conversacion_activa, miUsuario, setMensajes);
+
+            const idEmisor = mensaje.emisor_id;
+            const chatAbierto = conversacion_activa?.id === idEmisor && !conversacion_activa?.esGrupo;
+            const horaCorta = new Date(mensaje.fecha_envio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+            // Actualizar preview y contador del emisor
+            if (idEmisor && idEmisor !== miUsuario?.id) {
+                setContactos(prev => ({
+                    ...prev,
+                    amigos: prev.amigos.map(a =>
+                        a.id === idEmisor
+                            ? {
+                                ...a,
+                                ultimo_mensaje: mensaje.contenido,
+                                ultima_hora: horaCorta,
+                                mensajes_no_leidos: chatAbierto ? a.mensajes_no_leidos : (a.mensajes_no_leidos || 0) + 1
+                              }
+                            : a
+                    )
+                }));
+            }
         };
         socket.on('nuevo_mensaje', callbackMensajes);
         return () => socket.off('nuevo_mensaje', callbackMensajes);
@@ -59,11 +78,24 @@ export default function Chat() {
     const cambiarTipoConversacion = (tipo) => setTipoCOnversacion(tipo);
 
     const handleSeleccionarChat = (contacto, esGrupo) => {
-        activarConversacion(contacto, esGrupo, set_conversacion_activa, setMensajes);
+        activarConversacion(contacto, esGrupo, set_conversacion_activa, setMensajes, setContactos);
     };
 
     const handleEnviar = (contenido) => {
         servicioEnviarMensaje(contenido, conversacion_activa, miUsuario, socket, setMensajes);
+
+        // Actualizar preview del contacto al enviar
+        if (conversacion_activa && !conversacion_activa.esGrupo) {
+            const horaCorta = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            setContactos(prev => ({
+                ...prev,
+                amigos: prev.amigos.map(a =>
+                    a.id === conversacion_activa.id
+                        ? { ...a, ultimo_mensaje: contenido, ultima_hora: horaCorta }
+                        : a
+                )
+            }));
+        }
     };
 
     const handleSolicitudes = () => {
@@ -121,8 +153,10 @@ export default function Chat() {
                                 isActiva={conversacion_activa?.id === amigo.id && !conversacion_activa?.esGrupo}
                                 sigla={amigo.Nombre[0]}
                                 nombre={amigo.Nombre}
-                                texto={ultimoMensajeCualquiera?.Contenido}
-                                hora={ultimoMensajeDelOtro?.Fecha_envio || ultimoMensajeCualquiera?.Fecha_envio}
+                                texto={amigo.ultimo_mensaje || ''}
+                                hora={amigo.ultima_hora || ''}
+                                fotoPerfil={amigo.Foto_perfil}
+                                mensajesNuevos={amigo.mensajes_no_leidos || 0}
                             />
                         ))
                     ) : (

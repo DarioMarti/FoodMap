@@ -3,3 +3,5 @@
 export const API_URL = "http://localhost/foodmap/backend/";
 
 export const IMG_PATH = "http://localhost/foodmap/backend/assets/img/";
+
+export const RAIZ = "http://localhost/foodmap"

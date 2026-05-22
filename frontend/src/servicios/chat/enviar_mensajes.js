@@ -28,13 +28,33 @@ export const manejarNuevoMensaje = (mensaje, conversacion_activa, miUsuario, set
 };
 
 
-export const activarConversacion = async (contacto, esGrupo, set_conversacion_activa, setMensajes) => {
+export const activarConversacion = async (contacto, esGrupo, set_conversacion_activa, setMensajes, setContactos) => {
     const idActivo = { ...contacto, esGrupo };
     set_conversacion_activa(idActivo);
+
+    // Marcar mensajes como leídos en la BD y resetear contador local
+    if (!esGrupo && setContactos) {
+        const formData = new FormData();
+        formData.append('emisor_id', contacto.id);
+        fetch('http://localhost/foodmap/backend/modelos/chat/marcar_leidos.php', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        });
+
+        setContactos(prev => ({
+            ...prev,
+            amigos: prev.amigos.map(a =>
+                a.id === contacto.id
+                    ? { ...a, mensajes_no_leidos: 0 }
+                    : a
+            )
+        }));
+    }
+
     const url = esGrupo
         ? `http://localhost/foodmap/backend/modelos/chat/obtener_mensajes.php?grupo_id=${contacto.id}`
         : `http://localhost/foodmap/backend/modelos/chat/obtener_mensajes.php?otro_id=${contacto.id}`;
-    // Pedimos el historial a PHP
     try {
         const resp = await fetch(url, { credentials: 'include' });
         const data = await resp.json();

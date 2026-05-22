@@ -2,7 +2,7 @@ import * as lucideIcons from 'lucide-react';
 
 export default function Chat_mensaje({ texto, hora, isMe, isBot }) {
     return (
-        <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4 gap-3`}>
+        <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} gap-3`}>
             {isBot ? (
                 <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
                     <lucideIcons.Bot className="size-6 text-white" />

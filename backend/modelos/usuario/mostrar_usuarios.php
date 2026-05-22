@@ -32,7 +32,8 @@ try {
             )
             WHERE u.Nombre LIKE ? 
             AND u.id != ? 
-            AND b2.id IS NULL";
+            AND b2.id IS NULL
+            AND u.Perfil_publico = 1";
 
     $stmt = $conn->prepare($sql);
     $stmt->execute([$mi_id, $mi_id, $mi_id, $mi_id, $mi_id, $mi_id, "%$nombre%", $mi_id]);
