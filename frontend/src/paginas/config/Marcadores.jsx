@@ -51,7 +51,7 @@ export default function Marcadores() {
 
     return (
         <div className="h-full flex flex-col overflow-hidden dark:bg-background-oscuro bg-background">
-            <div className="border-b-3 border-borde dark:border-borde-dark py-5 px-10 flex-shrink-0">
+            <div className="border-b-3 border-borde dark:border-text-tertiary py-5 px-10 flex-shrink-0">
                 <h1 className="text-3xl font-semibold dark:text-white text-text-main">Marcadores</h1>
             </div>
             <article className="p-10 flex-1 overflow-y-auto">

@@ -35,9 +35,9 @@ export default function Apariencia({ darkMode, setDarkMode, setPrimaryColor, fon
     };
 
     return (
-        <div className="h-full flex flex-col overflow-hidden dark:bg-text-main bg-background dark:bg-background-oscuro">
-            <div className="border-b-3 border-borde dark:border-borde-dark py-5 px-10 flex-shrink-0">
-                <h1 className="text-3xl font-semibold">Apariencia</h1>
+        <div className="h-full flex flex-col overflow-hidden dark:bg-background-oscuro bg-background dark:bg-background-oscuro">
+            <div className="border-b-3 border-borde dark:border-text-tertiary py-5 px-10 flex-shrink-0">
+                <h1 className="text-3xl font-semibold dark:text-background">Apariencia</h1>
             </div>
             <article className="p-10 flex-1 overflow-y-auto dark:text-background dark:bg-background-oscuro">
 

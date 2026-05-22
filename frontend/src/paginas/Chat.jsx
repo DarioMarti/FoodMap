@@ -61,7 +61,7 @@ export default function Chat() {
                                 ultimo_mensaje: mensaje.contenido,
                                 ultima_hora: horaCorta,
                                 mensajes_no_leidos: chatAbierto ? a.mensajes_no_leidos : (a.mensajes_no_leidos || 0) + 1
-                              }
+                            }
                             : a
                     )
                 }));
