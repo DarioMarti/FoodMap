@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
@@ -31,10 +30,11 @@ function obtener_marcadores($id_usuario, $nombre = null)
 
     if ($nombre) {
         $stmt = $conn->prepare("
-            SELECT m.*, c.Color, c.Icono, c.id as Categoria_id 
+            SELECT m.*, c.Color, c.Icono, c.id as Categoria_id, CAST(GROUP_CONCAT(mc2.Categoria_id) AS CHAR) as Todas_Categorias
             FROM marcador m 
             LEFT JOIN marcador_categoria mc ON m.id = mc.Marcador_id AND mc.Es_principal = 1
             LEFT JOIN categoria c ON mc.Categoria_id = c.id 
+            LEFT JOIN marcador_categoria mc2 ON m.id = mc2.Marcador_id
             WHERE m.Usuario_id = ? AND m.Titulo LIKE ?
             GROUP BY m.id
         ");
@@ -43,10 +43,11 @@ function obtener_marcadores($id_usuario, $nombre = null)
         return $resultado;
     } else {
         $stmt = $conn->prepare("
-            SELECT m.*, c.Color, c.Icono, c.id as Categoria_id 
+            SELECT m.*, c.Color, c.Icono, c.id as Categoria_id, CAST(GROUP_CONCAT(mc2.Categoria_id) AS CHAR) as Todas_Categorias
             FROM marcador m 
             LEFT JOIN marcador_categoria mc ON m.id = mc.Marcador_id AND mc.Es_principal = 1
             LEFT JOIN categoria c ON mc.Categoria_id = c.id 
+            LEFT JOIN marcador_categoria mc2 ON m.id = mc2.Marcador_id
             WHERE m.Usuario_id = ?
             GROUP BY m.id
         ");

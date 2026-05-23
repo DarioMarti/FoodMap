@@ -6,9 +6,15 @@ export default function Ventana_filtros({ estado, marcadores, onFilterChange, pu
     const [seleccionadas, setSeleccionadas] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php")
+        fetch("http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php", { credentials: 'include' })
             .then((res) => res.json())
-            .then((data) => setCategorias(data))
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setCategorias(data);
+                } else {
+                    console.error("Error del servidor (no autorizado o formato incorrecto):", data);
+                }
+            })
             .catch((err) => console.error("Error al cargar categorías:", err));
     }, []);
 

@@ -159,14 +159,19 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
             setUsuarioUbicacion([40.4167, -3.7032]);
         }
 
-        fetch("http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php")
+        fetch("http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php", { credentials: 'include' })
             .then(res => res.json())
             .then(data => {
-                setCategoriasBD(data);
-                if (data.length > 0) {
-                    setEtiquetaSeleccionada({ id: data[0].id, nombre: data[0].Nombre });
+                if (Array.isArray(data)) {
+                    setCategoriasBD(data);
+                    if (data.length > 0) {
+                        setEtiquetaSeleccionada({ id: data[0].id, nombre: data[0].Nombre });
+                    }
+                } else {
+                    console.error("Error del servidor al obtener categorías:", data);
                 }
-            });
+            })
+            .catch(err => console.error("Error al cargar categorías en Mapa:", err));
     }, []);
 
     useEffect(() => {
@@ -184,7 +189,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 }}
                 className="bg-primary-light dark:bg-primary-dark/30 border-2 border-primary hover:bg-primary/100 dark:hover:bg-primary-hover hover:text-background  text-primary size-14 absolute top-22 md:top-26 left-4 md:left-8 z-1000" icon={<lucideIcons.Plus size={26} />} />
 
-            <form onSubmit={manejarEnvio} className={`absolute w-[90%] max-h-[500px]  md:w-150 bottom-20 md:top-46 left-[5%] md:left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta dark:border-text-main p-6 rounded-xl dark:text-background
+            <form onSubmit={manejarEnvio} className={`absolute w-[90%] max-h-[900px]  md:w-150 bottom-20 md:top-26 left-[5%] md:left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta dark:border-text-main p-6 rounded-xl dark:text-background
                 shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-[1200] max-h-[75vh] overflow-y-auto pb-20 ${formularioActivo ? 'block' : 'hidden'}`}>
                 <button
                     onClick={() => {
@@ -298,7 +303,16 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 <ZoomControl position="bottomright" />
 
                 {marcadores
-                    .filter(m => categoriasFiltro?.length === 0 || categoriasFiltro?.includes(m.Categoria_id))
+                    .filter(m => {
+                        if (!categoriasFiltro || categoriasFiltro.length === 0) return true;
+                        let markerCats = [];
+                        if (m.Todas_Categorias) {
+                            markerCats = String(m.Todas_Categorias).split(',').map(Number);
+                        } else if (m.Categoria_id) {
+                            markerCats = [Number(m.Categoria_id)];
+                        }
+                        return categoriasFiltro.some(catId => markerCats.includes(Number(catId)));
+                    })
                     .filter(m => !puntuacionMinima || (parseFloat(m.Puntuacion) || 0) >= puntuacionMinima)
                     .map((marcador) => (
                         <Marcador key={marcador.id} position={[marcador.Latitud, marcador.Longitud]} color={marcador.Color || '#EA2678'} icono={<IconoDinamico nombre={marcador.Icono || 'MapPin'} size={22} />}
@@ -320,9 +334,9 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
 
             {
                 lugarSeleccionado && (
-                    <div className="h-[80vh] md:max-h-[50vh] overflow-y-auto absolute bottom-0 left-0 right-0 z-[1001] bg-background dark:bg-dark-tarjeta p-6 rounded-t-xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300">
+                    <div className="h-[80vh] md:max-h-[35vh] overflow-y-auto absolute bottom-0 left-0 right-0 z-[1001] bg-background dark:bg-dark-tarjeta p-6 rounded-t-xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300">
                         <div className="flex gap-2 absolute top-4 right-4 z-1000">
-                            <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:border-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => manejarFormularioMarcador("editar", false, true, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando)} icon={<lucideIcons.Pencil size={26} />} />
+                            <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:border-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => { manejarFormularioMarcador("editar", false, true, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando); setPuntuacion(parseInt(lugarSeleccionado?.Puntuacion) || 1); }} icon={<lucideIcons.Pencil size={26} />} />
                             <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:border-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => setLugarSeleccionado(null)} icon={<lucideIcons.XIcon size={26} />} />
 
 
@@ -382,7 +396,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 <textarea className='border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id="descripcion" name="descripcion" defaultValue={lugarSeleccionado?.Descripcion || ""} />
                 <label htmlFor="puntuacion">Puntuación:</label>
                 <div className="relative flex items-center">
-                    <input className="border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl w-full" type="number" id="puntuacion" name="puntuacion" value={parseInt(lugarSeleccionado?.Puntuacion) || 1} readOnly />
+                    <input className="border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl w-full" type="number" id="puntuacion" name="puntuacion" value={puntuacion || 1} readOnly />
                     <div className="absolute right-2 flex gap-1">
                         <button type="button" onClick={() => setPuntuacion(prev => Math.min(prev + 1, 5))} className="text-background rounded-lg bg-primary dark:bg-descripcion hover:bg-primary-active dark:hover:bg-primary-active p-1 cursor-pointer" ><lucideIcons.ChevronUp size={20} /></button>
                         <button type="button" onClick={() => setPuntuacion(prev => Math.max(prev - 1, 0))} className="text-background rounded-lg bg-primary dark:bg-descripcion hover:bg-primary-active dark:hover:bg-primary-active p-1 cursor-pointer" ><lucideIcons.ChevronDown size={20} /></button>
@@ -393,9 +407,11 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                     <div className='flex gap-4 w-full items-center justify-between'>
                         <select value={etiquetaSeleccionada.id} onChange={(e) => setEtiquetaSeleccionada({ id: e.target.value, nombre: e.target.options[e.target.selectedIndex].text })}
                             className='border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl w-full' id="etiquetas" name="etiquetas">
-                            <option value="1">Cafetería</option>
-                            <option value="2">Hamburguesería</option>
-                            <option value="3">Restaurante</option>
+                            {
+                                categoriasBD.map((categoria) => (
+                                    <option key={categoria.id} value={categoria.id}>{categoria.Nombre}</option>
+                                ))
+                            }
                         </select>
                         <button type='button'
                             onClick={() => { agregarEtiqueta(etiquetaSeleccionada.id, etiquetaSeleccionada.nombre, esPrincipal, setEtiquetasMarcador, etiquetasMarcador, mostrarNotificacion); setEsPrincipal(false); }}

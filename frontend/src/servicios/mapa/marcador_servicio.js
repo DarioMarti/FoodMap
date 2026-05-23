@@ -92,7 +92,7 @@ export function manejarFormularioMarcador(tipo, estado, estadoEditar, setFormula
 //Obtener etiqueta
 export const obtenerEtiquetas = async (id_categoria) => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_etiqueta.php?id_categoria=${id_categoria}`);
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_etiqueta.php?id_categoria=${id_categoria}`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {
@@ -103,7 +103,7 @@ export const obtenerEtiquetas = async (id_categoria) => {
 //Obtener todas las etiquetas de un marcador
 export const obtenerTodasEtiquetas = async (id) => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_todas_etiquetas.php?id_marcador=${id}`);
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_todas_etiquetas.php?id_marcador=${id}`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {
@@ -152,7 +152,7 @@ export const agregarEtiqueta = async (id, nombre, principal, setEtiquetas, etiqu
 //Obtener todas las fotos del marcador
 export const obtenerFotografias = async (id) => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_fotos_marcador.php?id_marcador=${id}`);
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_fotos_marcador.php?id_marcador=${id}`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {
@@ -163,7 +163,7 @@ export const obtenerFotografias = async (id) => {
 //Eliminar marcador
 export const eliminarMarcador = async (id) => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/eliminar_marcador.php?id_marcador=${id}`);
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/eliminar_marcador.php?id_marcador=${id}`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {

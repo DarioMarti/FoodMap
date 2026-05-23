@@ -53,36 +53,44 @@ const Login = () => {
     }
 
     return (
-        <div className="flex items-end justify-center w-full h-screen bg-gradient-to-br from-primary/90 via-primary/70 to-primary/60 font-['Outfit']">
-            <main className="flex w-[90%] max-w-[1400px] justify-around items-center">
+        <div className="relative flex items-end justify-center w-full h-[100dvh] bg-gradient-to-br from-primary/90 via-primary/70 to-primary/60 font-['Outfit'] overflow-hidden">
 
-                {/* Bloque izquierdo */}
-                <div className="w-[55%] p-10 mb-[30%] hidden lg:flex flex-col">
+            {/* Logo y título para móvil */}
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 lg:hidden flex flex-col items-center w-full px-6 text-center">
+                <img className="w-20 mb-4 drop-shadow-md" src={logotipo} alt="Logo" />
+                <h1 className="text-white text-4xl font-extrabold drop-shadow-sm">Welcome!</h1>
+                <p className="text-white/90 mt-2 text-sm">Sign in to discover your favorite places</p>
+            </div>
+
+            <main className="flex w-full md:w-[90%] max-w-[1400px] justify-around items-center z-10">
+
+                {/* Bloque izquierdo (solo desktop) */}
+                <div className="w-[55%] p-10 md:mb-[30%] hidden lg:flex flex-col">
                     <img className="w-[120px] mb-10" src={logotipo} alt="Logo" />
-                    <h1 className="text-[54px] text-white py-[10px] font-extrabold leading-[1.1]">Hey, Hello!</h1>
-                    <h3 className="text-white text-[22px] py-[10px] font-normal">Join The Waitlist For The Design System!</h3>
+                    <h1 className="text-[54px] text-white py-[10px] font-extrabold leading-[1.1]">Hey, Hola!</h1>
+                    <h3 className="text-white text-[22px] py-[10px] font-normal">Entra en el mundo FoodMap y comienza a descubrir nuevos lugares gastronómicos.</h3>
                     <p className="text-white/80 text-[18px] leading-[28px] py-5">
-                        We provide all the advantages that can simplify all your financial transactions.
+                        Crea, organiza y comparte tus experiencias gastronómicas con tus amigos.
                     </p>
                     <button
                         onClick={() => cambiarFormulario(formularioMostrado)}
-                        className="self-start bg-transparent border-2 border-white text-white mt-5 px-[60px] py-[18px] rounded-full font-bold cursor-pointer transition-all duration-300 hover:bg-white hover:text-[#EA2678] uppercase tracking-wider"
+                        className="self-start bg-transparent border-2 border-white text-white mt-5 px-[60px] py-[18px] rounded-full font-bold cursor-pointer transition-all duration-300 hover:bg-white hover:text-primary uppercase tracking-wider"
                     >
                         {formularioMostrado === "login" ? "Registrarse" : "Iniciar sesión"}
                     </button>
                 </div>
 
-                <form onSubmit={inicio_sesion} className={`rounded-t-[40px] bg-background p-[50px] flex flex-col items-center min-w-[550px] h-[calc(100vh-150px)] transition-all duration-300 shadow-[-10px_0_40px_rgba(0,0,0,0.1)] ${formularioMostrado === "login" ? "flex" : "hidden"}`}>
-                    <h2 className="text-[#1a1a1a] text-3xl font-bold mb-[30px]">Iniciar Sesión</h2>
+                <form onSubmit={inicio_sesion} className={`rounded-t-[40px] bg-background p-8 md:p-[50px] flex flex-col items-center w-[90%] md:w-auto md:min-w-[550px] h-[72dvh] md:h-[calc(100vh-150px)] transition-all duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] md:shadow-[-10px_0_40px_rgba(0,0,0,0.1)] overflow-y-auto ${formularioMostrado === "login" ? "flex" : "hidden"}`}>
+                    <h2 className="text-[#1a1a1a] text-3xl font-bold mb-[30px] md:mb-[30px]">Iniciar Sesión</h2>
 
                     <div className="relative w-full my-[10px]">
-                        <label className="absolute left-[30px] top-0 bg-white px-[10px] text-[14px] font-bold text-[#EA2678] z-10" htmlFor="loginEmail">Email</label>
-                        <input className="w-full px-[25px] py-[18px] rounded-full my-[10px] border-2 border-borde transition-all duration-300 focus:border-[#EA2678] focus:outline-none" id="loginEmail" name="email" type="text" placeholder="usuario@gmail.com" />
+                        <label className="absolute left-[30px] top-0 bg-white px-[10px] text-[14px] font-bold text-primary z-10" htmlFor="loginEmail">Email</label>
+                        <input className="w-full px-[25px] py-[18px] rounded-full my-[10px] border-2 border-borde transition-all duration-300 focus:border-primary focus:outline-none" id="loginEmail" name="email" type="text" placeholder="usuario@gmail.com" />
                     </div>
 
                     <div className="relative w-full my-[10px]">
-                        <label className="absolute left-[30px] top-0 bg-white px-[10px] text-[14px] font-bold text-[#EA2678] z-10" htmlFor="loginPassword">Password</label>
-                        <input className="w-full px-[25px] py-[18px] rounded-full my-[10px] border-2 border-borde transition-all duration-300 focus:border-[#EA2678] focus:outline-none" id="loginPassword" name="password" type="password" placeholder="••••••••" />
+                        <label className="absolute left-[30px] top-0 bg-white px-[10px] text-[14px] font-bold text-primary z-10" htmlFor="loginPassword">Password</label>
+                        <input className="w-full px-[25px] py-[18px] rounded-full my-[10px] border-2 border-borde transition-all duration-300 focus:border-primary focus:outline-none" id="loginPassword" name="password" type="password" placeholder="••••••••" />
                     </div>
 
                     <p className="text-right text-[14px] text-[#6c757d] mb-[35px] mt-[10px] font-medium cursor-pointer self-end hover:text-[#EA2678]">Forget your password?</p>
@@ -90,12 +98,15 @@ const Login = () => {
                     <button type="submit" className="bg-primary w-full text-white cursor-pointer py-[18px] rounded-full border-none font-bold text-lg hover:bg-primary-hover ">
                         Iniciar sesión
                     </button>
+                    <p className="text-center text-text-main  mt-5 px-[60px] py-[18px]  md:hidden tracking-wider">
+                        ¿No tienes una cuenta? <span onClick={() => cambiarFormulario(formularioMostrado)} className="text-primary font-bold cursor-pointer hover:text-primary-hover uppercase tracking-wider">Registrarse</span>
+                    </p>
                     {mensajeError && <p className="text-red-500 text-[14px] mt-[10px]">Error al iniciar sesión. Revisa que el correo y la contraseña sean correctos</p>}
                 </form>
 
                 {/* Formulario de registro */}
-                <form onSubmit={registro_usuario} className={`rounded-t-[40px] bg-background p-[50px] flex flex-col items-center min-w-[550px] h-[calc(100vh-150px)] transition-all duration-300 shadow-[-10px_0_40px_rgba(0,0,0,0.1)] ${formularioMostrado === "register" ? "flex" : "hidden"}`}>
-                    <h2 className="text-[#1a1a1a] text-3xl font-bold mb-[10px]">Crear cuenta</h2>
+                <form onSubmit={registro_usuario} className={`rounded-t-[40px] bg-background p-8 md:p-[50px] flex flex-col items-center w-[90%] md:w-auto md:min-w-[550px] h-[74dvh] md:h-[calc(100vh-150px)] transition-all duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] md:shadow-[-10px_0_40px_rgba(0,0,0,0.1)] overflow-y-auto ${formularioMostrado === "register" ? "flex" : "hidden"}`}>
+                    <h2 className="text-[#1a1a1a] text-3xl font-bold mb-2 md:mb-[10px]">Crear cuenta</h2>
 
                     <input type="file" id="fotoPerfil" accept="image/*" className="hidden" onChange={handleFotoChange} />
                     <label
