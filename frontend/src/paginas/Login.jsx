@@ -7,6 +7,7 @@ import { iniciar_sesion } from '../servicios/usuario/handler_iniciar_sesion';
 const Login = () => {
     const [formularioMostrado, setFormularioMostrado] = useState("login");
     const [fotoPreview, setFotoPreview] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png");
+    const [mensajeError, setMensajeError] = useState(false);
 
     const handleFotoChange = (e) => {
         const file = e.target.files[0];
@@ -29,6 +30,11 @@ const Login = () => {
             window.location.href = "/";
         } else {
             alert(respuesta.error || "Error al registrar usuario");
+            setMensajeError(true);
+            setTimeout(() => {
+                setMensajeError(false);
+            }, 5000);
+
         }
     }
 
@@ -39,7 +45,10 @@ const Login = () => {
         if (respuesta.ok) {
             window.location.href = "/";
         } else {
-            alert(respuesta.error || "Error al iniciar sesión");
+            setMensajeError(true);
+            setTimeout(() => {
+                setMensajeError(false);
+            }, 5000);
         }
     }
 
@@ -81,6 +90,7 @@ const Login = () => {
                     <button type="submit" className="bg-primary w-full text-white cursor-pointer py-[18px] rounded-full border-none font-bold text-lg hover:bg-primary-hover ">
                         Iniciar sesión
                     </button>
+                    {mensajeError && <p className="text-red-500 text-[14px] mt-[10px]">Error al iniciar sesión. Revisa que el correo y la contraseña sean correctos</p>}
                 </form>
 
                 {/* Formulario de registro */}
@@ -117,6 +127,7 @@ const Login = () => {
                         <button type="button" onClick={() => setFormularioMostrado("login")} className="w-full text-[#333] font-bold py-2 hover:text-primary cursor-pointer">
                             Iniciar sesión
                         </button>
+                        {mensajeError && <p className="text-red-500 text-[14px] mt-[10px]">Error al registrar usuario. Revisa que el correo no esté registrado</p>}
                     </div>
                 </form>
             </main>

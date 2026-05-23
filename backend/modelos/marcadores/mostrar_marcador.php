@@ -1,11 +1,16 @@
 <?php
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
+
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+
+//Comprueba si el usuario esta logueado
+requerirLogin();
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;

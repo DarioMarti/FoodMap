@@ -111,230 +111,229 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
         <>
             {/* Fondo desenfocado (Overlay) */}
             {estado && (
-                <div 
+                <div
                     className="fixed inset-0 z-[4999] bg-black/50 backdrop-blur-sm transition-opacity"
                     onClick={handleSolicitudes}
                 />
             )}
-            
+
             <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col md:flex-row items-center md:items-start z-[5000] w-[95vw] sm:w-[80vw] md:w-auto max-h-[90vh] ${estado ? 'flex' : 'hidden'}`}>
-            
-            {/* Botón de cerrar para móvil */}
-            <button onClick={handleSolicitudes} className="md:hidden self-end mb-2 bg-dark-tarjeta text-text-main p-2 rounded-full shadow-lg">
-                <lucideIcons.X className="size-6" />
-            </button>
 
-            <div className="flex flex-row md:flex-col gap-1 w-full md:w-auto items-end justify-center px-4 md:px-0">
-                <button
-                    onClick={() => setTabActiva("buscar")}
-                    title="Buscar Amigos"
-                    className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "buscar"
-                        ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
-                        : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
-                        }`}
-                >
-                    <lucideIcons.UserSearch className="size-5 md:size-6" />
+                <button onClick={handleSolicitudes} className="md:hidden self-end mb-2 bg-dark-tarjeta text-text-main p-2 rounded-full shadow-lg">
+                    <lucideIcons.X className="size-6" />
                 </button>
 
-                <button
-                    onClick={() => setTabActiva("solicitudes")}
-                    title="Solicitudes Pendientes"
-                    className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "solicitudes"
-                        ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
-                        : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
-                        }`}
-                >
-                    <div className="relative">
-                        <lucideIcons.Bell className="size-5 md:size-6" />
-                        {solicitudes?.length > 0 && (
-                            <span className="absolute -top-1.5 -right-1.5 bg-primary text-white rounded-full min-w-4 h-4 flex items-center justify-center text-[10px] font-bold px-1 pointer-events-none">
-                                {solicitudes.length}
-                            </span>
-                        )}
-                    </div>
-                    {/* Botón X de cerrar en desktop */}
-                    <span onClick={(e) => { e.stopPropagation(); handleSolicitudes(); }} className="hidden md:flex absolute items-center justify-center size-8 top-4 right-6 bg-error hover:bg-error/80 transition-colors cursor-pointer text-white rounded-full text-xs z-50">
-                        <lucideIcons.X className="size-4" />
-                    </span>
-                </button>
-                
-                <button
-                    onClick={() => setTabActiva("Contactos")}
-                    title="Mis Amigos"
-                    className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "Contactos"
-                        ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
-                        : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
-                        }`}
-                >
-                    <lucideIcons.Contact className="size-5 md:size-6" />
-                </button>
-            </div>
+                <div className="flex flex-row md:flex-col gap-1 w-full md:w-auto items-end justify-center px-4 md:px-0">
+                    <button
+                        onClick={() => setTabActiva("buscar")}
+                        title="Buscar Amigos"
+                        className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "buscar"
+                            ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
+                            : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
+                            }`}
+                    >
+                        <lucideIcons.UserSearch className="size-5 md:size-6" />
+                    </button>
 
-            <div className="bg-dark-tarjeta p-4 md:p-8 rounded-2xl rounded-t-none md:rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] w-full md:min-w-[700px] h-[75vh] md:h-auto md:min-h-120 overflow-y-auto flex-1 flex flex-col">
-
-                {tabActiva === "buscar" && (
-                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                        <h1 className="text-2xl font-bold text-text-main dark:text-background mb-6 flex items-center gap-3">
-                            Buscar Amigos
-                        </h1>
-
-                        <form className="flex items-center gap-4 mb-8">
-                            <input
-                                type="text"
-                                value={nombre_usuario}
-                                onChange={(e) => setNombre_usuario(e.target.value)}
-                                placeholder="Escribe el nombre de usuario..."
-                                className="bg-background-oscuro/50 border border-text-tertiary text-lg rounded-xl px-4 py-3 w-full text-text-main dark:text-background focus:outline-none focus:border-primary transition-colors"
-                            />
-                            <button onClick={buscar_usuarios} className="bg-primary text-white px-6 py-3 border border-primary rounded-xl text-lg font-semibold cursor-pointer hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-95">
-                                Buscar
-                            </button>
-                        </form>
-
-                        <div className="flex flex-col gap-1 overflow-hidden rounded-xl ">
-
-                            {usuarios?.map((usuario) => (
-                                (usuario.id !== miUsuario?.id) ?
-                                    (<div key={usuario.id} className={`flex items-center justify-between py-4 px-6 text-text-main dark:text-background hover:bg-primary/5 transition-colors`}>
-                                        <div className="flex items-center gap-4">
-                                            <div className="size-10 text-lg rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold">
-                                                {usuario.Nombre.toUpperCase()[0]}
-                                            </div>
-                                            <strong className="font-medium text-2xl">{usuario.Nombre}</strong>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Boton_cuadrado
-                                                onClick={() => enviar_solicitud(usuario.id)}
-                                                className={usuario.ya_amigos == 1
-                                                    ? "bg-primary/20 text-primary size-11 border border-primary/30"
-                                                    : usuario.solicitud_enviada == 1
-                                                        ? "bg-slate-500/20 text-slate-500 size-11 border border-slate-500/30"
-                                                        : usuario.solicitud_recibida == 1
-                                                            ? "bg-amber-500/20 text-amber-600 size-11 border border-amber-500/30"
-                                                            : "bg-success/20 text-success hover:bg-success hover:text-white size-11 border border-success/30"
-                                                }
-                                                icon={usuario.ya_amigos == 1
-                                                    ? <lucideIcons.Users className="size-5" />
-                                                    : usuario.solicitud_enviada == 1
-                                                        ? <lucideIcons.UserCheck className="size-5" />
-                                                        : usuario.solicitud_recibida == 1
-                                                            ? <lucideIcons.BellRing className="size-5" />
-                                                            : <lucideIcons.UserPlus className="size-5" />
-                                                }
-                                                title={usuario.ya_amigos == 1
-                                                    ? "Ya son amigos"
-                                                    : usuario.solicitud_enviada == 1
-                                                        ? "Solicitud enviada"
-                                                        : usuario.solicitud_recibida == 1
-                                                            ? "Te ha enviado una solicitud"
-                                                            : "Enviar solicitud"
-                                                }
-                                                disabled={usuario.ya_amigos == 1 || usuario.solicitud_enviada == 1 || usuario.solicitud_recibida == 1 || usuario.yo_lo_bloquee == 1}
-                                            />
-                                            {usuario.yo_lo_bloquee == 1 ? (
-                                                <Boton_cuadrado
-                                                    onClick={() => desbloquear_usuario(usuario.id)}
-                                                    className="bg-primary/20 text-primary hover:bg-primary hover:text-white size-11 border border-primary/30"
-                                                    icon={<lucideIcons.Unlock className="size-5" />}
-                                                    title="Desbloquear"
-                                                />
-                                            ) : (
-                                                <Boton_cuadrado
-                                                    onClick={() => bloquear_usuario(usuario.id)}
-                                                    className="bg-error/20 text-error hover:bg-error hover:text-white size-11 border border-error/30"
-                                                    icon={<lucideIcons.Ban className="size-5" />}
-                                                    title="Bloquear"
-                                                />
-                                            )}
-                                        </div>
-                                    </div>) : null
-                            ))}
+                    <button
+                        onClick={() => setTabActiva("solicitudes")}
+                        title="Solicitudes Pendientes"
+                        className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "solicitudes"
+                            ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
+                            : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
+                            }`}
+                    >
+                        <div className="relative">
+                            <lucideIcons.Bell className="size-5 md:size-6" />
+                            {solicitudes?.length > 0 && (
+                                <span className="absolute -top-1.5 -right-1.5 bg-primary text-white rounded-full min-w-4 h-4 flex items-center justify-center text-[10px] font-bold px-1 pointer-events-none">
+                                    {solicitudes.length}
+                                </span>
+                            )}
                         </div>
-                    </div>
-                )}
+                        {/* Botón X de cerrar en desktop */}
+                        <span onClick={(e) => { e.stopPropagation(); handleSolicitudes(); }} className="hidden md:flex absolute items-center justify-center size-8 top-4 right-6 bg-error hover:bg-error/80 transition-colors cursor-pointer text-white rounded-full text-xs z-50">
+                            <lucideIcons.X className="size-4" />
+                        </span>
+                    </button>
 
-                {tabActiva === "solicitudes" && (
-                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                        <h1 className="text-2xl font-bold text-text-main dark:text-background mb-6 flex items-center gap-3">
-                            Solicitudes Pendientes
-                        </h1>
+                    <button
+                        onClick={() => setTabActiva("Contactos")}
+                        title="Mis Amigos"
+                        className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "Contactos"
+                            ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
+                            : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
+                            }`}
+                    >
+                        <lucideIcons.Contact className="size-5 md:size-6" />
+                    </button>
+                </div>
 
-                        {solicitudes.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 text-text-tertiary">
-                                <lucideIcons.Inbox className="size-16 mb-4 opacity-20" />
-                                <p className="text-xl">No tienes solicitudes nuevas</p>
-                            </div>
-                        ) : (
+                <div className="bg-dark-tarjeta p-4 md:p-8 rounded-2xl rounded-t-none md:rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] w-full md:min-w-[700px] h-[75vh] md:h-auto md:min-h-120 overflow-y-auto flex-1 flex flex-col">
+
+                    {tabActiva === "buscar" && (
+                        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                            <h1 className="text-2xl font-bold text-text-main dark:text-background mb-6 flex items-center gap-3">
+                                Buscar Amigos
+                            </h1>
+
+                            <form className="flex items-center gap-4 mb-8">
+                                <input
+                                    type="text"
+                                    value={nombre_usuario}
+                                    onChange={(e) => setNombre_usuario(e.target.value)}
+                                    placeholder="Escribe el nombre de usuario..."
+                                    className="bg-background-oscuro/50 border border-text-tertiary text-lg rounded-xl px-4 py-3 w-full text-text-main dark:text-background focus:outline-none focus:border-primary transition-colors"
+                                />
+                                <button onClick={buscar_usuarios} className="bg-primary text-white px-6 py-3 border border-primary rounded-xl text-lg font-semibold cursor-pointer hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-95">
+                                    Buscar
+                                </button>
+                            </form>
+
                             <div className="flex flex-col gap-1 overflow-hidden rounded-xl ">
-                                {solicitudes.map((solicitud, index) => (
-                                    <div
-                                        key={solicitud.id}
-                                        className={`flex items-center justify-between py-4 px-6 ${index % 2 === 0 ? "bg-text-tertiary/10" : "bg-transparent"
-                                            } text-text-main dark:text-background hover:bg-primary/5 transition-colors`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className="size-10 rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold">
-                                                {solicitud.Nombre[0]}
+
+                                {usuarios?.map((usuario) => (
+                                    (usuario.id !== miUsuario?.id) ?
+                                        (<div key={usuario.id} className={`flex items-center justify-between py-4 px-6 text-text-main dark:text-background hover:bg-primary/5 transition-colors`}>
+                                            <div className="flex items-center gap-4">
+                                                <div className="size-10 text-lg rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold">
+                                                    {usuario.Nombre.toUpperCase()[0]}
+                                                </div>
+                                                <strong className="font-medium text-2xl">{usuario.Nombre}</strong>
                                             </div>
-                                            <strong className="font-medium text-lg">{solicitud.Nombre}</strong>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Boton_cuadrado
-                                                onClick={() => aceptar_solicitud(solicitud.Usuario_solicita_id)}
-                                                className="bg-success/20 text-success hover:bg-success hover:text-white size-11 border border-success/30"
-                                                icon={<lucideIcons.Check className="size-6" />}
-                                                title="Aceptar solicitud"
-                                            />
-                                            <Boton_cuadrado
-                                                className="bg-error/20 text-error hover:bg-error hover:text-white size-11 border border-error/30"
-                                                icon={<lucideIcons.X className="size-6" />}
-                                                title="Rechazar solicitud"
-                                            />
-                                        </div>
-                                    </div>
+                                            <div className="flex items-center gap-2">
+                                                <Boton_cuadrado
+                                                    onClick={() => enviar_solicitud(usuario.id)}
+                                                    className={usuario.ya_amigos == 1
+                                                        ? "bg-primary/20 text-primary size-11 border border-primary/30"
+                                                        : usuario.solicitud_enviada == 1
+                                                            ? "bg-slate-500/20 text-slate-500 size-11 border border-slate-500/30"
+                                                            : usuario.solicitud_recibida == 1
+                                                                ? "bg-amber-500/20 text-amber-600 size-11 border border-amber-500/30"
+                                                                : "bg-success/20 text-success hover:bg-success hover:text-white size-11 border border-success/30"
+                                                    }
+                                                    icon={usuario.ya_amigos == 1
+                                                        ? <lucideIcons.Users className="size-5" />
+                                                        : usuario.solicitud_enviada == 1
+                                                            ? <lucideIcons.UserCheck className="size-5" />
+                                                            : usuario.solicitud_recibida == 1
+                                                                ? <lucideIcons.BellRing className="size-5" />
+                                                                : <lucideIcons.UserPlus className="size-5" />
+                                                    }
+                                                    title={usuario.ya_amigos == 1
+                                                        ? "Ya son amigos"
+                                                        : usuario.solicitud_enviada == 1
+                                                            ? "Solicitud enviada"
+                                                            : usuario.solicitud_recibida == 1
+                                                                ? "Te ha enviado una solicitud"
+                                                                : "Enviar solicitud"
+                                                    }
+                                                    disabled={usuario.ya_amigos == 1 || usuario.solicitud_enviada == 1 || usuario.solicitud_recibida == 1 || usuario.yo_lo_bloquee == 1}
+                                                />
+                                                {usuario.yo_lo_bloquee == 1 ? (
+                                                    <Boton_cuadrado
+                                                        onClick={() => desbloquear_usuario(usuario.id)}
+                                                        className="bg-primary/20 text-primary hover:bg-primary hover:text-white size-11 border border-primary/30"
+                                                        icon={<lucideIcons.Unlock className="size-5" />}
+                                                        title="Desbloquear"
+                                                    />
+                                                ) : (
+                                                    <Boton_cuadrado
+                                                        onClick={() => bloquear_usuario(usuario.id)}
+                                                        className="bg-error/20 text-error hover:bg-error hover:text-white size-11 border border-error/30"
+                                                        icon={<lucideIcons.Ban className="size-5" />}
+                                                        title="Bloquear"
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>) : null
                                 ))}
                             </div>
-                        )}
-                    </div>
-                )}
+                        </div>
+                    )}
 
-                {tabActiva === "Contactos" && (
-                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                        <h1 className="text-2xl font-bold text-text-main dark:text-background mb-6 flex items-center gap-3">
-                            Mis Amigos
-                        </h1>
+                    {tabActiva === "solicitudes" && (
+                        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                            <h1 className="text-2xl font-bold text-text-main dark:text-background mb-6 flex items-center gap-3">
+                                Solicitudes Pendientes
+                            </h1>
 
-                        {contactos?.amigos?.length > 0 ? (
-                            <div className="flex flex-col gap-1 overflow-hidden rounded-xl">
-                                {contactos.amigos.map((amigo) => (
-                                    <div key={amigo.id} className="flex items-center justify-between py-4 px-6 text-text-main dark:text-background hover:bg-primary/5 transition-colors">
-                                        <div className="flex items-center gap-4">
-                                            <div className="size-10 text-lg rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold">
-                                                {amigo.Nombre.toUpperCase()[0]}
+                            {solicitudes.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-20 text-text-tertiary">
+                                    <lucideIcons.Inbox className="size-16 mb-4 opacity-20" />
+                                    <p className="text-xl">No tienes solicitudes nuevas</p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col gap-1 overflow-hidden rounded-xl ">
+                                    {solicitudes.map((solicitud, index) => (
+                                        <div
+                                            key={solicitud.id}
+                                            className={`flex items-center justify-between py-4 px-6 ${index % 2 === 0 ? "bg-text-tertiary/10" : "bg-transparent"
+                                                } text-text-main dark:text-background hover:bg-primary/5 transition-colors`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="size-10 rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold">
+                                                    {solicitud.Nombre[0]}
+                                                </div>
+                                                <strong className="font-medium text-lg">{solicitud.Nombre}</strong>
                                             </div>
-                                            <strong className="font-medium text-2xl">{amigo.Nombre}</strong>
+                                            <div className="flex items-center gap-2">
+                                                <Boton_cuadrado
+                                                    onClick={() => aceptar_solicitud(solicitud.Usuario_solicita_id)}
+                                                    className="bg-success/20 text-success hover:bg-success hover:text-white size-11 border border-success/30"
+                                                    icon={<lucideIcons.Check className="size-6" />}
+                                                    title="Aceptar solicitud"
+                                                />
+                                                <Boton_cuadrado
+                                                    className="bg-error/20 text-error hover:bg-error hover:text-white size-11 border border-error/30"
+                                                    icon={<lucideIcons.X className="size-6" />}
+                                                    title="Rechazar solicitud"
+                                                />
+                                            </div>
                                         </div>
-                                        <Boton_cuadrado
-                                            className="bg-primary/20 text-primary hover:bg-primary hover:text-white size-11 border border-primary/30"
-                                            onClick={() => { handleSeleccionarChat(amigo, false); handleSolicitudes(); }}
-                                            icon={<lucideIcons.MessageCircle className="size-5" />}
-                                            title="Chatear"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center py-20 text-text-tertiary">
-                                <lucideIcons.Users className="size-16 mb-4 opacity-20" />
-                                <p className="text-xl">Aún no tienes amigos agregados</p>
-                            </div>
-                        )}
-                    </div>
-                )}
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {tabActiva === "Contactos" && (
+                        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                            <h1 className="text-2xl font-bold text-text-main dark:text-background mb-6 flex items-center gap-3">
+                                Mis Amigos
+                            </h1>
+
+                            {contactos?.amigos?.length > 0 ? (
+                                <div className="flex flex-col gap-1 overflow-hidden rounded-xl">
+                                    {contactos.amigos.map((amigo) => (
+                                        <div key={amigo.id} className="flex items-center justify-between py-4 px-6 text-text-main dark:text-background hover:bg-primary/5 transition-colors">
+                                            <div className="flex items-center gap-4">
+                                                <div className="size-10 text-lg rounded-full bg-gradient-to-tr from-primary to-violet-500 flex items-center justify-center text-white font-bold">
+                                                    {amigo.Nombre.toUpperCase()[0]}
+                                                </div>
+                                                <strong className="font-medium text-2xl">{amigo.Nombre}</strong>
+                                            </div>
+                                            <Boton_cuadrado
+                                                className="bg-primary/20 text-primary hover:bg-primary hover:text-white size-11 border border-primary/30"
+                                                onClick={() => { handleSeleccionarChat(amigo, false); handleSolicitudes(); }}
+                                                icon={<lucideIcons.MessageCircle className="size-5" />}
+                                                title="Chatear"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-20 text-text-tertiary">
+                                    <lucideIcons.Users className="size-16 mb-4 opacity-20" />
+                                    <p className="text-xl">Aún no tienes amigos agregados</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+
             </div>
-
-
-        </div>
         </>
     );
 }

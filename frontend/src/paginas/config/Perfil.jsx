@@ -29,6 +29,31 @@ export default function Perfil() {
         }
     }
 
+    const actualizar_foto = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('foto', file);
+
+        try {
+            const res = await fetch("http://localhost/foodmap/backend/modelos/usuario/actualizar_foto.php", {
+                method: "POST",
+                credentials: 'include',
+                body: formData
+            });
+            const respuesta = await res.json();
+            if (respuesta.ok) {
+                setUsuario(respuesta.usuario);
+                window.dispatchEvent(new Event("actualizar_sesion"));
+            } else {
+                console.error("Error al actualizar foto:", respuesta.error);
+            }
+        } catch (error) {
+            console.error("Error de red:", error);
+        }
+    };
+
     useEffect(() => {
         const obtenerSesionUsuario = async () => {
             const res = await obtener_sesion_usuario();
@@ -67,7 +92,7 @@ export default function Perfil() {
                             <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                                 <Pen className="text-white size-6" />
                             </div>
-                            <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 rounded-full cursor-pointer" />
+                            <input type="file" accept="image/*" name="foto" onChange={actualizar_foto} className="absolute inset-0 w-full h-full opacity-0 rounded-full cursor-pointer" />
 
                         </div>
                         <div>

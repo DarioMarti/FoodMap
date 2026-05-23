@@ -1,15 +1,10 @@
 <?php
-// backend/config/privacidad.php
 
-// Asegurarnos de que la sesión esté iniciada si vamos a usar esta validación
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/**
- * Verifica si hay un usuario logueado en la sesión
- * @return bool
- */
+
 function estaLogueado() {
     return isset($_SESSION['usuario']) && !empty($_SESSION['usuario']['id']);
 }
@@ -22,9 +17,7 @@ function esAdministrador() {
     if (!estaLogueado()) {
         return false;
     }
-    
-    // Verificamos si existe la clave 'rol' y si equivale a admin
-    $rol = strtolower($_SESSION['usuario']['rol'] ?? '');
+        $rol = strtolower($_SESSION['usuario']['rol'] ?? '');
     return $rol === 'admin' || $rol === 'administrador';
 }
 

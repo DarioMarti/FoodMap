@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { MapPin, MessageSquare, Bot, Settings, NotebookText } from 'lucide-react';
 import Logo from '../../assets/foodmap_logo_blanco.svg';
+import { obtener_mensajes_no_leidos } from '../../servicios/chat/obtener_mensajes_no_leidos';
 import { comprobar_sesion_usuario } from '../../servicios/usuario/comprobar_sesion_usuario';
 
 export function Sidebar() {
   const [usuariologueado, setUsuariologueado] = useState(false);
-  const [usuario, setUsuario] = useState({});
+  const [usuario, setUsuario] = useState([]);
+  const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0);
   const siglaInicial = usuario.nombre ? usuario.nombre.charAt(0).toUpperCase() : 'U';
   const esFotoDefault = usuario.foto === "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
@@ -33,6 +35,18 @@ export function Sidebar() {
   }, []);
 
   useEffect(() => {
+    if (usuariologueado) {
+      const fetchNoLeidos = async () => {
+        const data = await obtener_mensajes_no_leidos();
+        if (data && data.ok) {
+          setMensajesNoLeidos(data.total);
+        }
+      };
+
+      fetchNoLeidos();
+      const intervalo = setInterval(fetchNoLeidos, 10000);
+      return () => clearInterval(intervalo);
+    }
   }, [usuariologueado]);
 
   return (
@@ -46,9 +60,9 @@ export function Sidebar() {
 
       <nav className="flex-1 flex flex-col gap-6 w-full px-4">
         <SidebarLink to="/mapa" icon={<MapPin size={24} />} />
-        <SidebarLink to="/chat" icon={<MessageSquare size={24} />} />
+        <SidebarLink to="/chat" icon={<MessageSquare size={24} />} badge={mensajesNoLeidos} />
         <SidebarLink to="/asistente_ia" icon={<Bot size={24} />} />
-        <SidebarLink to="/administrador" icon={<NotebookText size={24} />} />
+        {usuario.rol === "admin" && <SidebarLink to="/administrador" icon={<NotebookText size={24} />} />}
       </nav>
 
       <div className="flex flex-col gap-6 w-full px-4 mt-auto">
@@ -73,17 +87,22 @@ export function Sidebar() {
   );
 }
 
-function SidebarLink({ to, icon }) {
+function SidebarLink({ to, icon, badge }) {
   return (
     <NavLink to={to}>
       {({ isActive }) => (
         <button
-          className={`w-full aspect-square rounded-2xl flex items-center justify-center cursor-pointer transition-all ${isActive
+          className={`w-full aspect-square rounded-2xl flex items-center justify-center relative cursor-pointer transition-all ${isActive
             ? 'bg-primary/20 text-primary shadow-lg shadow-primary/20'
             : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50'
             }`}
         >
           {icon}
+          {badge > 0 && (
+            <span className="absolute top-2 right-2 flex items-center justify-center bg-primary text-white text-[10px] font-bold rounded-full min-w-[1.25rem] h-5 px-1 shadow-sm">
+              {badge > 99 ? '99+' : badge}
+            </span>
+          )}
         </button>
       )}
     </NavLink>

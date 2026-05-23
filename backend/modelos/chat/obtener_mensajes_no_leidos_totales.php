@@ -11,26 +11,28 @@ header("Content-Type: application/json");
 //Comprueba si el usuario esta logueado
 requerirLogin();
 
-if (!isset($_SESSION['usuario'])) {
-    echo json_encode(["ok" => false, "error" => "Sesión no iniciada"]);
+if (!isset($_SESSION["usuario"])) {
+    echo json_encode(["ok" => false, "total" => 0]);
     exit;
 }
 
-$mi_id = $_SESSION['usuario']['id'];
-
 try {
     $conn = conectar();
+    $mi_id = $_SESSION["usuario"]["id"];
 
-    $sql = "SELECT a.*, u.Nombre 
-            FROM amistades a 
-            JOIN usuario u ON a.Usuario_solicita_id = u.id 
-            WHERE a.Usuario_receptor_id = ? AND a.Estado = 'pendiente'";
-
+    $sql = "SELECT COUNT(*) as total 
+            FROM mensaje 
+            WHERE Usuario_receptor_id = ? 
+            AND Leido = 0";
+            
     $stmt = $conn->prepare($sql);
     $stmt->execute([$mi_id]);
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $solicitudes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    echo json_encode(["ok" => true, "solicitudes" => $solicitudes]);
+    echo json_encode([
+        "ok" => true,
+        "total" => (int)$resultado['total']
+    ]);
 
 } catch (Exception $e) {
     echo json_encode(["ok" => false, "error" => $e->getMessage()]);
