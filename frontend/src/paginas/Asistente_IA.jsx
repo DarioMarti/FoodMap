@@ -57,7 +57,7 @@ export default function Asistente_IA() {
 
 
     return (
-        <div className="flex flex-col h-full w-full bg-background dark:bg-dark-tarjeta overflow-hidden">
+        <div className="flex flex-col h-full w-full min-h-0 bg-background dark:bg-dark-tarjeta overflow-hidden">
             {/* Cuerpo del Chat */}
             <main className="flex-1 flex flex-col min-h-0">
 
@@ -86,8 +86,8 @@ export default function Asistente_IA() {
                 </section>
 
                 {/* Zona del Input (Fija abajo) */}
-                <footer className="p-4 w-full bg-background dark:bg-dark-tarjeta border-t border-borde dark:border-text-tertiary/10">
-                    <Chat_input onSend={handleEnviar} className="w-full  mx-auto" />
+                <footer className="w-full p-4 pb-20 md:p-8 md:pb-8 shrink-0 bg-background dark:bg-dark-tarjeta border-t border-borde dark:border-text-tertiary/10">
+                    <Chat_input onSend={handleEnviar} className="w-full mx-auto" />
                 </footer>
 
             </main>

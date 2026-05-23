@@ -8,6 +8,7 @@ import Login from './paginas/Login';
 import Asistente_IA from './paginas/Asistente_IA';
 import { comprobar_sesion_usuario } from './servicios/usuario/comprobar_sesion_usuario';
 import Administrador from './paginas/Administrador';
+import Perfil from './paginas/config/Perfil';
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => { const temaGuardado = localStorage.getItem('theme'); return temaGuardado === 'dark'; });
@@ -79,6 +80,7 @@ function App() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/asistente_ia" element={<Asistente_IA />} />
           <Route path="/administrador" element={<Administrador />} />
+          <Route path="/perfil" element={<Perfil />} />
           <Route path="/config" element={<Config darkMode={darkMode} setDarkMode={setDarkMode} setPrimaryColor={setPrimaryColor} fontSize={fontSize} setFontSize={setFontSize} />} />
         </Routes>
       </MainLayout> : <Login />

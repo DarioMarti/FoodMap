@@ -109,10 +109,26 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-/* Sobrescribir el color amarillo del autocompletado del navegador con la transición infinita */
+/* Sobrescribir el color amarillo del autocompletado de los inputs */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+}
+
+
+
+/* Queries*/
+
+@media (max-width: 767px) {
+  .leaflet-control-zoom a {
+    width: 60px !important;
+    /* Más pequeño en móvil */
+    height: 60px !important;
+  }
+
+  .leaflet-bottom {
+    bottom: 80px !important;
+  }
 }

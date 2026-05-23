@@ -18,6 +18,21 @@ export const agregarMarcador = async (formData) => {
     return await respuesta.text();
 };
 
+export const editarMarcador = async (formData) => {
+    const respuesta = await fetch(`${API_URL}modelos/marcadores/editar_marcador.php`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+
+    if (!respuesta.ok) {
+        const error = await respuesta.text();
+        throw new Error(error);
+    }
+
+    return await respuesta.json();
+};
+
 //Detecta las coordenadas al pinchar en el mapa
 export function DetectarCordenadas({ alPincharMapa }) {
     useMapEvents({

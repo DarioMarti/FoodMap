@@ -18,7 +18,6 @@ export function BarraBusqueda({ buscarMarcadores, toggleFiltros }) {
 
   return (
     <div className="absolute top-0 left-0 right-0 py-4 px-4 md:py-6 md:px-8 flex items-center gap-2 md:gap-4 z-40 pointer-events-none">
-      {/* Search Input Container */}
       <div className="flex-1 max-w-full mx-auto flex gap-4 md:gap-4 pointer-events-auto w-full justify-between ">
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -33,9 +32,8 @@ export function BarraBusqueda({ buscarMarcadores, toggleFiltros }) {
           />
         </div>
 
-        {/* Action Buttons */}
-        <Boton_cuadrado onClick={toggleFiltros} className="bg-input dark:bg-dark-tarjeta text-text-main dark:text-background size-14 border border-borde dark:border-descripcion dark:hover:bg-primary-hover" icon={<Filter size={20} />} />
-        <Boton_cuadrado onClick={activarBusqueda} className="bg-primary dark:bg-dark-tarjeta text-input dark:text-background size-14 border border-borde dark:border-descripcion dark:hover:bg-primary-hover" icon={<Send size={20} />} />
+        <Boton_cuadrado onClick={toggleFiltros} className=" bg-input dark:bg-dark-tarjeta text-text-main dark:text-background size-14 border border-borde dark:border-descripcion dark:hover:bg-primary-hover" icon={<Filter size={20} />} />
+        <Boton_cuadrado onClick={activarBusqueda} className="hidden md:block bg-primary dark:bg-dark-tarjeta text-input dark:text-background size-14 border border-borde dark:border-descripcion dark:hover:bg-primary-hover" icon={<Send size={20} />} />
 
       </div>
     </div>

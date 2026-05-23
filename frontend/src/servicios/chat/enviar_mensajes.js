@@ -32,7 +32,6 @@ export const activarConversacion = async (contacto, esGrupo, set_conversacion_ac
     const idActivo = { ...contacto, esGrupo };
     set_conversacion_activa(idActivo);
 
-    // Marcar mensajes como leídos en la BD y resetear contador local
     if (!esGrupo && setContactos) {
         const formData = new FormData();
         formData.append('emisor_id', contacto.id);

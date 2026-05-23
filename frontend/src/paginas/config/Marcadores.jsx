@@ -74,8 +74,8 @@ export default function Marcadores() {
 
                 <h2 className="text-2xl font-bold py-10 px-2 dark:text-white text-text-main">Ajustes visuales</h2>
                 <div className="flex flex-col gap-6 bg-background dark:bg-dark-tarjeta border-3 border-borde dark:border-white/10 py-8 rounded-3xl ">
-                    <div className="flex justify-between px-10 items-center">
-                        <strong className="text-xl font-semibold dark:text-white text-text-main">Mostrar etiquetas de nombre</strong>
+                    <div className="flex justify-between px-4 md:px-10 items-center">
+                        <strong className="text-lg md:text-xl font-semibold dark:text-white text-text-main">Mostrar etiquetas de nombre</strong>
                         <Toggle
                             id="mostrar-etiquetas"
                             checked={mostrarEtiquetas}
@@ -87,8 +87,8 @@ export default function Marcadores() {
                         />
                     </div>
                     <span className=" h-1 bg-borde w-full dark:bg-white/10"></span>
-                    <div className="flex justify-between px-10 items-center">
-                        <strong className="text-xl font-semibold dark:text-white text-text-main">Marcadores grandes</strong>
+                    <div className="flex justify-between px-4 md:px-10 items-center">
+                        <strong className="text-lg md:text-xl font-semibold dark:text-white text-text-main">Marcadores grandes</strong>
                         <Toggle
                             id="marcadores-grandes"
                             checked={marcadoresGrandes}
@@ -100,8 +100,8 @@ export default function Marcadores() {
                         />
                     </div>
                     <span className=" h-1 bg-borde w-full dark:bg-white/10"></span>
-                    <div className="flex justify-between px-10 items-center">
-                        <strong className="text-xl font-semibold dark:text-white text-text-main">Mostrar Icono</strong>
+                    <div className="flex justify-between px-4 md:px-10 items-center">
+                        <strong className="text-lg md:text-xl font-semibold dark:text-white text-text-main">Mostrar Icono</strong>
                         <Toggle
                             id="mostrar-icono"
                             checked={mostrarIconos}

@@ -38,14 +38,12 @@ export function Sidebar() {
   return (
     <aside className="w-20 lg:w-24 h-full bg-background dark:bg-dark-tarjeta border-r border-borde dark:border-descripcion flex flex-col items-center py-6 gap-8 z-50">
 
-      {/* Logo */}
       <NavLink to="/mapa">
         <div className="size-16 bg-primary rounded-lg flex items-center justify-center">
           <img src={Logo} alt="Logo" className="w-10 h-10" />
         </div>
       </NavLink>
 
-      {/* Navigation Links */}
       <nav className="flex-1 flex flex-col gap-6 w-full px-4">
         <SidebarLink to="/mapa" icon={<MapPin size={24} />} />
         <SidebarLink to="/chat" icon={<MessageSquare size={24} />} />
@@ -53,7 +51,6 @@ export function Sidebar() {
         <SidebarLink to="/administrador" icon={<NotebookText size={24} />} />
       </nav>
 
-      {/* Bottom Actions */}
       <div className="flex flex-col gap-6 w-full px-4 mt-auto">
         <SidebarLink to="/config" icon={<Settings size={24} />} />
 
@@ -76,7 +73,6 @@ export function Sidebar() {
   );
 }
 
-// NavLink nos da isActive automáticamente según la URL actual
 function SidebarLink({ to, icon }) {
   return (
     <NavLink to={to}>

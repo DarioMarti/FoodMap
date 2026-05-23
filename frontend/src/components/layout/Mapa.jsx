@@ -8,7 +8,7 @@ import * as lucideIcons from 'lucide-react';
 import Tarjeta_foto_marcador, { Tarjeta_foto_marcador_añadir } from '../ui/tarjetas_fotos_marcador';
 import Marcador from '../ui/Marcador';
 import Etiqueta_marcador from '../ui/etiqueta_marcador';
-import { agregarMarcador, alPincharMapa, DetectarCordenadas, obtenerMarcadores, manejarFormularioMarcador, agregarEtiqueta, obtenerTodasEtiquetas, obtenerFotografias, eliminarMarcador } from '../../servicios/mapa/marcador_servicio.js';
+import { agregarMarcador, editarMarcador, alPincharMapa, DetectarCordenadas, obtenerMarcadores, manejarFormularioMarcador, agregarEtiqueta, obtenerTodasEtiquetas, obtenerFotografias, eliminarMarcador } from '../../servicios/mapa/marcador_servicio.js';
 import { LocalizacionUsuario } from '../../servicios/mapa/localizar_usuario.jsx';
 import TarjetaConfirmacion from '../ui/tarjeta_confirmacion';
 
@@ -63,11 +63,17 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
         }
         const formData = new FormData(e.target);
         if (isEditando) {
+            formData.append('id', lugarSeleccionado.id);
             formData.append('etiquetas', JSON.stringify(etiquetasMarcador));
+            const fotosExistentes = [];
             fotosMarcador.forEach((foto, index) => {
-                formData.append('fotos[]', foto);
-
+                if (foto instanceof File) {
+                    formData.append('fotos[]', foto);
+                } else if (foto.Url_archivo) {
+                    fotosExistentes.push(foto.Url_archivo);
+                }
             });
+            formData.append('fotosExistentes', JSON.stringify(fotosExistentes));
         } else {
             formData.append('etiquetas', JSON.stringify(etiquetas));
             fotos.forEach((foto, index) => {
@@ -81,11 +87,17 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
         }
 
         try {
-            const resultado = await agregarMarcador(formData);
-            mostrarNotificacion("¡Marcador guardado con éxito!", "success");
+            if (isEditando) {
+                const resultado = await editarMarcador(formData);
+                mostrarNotificacion(resultado.mensaje || "¡Marcador editado con éxito!", "success");
+            } else {
+                const resultado = await agregarMarcador(formData);
+                mostrarNotificacion("¡Marcador guardado con éxito!", "success");
+            }
             e.target.reset();
             setEtiquetas([]);
             setFotos([]);
+            setFotosMarcador([]);
             setFormularioActivo(false);
             setFormularioEditarActivo(false);
             setLugarSeleccionado(null);
@@ -170,10 +182,10 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                     const inputFoto = document.getElementById('foto_input');
                     if (inputFoto) inputFoto.value = '';
                 }}
-                className="bg-primary-light dark:bg-primary-dark/30 border-2 border-primary hover:bg-primary/100 dark:hover:bg-primary-hover hover:text-background  text-primary size-14 absolute top-26 left-8 z-1000" icon={<lucideIcons.Plus size={26} />} />
+                className="bg-primary-light dark:bg-primary-dark/30 border-2 border-primary hover:bg-primary/100 dark:hover:bg-primary-hover hover:text-background  text-primary size-14 absolute top-22 md:top-26 left-4 md:left-8 z-1000" icon={<lucideIcons.Plus size={26} />} />
 
-            <form onSubmit={manejarEnvio} className={`absolute w-150 top-26 left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta  dark:border-text-main p-6 rounded-xl dark:text-background
-                shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-1200 ${formularioActivo ? 'block' : 'hidden'}`}>
+            <form onSubmit={manejarEnvio} className={`absolute w-[90%] max-h-[500px]  md:w-150 bottom-20 md:top-46 left-[5%] md:left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta dark:border-text-main p-6 rounded-xl dark:text-background
+                shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-[1200] max-h-[75vh] overflow-y-auto pb-20 ${formularioActivo ? 'block' : 'hidden'}`}>
                 <button
                     onClick={() => {
                         manejarFormularioMarcador("crear", false, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetas, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando);
@@ -241,19 +253,17 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                     </div>
                 </div>
                 <label htmlFor="coordenadas">Coordenadas:</label>
-                <div className='flex gap-4'>
-                    <input required className='border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='latitud' name='latitud' value={posicionClick?.lat || ""} readOnly />
-                    <input required className='border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='longitud' name='longitud' value={posicionClick?.lng || ""} readOnly />
+                <div className='flex flex-col md:flex-row gap-4'>
+                    <input required className='w-full border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='latitud' name='latitud' value={posicionClick?.lat || ""} readOnly />
+                    <input required className='w-full border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='longitud' name='longitud' value={posicionClick?.lng || ""} readOnly />
                 </div>
                 <label>Fotos:</label>
-                <div id="contenedor_fotos" className='flex gap-4 mb-4 flex-wrap'>
-                    {/* Input oculto que realmente hace el trabajo */}
+                <div id="contenedor_fotos" className='grid grid-cols-2 md:flex md:flex-wrap gap-4 mb-4'>
                     <input
                         type="file" id="foto_input" multiple
                         className="hidden" onChange={alElegirFoto}
                     />
 
-                    {/* Previsualización de fotos seleccionadas */}
                     {fotos.map((foto, index) => (
                         <Tarjeta_foto_marcador
                             key={index}
@@ -274,6 +284,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 zoom={17}
                 scrollWheelZoom={true}
                 zoomControl={false}
+                attributionControl={false}
                 className="flex-1 h-full w-full relative">
 
                 <DetectarCordenadas alPincharMapa={(latlng) => alPincharMapa(latlng, formularioActivo, setPosicionClick)} />
@@ -309,15 +320,15 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
 
             {
                 lugarSeleccionado && (
-                    <div className="max-h-[50vh] overflow-y-auto absolute bottom-0 left-0 right-0 z-[1001] bg-background dark:bg-dark-tarjeta p-6 rounded-t-xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300">
+                    <div className="h-[80vh] md:max-h-[50vh] overflow-y-auto absolute bottom-0 left-0 right-0 z-[1001] bg-background dark:bg-dark-tarjeta p-6 rounded-t-xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300">
                         <div className="flex gap-2 absolute top-4 right-4 z-1000">
                             <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:border-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => manejarFormularioMarcador("editar", false, true, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando)} icon={<lucideIcons.Pencil size={26} />} />
                             <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:border-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => setLugarSeleccionado(null)} icon={<lucideIcons.XIcon size={26} />} />
 
 
                         </div>
-                        <div className="flex flex-col gap-4">
-                            <h3 className="font-semibold text-3xl text-text-main dark:text-background">
+                        <div className="flex flex-col gap-4 md-w-full">
+                            <h3 className="font-semibold text-2xl md:text-3xl text-text-main dark:text-background  w-[65%]">
                                 {lugarSeleccionado.Titulo}
                             </h3>
                             <div className="flex gap-1 text-yellow-500">
@@ -327,15 +338,13 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                                 {lugarSeleccionado.Descripcion}
                             </p>
 
-                            <div id="contenedor_fotos" className='flex gap-4'>
-                                <div id="contenedor_fotos" className='flex gap-4'>
-                                    {fotosMarcador.map((foto, index) => (
-                                        <Tarjeta_foto_marcador
-                                            key={index}
-                                            foto={`http://localhost/foodmap/backend/uploads/img/${foto.Url_archivo}`}
-                                        />
-                                    ))}
-                                </div>
+                            <div id="contenedor_fotos" className='grid grid-cols-2 md:flex md:flex-wrap gap-4 mb-4'>
+                                {fotosMarcador.map((foto, index) => (
+                                    <Tarjeta_foto_marcador
+                                        key={index}
+                                        foto={`http://localhost/foodmap/backend/uploads/img/${foto.Url_archivo}`}
+                                    />
+                                ))}
                             </div>
 
                             <div className='flex gap-4'>
@@ -356,8 +365,8 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
 
 
 
-            <form onSubmit={manejarEnvio} className={`absolute w-150 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta  dark:border-text-main p-6 rounded-xl dark:text-background
-                shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-1100 ${formularioActivo_editar ? 'block' : 'hidden'}`}>
+            <form onSubmit={manejarEnvio} className={`absolute w-[90%] md:w-150 top-22 md:top-26 left-[5%] md:left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta dark:border-text-main p-6 rounded-xl dark:text-background
+                shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-[1200] max-h-[75vh] overflow-y-auto pb-20 ${formularioActivo_editar ? 'block' : 'hidden'}`}>
                 <button
                     onClick={() => {
                         manejarFormularioMarcador("editar", false, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando);
@@ -423,12 +432,12 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                     </div>
                 </div>
                 <label htmlFor="coordenadas">Coordenadas:</label>
-                <div className='flex gap-4'>
-                    <input required className='border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='latitud' name='latitud' value={lugarSeleccionado?.Latitud || ""} readOnly />
-                    <input required className='border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='longitud' name='longitud' value={lugarSeleccionado?.Longitud || ""} readOnly />
+                <div className='flex flex-col md:flex-row gap-4'>
+                    <input required className='w-full border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='latitud' name='latitud' value={lugarSeleccionado?.Latitud || ""} readOnly />
+                    <input required className='w-full border-2 border-borde dark:border-descripcion dark:text-input p-2 rounded-xl' type="text" id='longitud' name='longitud' value={lugarSeleccionado?.Longitud || ""} readOnly />
                 </div>
                 <label>Fotos:</label>
-                <div id="contenedor_fotos_editar" className='flex gap-4 mb-4 flex-wrap'>
+                <div id="contenedor_fotos_editar" className='grid grid-cols-2 md:flex md:flex-wrap gap-4 mb-4'>
                     <input
                         type="file" id="foto_input_editar" multiple
                         className="hidden" onChange={alElegirFotoEditar}

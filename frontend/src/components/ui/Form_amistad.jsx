@@ -108,50 +108,69 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
 
 
     return (
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-start z-1500 ${estado ? 'block' : 'hidden'}`}>
+        <>
+            {/* Fondo desenfocado (Overlay) */}
+            {estado && (
+                <div 
+                    className="fixed inset-0 z-[4999] bg-black/50 backdrop-blur-sm transition-opacity"
+                    onClick={handleSolicitudes}
+                />
+            )}
+            
+            <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col md:flex-row items-center md:items-start z-[5000] w-[95vw] sm:w-[80vw] md:w-auto max-h-[90vh] ${estado ? 'flex' : 'hidden'}`}>
+            
+            {/* Botón de cerrar para móvil */}
+            <button onClick={handleSolicitudes} className="md:hidden self-end mb-2 bg-dark-tarjeta text-text-main p-2 rounded-full shadow-lg">
+                <lucideIcons.X className="size-6" />
+            </button>
 
-            <div className="flex flex-col gap-1 items-end ">
+            <div className="flex flex-row md:flex-col gap-1 w-full md:w-auto items-end justify-center px-4 md:px-0">
                 <button
                     onClick={() => setTabActiva("buscar")}
                     title="Buscar Amigos"
-                    className={`p-4 rounded-l-2xl transition-all cursor-pointer flex items-center justify-center h-20  border-borde/10 ${tabActiva === "buscar"
-                        ? "bg-dark-tarjeta text-primary shadow-[-20px_10px_30px_rgba(0,0,0,0.3)]  border-l-4 border-l-primary w-16 z-10"
-                        : "bg-dark-tarjeta text-primary-dark/60 shadow-[-20px_10px_30px_rgba(0,0,0,0.3)] border-r-0 border-l-4 border-l-primary-dark/60 w-14 z-10 "
+                    className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "buscar"
+                        ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
+                        : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
                         }`}
                 >
-                    <lucideIcons.UserSearch className="size-6" />
+                    <lucideIcons.UserSearch className="size-5 md:size-6" />
                 </button>
 
                 <button
                     onClick={() => setTabActiva("solicitudes")}
                     title="Solicitudes Pendientes"
-                    className={`p-4 rounded-l-2xl transition-all cursor-pointer flex items-center justify-center h-20  border-borde/10 ${tabActiva === "solicitudes"
-                        ? "bg-dark-tarjeta text-primary shadow-[-20px_10px_30px_rgba(0,0,0,0.3)] border-r-0 border-l-4 border-l-primary w-16 z-10"
-                        : "bg-dark-tarjeta text-primary-dark/60 shadow-[-20px_10px_30px_rgba(0,0,0,0.3)] border-r-0 border-l-4 border-l-primary-dark/60 w-14 z-10 "
+                    className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "solicitudes"
+                        ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
+                        : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
                         }`}
                 >
-                    <lucideIcons.Bell className="size-6" />
-                    {
-
-                        <span onClick={handleSolicitudes} className="absolute flex items-center justify-center size-8 top-4 right-6 bg-error hover:bg-error/80 transition-colors cursor-pointer text-white rounded-full  text-xs">
-
-                            <lucideIcons.X className="size-4" />
-                        </span>
-                    }
+                    <div className="relative">
+                        <lucideIcons.Bell className="size-5 md:size-6" />
+                        {solicitudes?.length > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-primary text-white rounded-full min-w-4 h-4 flex items-center justify-center text-[10px] font-bold px-1 pointer-events-none">
+                                {solicitudes.length}
+                            </span>
+                        )}
+                    </div>
+                    {/* Botón X de cerrar en desktop */}
+                    <span onClick={(e) => { e.stopPropagation(); handleSolicitudes(); }} className="hidden md:flex absolute items-center justify-center size-8 top-4 right-6 bg-error hover:bg-error/80 transition-colors cursor-pointer text-white rounded-full text-xs z-50">
+                        <lucideIcons.X className="size-4" />
+                    </span>
                 </button>
+                
                 <button
                     onClick={() => setTabActiva("Contactos")}
                     title="Mis Amigos"
-                    className={`p-4 rounded-l-2xl transition-all cursor-pointer flex items-center justify-center h-20 border-borde/10 ${tabActiva === "Contactos"
-                        ? "bg-dark-tarjeta text-primary shadow-[-20px_10px_30px_rgba(0,0,0,0.3)] border-r-0 border-l-4 border-l-primary w-16 z-10"
-                        : "bg-dark-tarjeta text-primary-dark/60 shadow-[-20px_10px_30px_rgba(0,0,0,0.3)] border-r-0 border-l-4 border-l-primary-dark/60 w-14 z-10 "
+                    className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "Contactos"
+                        ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
+                        : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
                         }`}
                 >
-                    <lucideIcons.Contact className="size-6" />
+                    <lucideIcons.Contact className="size-5 md:size-6" />
                 </button>
             </div>
 
-            <div className="bg-dark-tarjeta p-8 rounded-2xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] min-w-[700px]  min-h-120 ">
+            <div className="bg-dark-tarjeta p-4 md:p-8 rounded-2xl rounded-t-none md:rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] w-full md:min-w-[700px] h-[75vh] md:h-auto md:min-h-120 overflow-y-auto flex-1 flex flex-col">
 
                 {tabActiva === "buscar" && (
                     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
@@ -297,7 +316,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                                         </div>
                                         <Boton_cuadrado
                                             className="bg-primary/20 text-primary hover:bg-primary hover:text-white size-11 border border-primary/30"
-                                            onClick={() => handleSeleccionarChat(amigo, false)}
+                                            onClick={() => { handleSeleccionarChat(amigo, false); handleSolicitudes(); }}
                                             icon={<lucideIcons.MessageCircle className="size-5" />}
                                             title="Chatear"
                                         />
@@ -316,5 +335,6 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
 
 
         </div>
+        </>
     );
 }

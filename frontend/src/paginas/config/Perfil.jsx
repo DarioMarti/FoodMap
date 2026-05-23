@@ -54,13 +54,13 @@ export default function Perfil() {
                 <h1 className="text-3xl font-semibold dark:text-white text-text-main">Perfil</h1>
             </div>
 
-            <article className="p-10 flex-1 overflow-y-auto">
+            <article className="p-5 md:p-10 flex-1 overflow-y-auto">
                 {/* Profile Card */}
-                <div className="p-12 dark:bg-dark-tarjeta bg-background-tarjetas rounded-3xl relative dark:text-white text-text-main shadow-xl border dark:border-white/10">
+                <div className="p-4 md:p-12 dark:bg-dark-tarjeta bg-background-tarjetas rounded-3xl relative dark:text-white text-text-main shadow-xl border dark:border-white/10">
                     <div className="flex items-center gap-8">
                         <div className="relative group">
                             <img
-                                className="size-32 rounded-full object-cover ring-4 ring-primary shadow-2xl duration-300"
+                                className="size-18 md:size-32 rounded-full object-cover ring-4 ring-primary shadow-2xl duration-300"
                                 src={usuario?.foto?.startsWith('http') ? usuario.foto : `http://localhost/foodmap/backend/uploads/img/${usuario?.foto}`}
                                 alt="Foto de perfil"
                             />
@@ -71,10 +71,10 @@ export default function Perfil() {
 
                         </div>
                         <div>
-                            <h2 className="text-3xl font-bold">
+                            <h2 className="text-2xl md:text-3xl font-bold">
                                 {usuario?.nombre.charAt(0).toUpperCase() + usuario?.nombre.slice(1)}
                             </h2>
-                            <p className="text-lg text-text-tertiary flex items-center gap-2 mt-1">
+                            <p className="text-ms md:text-lg text-text-tertiary flex items-center gap-1 md:gap-2 mt-1">
                                 <span className="text-primary font-medium">@{usuario.nick ? usuario.nick : "undefined"}</span>
                                 <span className="opacity-30">·</span>
                                 <span className="flex items-center gap-1"><MapPin size={16} /> {usuario?.ciudad ? usuario.ciudad : "undefined"}</span>
@@ -93,46 +93,46 @@ export default function Perfil() {
                     </div>
                     <Boton_cuadrado
                         onClick={() => setEditando(true)}
-                        className="absolute right-8 top-8 bg-primary hover:bg-primary-hover text-white size-14 shadow-lg shadow-primary/30 transition-all "
+                        className="absolute right-4 top-4 md:right-8 md:top-8 bg-primary hover:bg-primary-hover text-white size-10 md:size-14 shadow-lg shadow-primary/30 transition-all "
                         icon={<Pen size={24} />}
                     />
                 </div>
 
                 {/* Personal Information */}
-                <div className="mt-12">
+                <div className="mt-12 pb-15 md:pb-0">
                     <h2 className="text-2xl font-bold mb-6 px-2 dark:text-white text-text-main flex items-center gap-3">
                         <User className="text-primary" size={24} />
                         Información personal
                     </h2>
                     <div className="flex flex-col dark:bg-dark-tarjeta bg-white border border-borde dark:border-white/5 rounded-3xl overflow-hidden shadow-sm">
-                        <div className="flex justify-between p-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                        <div className="flex justify-between px-4 md:px-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Nombre completo</span>
-                                <strong className="text-xl font-medium dark:text-white text-text-main">
+                                <strong className="text-lg md:text-xl font-medium dark:text-white text-text-main">
                                     {usuario?.nombre.charAt(0).toUpperCase() + usuario?.nombre.slice(1)}
                                 </strong>
                             </div>
                             <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Editar</button>
                         </div>
-                        <div className="flex justify-between p-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                        <div className="flex justify-between px-4 md:px-8 py-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Nick de usuario</span>
-                                <strong className="text-xl font-medium dark:text-white text-text-main">{usuario?.nick ? "@" + usuario.nick : "No especificado"}</strong>
+                                <strong className="text-lg md:text-xl font-medium dark:text-white text-text-main">{usuario?.nick ? "@" + usuario.nick : "No especificado"}</strong>
                             </div>
                             <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Editar</button>
                         </div>
                         <div className="h-px bg-borde dark:bg-white/5 w-full"></div>
-                        <div className="flex justify-between p-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                        <div className="flex justify-between px-4 md:px-8 py-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Email</span>
-                                <strong className="text-xl font-medium dark:text-white text-text-main">{usuario?.email}</strong>
+                                <strong className="text-lg md:text-xl font-medium dark:text-white text-text-main">{usuario?.email}</strong>
                             </div>
                         </div>
                         <div className="h-px bg-borde dark:bg-white/5 w-full"></div>
-                        <div className="flex justify-between p-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                        <div className="flex justify-between px-4 md:px-8 py-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Ciudad</span>
-                                <strong className="text-xl font-medium dark:text-white text-text-main">{usuario?.ciudad ? usuario.ciudad : "No especificado"}</strong>
+                                <strong className="text-lg md:text-xl font-medium dark:text-white text-text-main">{usuario?.ciudad ? usuario.ciudad : "No especificado"}</strong>
                             </div>
                             <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Editar</button>
                         </div>
@@ -142,7 +142,6 @@ export default function Perfil() {
 
             </article>
 
-            {/* Edit Profile Overlay/Form */}
             {editando && (
                 <div className="fixed inset-0 z-[5000] flex items-center justify-center p-6 animate-in fade-in duration-300">
                     <div
@@ -225,9 +224,9 @@ export default function Perfil() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 cursor-pointer text-lg font-bold py-5 px-8 bg-primary text-white rounded-2xl hover:bg-primary-hover shadow-xl shadow-primary/30 transition-all"
+                                    className="flex-1 cursor-pointer text-md md:text-lg font-bold py-5 px-8 bg-primary text-white rounded-2xl hover:bg-primary-hover shadow-xl shadow-primary/30 transition-all"
                                 >
-                                    Guardar Cambios
+                                    Guardar
                                 </button>
                             </div>
                         </div>

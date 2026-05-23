@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sidebar } from './Sidebar';
+import MenuMovil from './MenuMovil';
 
 export function MainLayout({ children }) {
   return (
@@ -10,12 +11,13 @@ export function MainLayout({ children }) {
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 relative flex flex-col min-w-0">
+      <main className="flex-1 relative flex flex-col min-h-0 min-w-0">
         {children}
       </main>
 
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden">
+        <MenuMovil />
       </div>
     </div>
   );

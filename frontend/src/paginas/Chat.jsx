@@ -1,7 +1,7 @@
 import Tarjeta_chat from "../components/ui/Tarjeta_chat";
 import Chat_mensaje from "../components/ui/Chat_mensaje";
 import * as lucideIcons from 'lucide-react';
-
+import { useLocation } from 'react-router-dom';
 import Chat_input from "../components/ui/Chat_input";
 import { useState, useEffect, useRef } from "react";
 import io from 'socket.io-client';
@@ -13,7 +13,8 @@ const socket = io('http://localhost:4000');
 
 export default function Chat() {
     const [conversacion_activa, set_conversacion_activa] = useState(null);
-    const [tipoConversacion, setTipoCOnversacion] = useState("Amigos");
+    const [vistaMovil, setVistaMovil] = useState(false);
+    const [vistaChat, setVistaChat] = useState(false);
     const [contactos, setContactos] = useState({ amigos: [], grupos: [] });
     const [mensajes, setMensajes] = useState([]);
     const [miUsuario, setMiUsuario] = useState(null);
@@ -21,6 +22,8 @@ export default function Chat() {
     const [solicitudesLista, setSolicitudesLista] = useState([]);
     const scrollRef = useRef(null);
     const [notificacion, setNotificacion] = useState({ visible: false, mensaje: "", tipo: "" });
+    const location = useLocation();
+
 
     const obtener_solicitudes = async () => {
         try {
@@ -75,10 +78,10 @@ export default function Chat() {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [mensajes]);
 
-    const cambiarTipoConversacion = (tipo) => setTipoCOnversacion(tipo);
 
     const handleSeleccionarChat = (contacto, esGrupo) => {
         activarConversacion(contacto, esGrupo, set_conversacion_activa, setMensajes, setContactos);
+        setVistaChat(true);
     };
 
     const handleEnviar = (contenido) => {
@@ -116,22 +119,46 @@ export default function Chat() {
     };
 
 
+    useEffect(() => {
+        if (location.state?.abrirSolicitudes) {
+            setSolicitudes(true);
+        }
+    }, [location]);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(max-width: 767px)');
+
+        const manejarCambioDeTamaño = (e) => {
+            setVistaMovil(e.matches);
+            if (!e.matches) {
+                setVistaChat(true);
+            } else {
+                setVistaChat(false);
+            }
+        };
+
+        setVistaMovil(mediaQuery.matches);
+        setVistaChat(!mediaQuery.matches);
+
+        mediaQuery.addEventListener('change', manejarCambioDeTamaño);
+        return () => {
+            mediaQuery.removeEventListener('change', manejarCambioDeTamaño);
+        };
+    }, []);
+
     return (
-        <div className="flex flex-col h-full w-full bg-background dark:bg-background-oscuro">
+        <div className="flex flex-col h-full w-full min-h-0 bg-background dark:bg-background-oscuro">
             <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[3000] pointer-events-none">
                 {notificacion.visible && (
                     <Notificacion mensaje={notificacion.mensaje} tipo={notificacion.tipo} />
                 )}
             </div>
-            <div className="flex  justify-between items-center pr-20  border-b border-borde dark:border-text-tertiary/20 ">
+            <div className="flex justify-between items-center pr-20 border-b border-borde dark:border-text-tertiary/20 shrink-0">
                 <div className="h-18 flex w-1/4  ">
-                    <div onClick={() => cambiarTipoConversacion("Amigos")} className={`w-1/2 min-w-[150px] text-text-main flex ${tipoConversacion === "Amigos" ? "dark:bg-secondary/25 border-b-6 border-primary text-background dark:text-background-oscuro" : "border-none border-text-tertiary"} justify-center items-center cursor-pointer`}>
-                        <h1 className={`text-xl font-semibold ${tipoConversacion === "Amigos" ? "text-text-main dark:text-background " : "text-text-tertiary"} cursor-pointer`}>Amigos</h1>
+                    <div className={`w-1/2 min-w-[150px] text-text-main flex  justify-center items-center cursor-pointer`}>
+                        <h1 className={`text-xl font-semibold text-text-main dark:text-background cursor-pointer`}>Amigos</h1>
                     </div>
 
-                    <div onClick={() => cambiarTipoConversacion("Grupos")} className={`w-1/2 min-w-[150px] text-text-main flex ${tipoConversacion === "Grupos" ? "dark:bg-secondary/25 border-b-6 border-primary " : "border-none border-text-tertiary"} justify-center items-center cursor-pointer`}>
-                        <h3 className={`text-xl  font-semibold ${tipoConversacion === "Grupos" ? "text-text-main dark:text-background" : "text-text-tertiary"}`}>Grupos</h3>
-                    </div>
                 </div>
                 <div className="relative">
                     <lucideIcons.Bell onClick={handleSolicitudes} className="w-7 h-7 text-text-main dark:text-background cursor-pointer hover:text-primary dark:hover:text-primary-hover" />
@@ -142,14 +169,19 @@ export default function Chat() {
                     )}
                 </div>
             </div>
-
+            {!vistaChat && (
+                <div className="shrink-0">
+                    <h2 className="text-2xl font-bold dark:text-background border-b-2 border-text-tertiary/20 md:hidden p-6">Mensajes</h2>
+                </div>
+            )}
             <main className="flex-1 flex min-h-0 bg-background dark:bg-background-oscuro">
-                <section className="w-1/4 border-r-3 border-r-borde dark:border-r-text-tertiary/20 overflow-y-auto">
-                    {tipoConversacion === "Amigos" ? (
-                        contactos.amigos.map(amigo => (
+                {(!vistaMovil || !vistaChat) && (
+                    <section className="w-full md:w-1/4 border-r-3 border-r-borde dark:border-r-text-tertiary/20 overflow-y-auto">
+                        {contactos.amigos.map(amigo => (
                             <Tarjeta_chat
-                                onClick={() => handleSeleccionarChat(amigo, false)}
+                                onClick={() => { handleSeleccionarChat(amigo, false); setVistaChat(true); }}
                                 key={amigo.id}
+
                                 isActiva={conversacion_activa?.id === amigo.id && !conversacion_activa?.esGrupo}
                                 sigla={amigo.Nombre[0]}
                                 nombre={amigo.Nombre}
@@ -158,61 +190,65 @@ export default function Chat() {
                                 fotoPerfil={amigo.Foto_perfil}
                                 mensajesNuevos={amigo.mensajes_no_leidos || 0}
                             />
-                        ))
-                    ) : (
-                        contactos.grupos.map(grupo => (
-                            <Tarjeta_chat
-                                onClick={() => handleSeleccionarChat(grupo, true)}
-                                key={grupo.id}
-                                isActiva={conversacion_activa?.id === grupo.id && conversacion_activa?.esGrupo}
-                                sigla={grupo.Nombre[0]}
-                                nombre={grupo.Nombre}
-                                texto="Chat de grupo"
-                                hora=""
-                            />
-                        ))
-                    )}
-                </section>
+                        ))}
+                    </section>
+                )}
+                {(!vistaMovil || vistaChat) && (
+                    <section className="w-full md:w-3/4 flex flex-col h-full min-h-0 overflow-hidden">
+                        {conversacion_activa ? (
 
-                <section className="w-3/4 relative  h-full overflow-hidden">
-                    {conversacion_activa ? (
+                            <div className="flex flex-col w-full h-full min-h-0">
+                                {/* Header del chat */}
+                                <div className="px-6 py-4 md:px-12 md:py-6 border-b border-borde dark:border-text-tertiary/20 shrink-0">
+                                    <span className="flex items-center gap-4 md:gap-6">
+                                        {vistaMovil && (
+                                            <lucideIcons.ArrowLeft
+                                                className="w-8 h-8 text-text-main dark:text-background cursor-pointer"
+                                                onClick={() => setVistaChat(false)}
+                                            />
+                                        )}
+                                        <span className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-lg  ">
+                                            {conversacion_activa.Foto_perfil ? <img src={conversacion_activa.Foto_perfil.startsWith('http') ? conversacion_activa.Foto_perfil : `http://localhost/foodmap/backend/uploads/img/${conversacion_activa.Foto_perfil}`} alt={conversacion_activa.Nombre} className="w-full h-full rounded-full object-cover" /> : conversacion_activa.Nombre[0]}
+                                        </span>
+                                        <strong className="text-lg md:text-3xl font-semibold text-text-main dark:text-background">{conversacion_activa.Nombre}</strong>
 
-                        <div className="flex flex-col w-full">
-                            <div className="px-12 py-6 border-b border-borde dark:border-text-tertiary/20">
-                                <span className="flex items-center gap-6">
-                                    <span className="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-lg  ">
-                                        {conversacion_activa.Nombre[0]}
                                     </span>
-                                    <strong className="text-md font-semibold text-3xl text-text-main dark:text-background">{conversacion_activa.Nombre}</strong>
-
-                                </span>
-                            </div>
-                            <div className="p-16">
-                                <div className="flex-1 overflow-y-auto pb-24 flex flex-col gap-4">
-                                    {mensajes.map((m, i) => (
-                                        <Chat_mensaje
-                                            key={i}
-                                            texto={m.Contenido || m.contenido}
-                                            hora={m.Fecha_envio || m.fecha_envio}
-                                            isMe={m.Usuario_id === miUsuario?.id || m.emisor_id === miUsuario?.id}
-                                        />
-                                    ))}
-                                    <div ref={scrollRef} />
                                 </div>
-                                <Chat_input onSend={handleEnviar} className="w-full absolute bottom-10 left-0" />
+
+                                {/* Contenedor de mensajes e input */}
+                                <div className="flex flex-col flex-1 min-h-0 bg-background dark:bg-background-oscuro relative">
+                                    {/* Lista de mensajes (scrolleable) */}
+                                    <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-4">
+                                        {mensajes.map((m, i) => (
+                                            <Chat_mensaje
+                                                key={i}
+                                                texto={m.Contenido || m.contenido}
+                                                hora={m.Fecha_envio || m.fecha_envio}
+                                                isMe={m.Usuario_id === miUsuario?.id || m.emisor_id === miUsuario?.id}
+                                            />
+                                        ))}
+                                        <div ref={scrollRef} />
+                                    </div>
+
+                                    {/* Input fijado al fondo de este flex, con padding bottom extra en móvil para que MenuMovil no lo tape */}
+                                    <div className="w-full p-4 pb-20 md:p-8 md:pb-8 shrink-0">
+                                        <Chat_input onSend={handleEnviar} />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    ) : (
+                        ) : (
 
-                        <div className="flex-1 flex items-center justify-center text-text-tertiary text-2xl relative  top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            Selecciona una conversación para empezar
+                            <div className="flex-1 flex items-center justify-center text-text-tertiary text-2xl relative  top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                Selecciona una conversación para empezar
 
-                        </div>
-                    )}
-                    <Form_amistad className="absolute bottom-10 left-0 right-0 mx-auto" estado={solicitudes} miUsuario={miUsuario} mostrarNotificacion={mostrarNotificacion} actualizarContactos={actualizarContactos} contactos={contactos} solicitudes={solicitudesLista} obtener_solicitudes={obtener_solicitudes} handleSolicitudes={handleSolicitudes} handleSeleccionarChat={handleSeleccionarChat} />
-
-                </section>
+                            </div>
+                        )}
+                    </section>
+                )}
             </main>
+
+            {/* Formulario de amistad siempre renderizado para que no desaparezca en móvil */}
+            <Form_amistad className="absolute bottom-10 left-0 right-0 mx-auto z-[4000]" estado={solicitudes} miUsuario={miUsuario} mostrarNotificacion={mostrarNotificacion} actualizarContactos={actualizarContactos} contactos={contactos} solicitudes={solicitudesLista} obtener_solicitudes={obtener_solicitudes} handleSolicitudes={handleSolicitudes} handleSeleccionarChat={handleSeleccionarChat} />
 
         </div>
     );

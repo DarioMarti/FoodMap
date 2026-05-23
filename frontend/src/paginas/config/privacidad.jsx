@@ -53,21 +53,21 @@ export default function Privacidad() {
             <div className="border-b-3 border-borde dark:border-text-tertiary py-5 px-10 flex-shrink-0">
                 <h1 className="text-3xl font-semibold dark:text-white text-text-main">Privacidad</h1>
             </div>
-            <article className="p-10 flex-1 overflow-y-auto">
+            <article className="p-5 md:p-10 flex-1 overflow-y-auto">
 
                 <h2 className="text-2xl font-bold py-10 px-2 dark:text-white text-text-main">Datos de usuario</h2>
                 <div className="flex flex-col gap-6 bg-background dark:bg-dark-tarjeta border-3 border-borde dark:border-white/10 py-8 rounded-3xl ">
 
-                    <div className="flex justify-between px-10 items-center ">
-                        <strong className="text-xl font-semibold dark:text-white text-text-main">Contraseña</strong>
+                    <div className="flex justify-between px-4 md:px-10 items-center ">
+                        <strong className="text-lg md:text-xl font-semibold dark:text-white text-text-main">Contraseña</strong>
                         <Boton_main nombre="Cambiar" />
                     </div>
 
                 </div>
                 <h2 className="text-2xl font-bold py-10 px-2 dark:text-white text-text-main">Privacidad del perfil</h2>
                 <div className="flex flex-col gap-6 bg-background dark:bg-dark-tarjeta border-3 border-borde dark:border-white/10 py-8 rounded-3xl ">
-                    <div className="flex justify-between px-10">
-                        <strong className="text-xl font-semibold dark:text-white text-text-main">Perfil público</strong>
+                    <div className="flex justify-between px-4 md:px-10">
+                        <strong className="text-lg md:text-xl font-semibold dark:text-white text-text-main">Perfil público</strong>
                         <Toggle
                             id="perfil-publico"
                             checked={perfilPublico}
@@ -75,8 +75,8 @@ export default function Privacidad() {
                         />
                     </div>
                     <span className=" h-1 bg-borde w-full dark:bg-white/10"></span>
-                    <div className="flex justify-between px-10 items-center">
-                        <strong className="text-xl font-semibold dark:text-white text-text-main">Compartir ubicación</strong>
+                    <div className="flex justify-between px-4 md:px-10 items-center">
+                        <strong className="text-lg md:text-xl font-semibold dark:text-white text-text-main">Compartir ubicación</strong>
                         <Toggle
                             id="compartir-ubicacion"
                             checked={compartirUbicacion}
