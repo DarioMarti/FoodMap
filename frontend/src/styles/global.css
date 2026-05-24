@@ -132,3 +132,8 @@ input:-webkit-autofill:active {
     bottom: 80px !important;
   }
 }
+
+/* Filtro para crear mapa oscuro a partir del mapa claro */
+.dark .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}

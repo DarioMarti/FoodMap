@@ -1,9 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';    
-
-session_start();
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
 
 header("Access-Control-Allow-Origin: http://localhost:5173");

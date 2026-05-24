@@ -148,7 +148,7 @@ export default function Chat() {
 
     return (
         <div className="flex flex-col h-full w-full min-h-0 bg-background dark:bg-background-oscuro">
-            <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[3000] pointer-events-none">
+            <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none">
                 {notificacion.visible && (
                     <Notificacion mensaje={notificacion.mensaje} tipo={notificacion.tipo} />
                 )}

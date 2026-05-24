@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
+
 //Comprueba si el usuario esta logueado
 requerirLogin();
 

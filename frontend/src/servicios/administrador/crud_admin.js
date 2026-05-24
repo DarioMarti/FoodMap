@@ -1,6 +1,6 @@
 export const obtenerTodasEtiquetas = async (id) => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php`);
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {
@@ -10,7 +10,7 @@ export const obtenerTodasEtiquetas = async (id) => {
 
 export const obtenerTodosUsuarios = async () => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/usuario/mostrar_todos_usuarios.php`);
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/usuario/mostrar_todos_usuarios.php`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {
@@ -20,7 +20,7 @@ export const obtenerTodosUsuarios = async () => {
 
 export const obtenerTodosMarcadores = async () => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/mostrar_todos_marcadores.php`);
+        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/mostrar_todos_marcadores.php`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {

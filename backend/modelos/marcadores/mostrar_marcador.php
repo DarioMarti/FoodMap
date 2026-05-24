@@ -35,10 +35,18 @@ function obtener_marcadores($id_usuario, $nombre = null)
             LEFT JOIN marcador_categoria mc ON m.id = mc.Marcador_id AND mc.Es_principal = 1
             LEFT JOIN categoria c ON mc.Categoria_id = c.id 
             LEFT JOIN marcador_categoria mc2 ON m.id = mc2.Marcador_id
-            WHERE m.Usuario_id = ? AND m.Titulo LIKE ?
+            WHERE m.Usuario_id = ? 
+              AND (
+                  m.Titulo LIKE ? 
+                  OR EXISTS (
+                      SELECT 1 FROM marcador_categoria mc3 
+                      JOIN categoria c3 ON mc3.Categoria_id = c3.id 
+                      WHERE mc3.Marcador_id = m.id AND c3.Nombre LIKE ?
+                  )
+              )
             GROUP BY m.id
         ");
-        $stmt->execute([$id_usuario, "%$nombre%"]);
+        $stmt->execute([$id_usuario, "%$nombre%", "%$nombre%"]);
         $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $resultado;
     } else {

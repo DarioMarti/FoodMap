@@ -1,5 +1,11 @@
-import { useState, useEffect } from "react"; // Añade useEffect
+import { useState, useEffect } from "react";
 import { actualizarCategoriaAdmin, crearCategoriaAdmin } from "../../servicios/administrador/crud_admin";
+import * as lucideIcons from 'lucide-react';
+import * as tbIcons from 'react-icons/tb';
+import * as biIcons from 'react-icons/bi';
+import * as mdIcons from 'react-icons/md';
+import * as giIcons from 'react-icons/gi';
+import * as piIcons from 'react-icons/pi';
 
 
 export default function Form_categoria_admin({ categoriaSeleccionada, setFormularioCategoriaActivo, className, mostrarNotificacion, recargarTabla }) {
@@ -13,6 +19,29 @@ export default function Form_categoria_admin({ categoriaSeleccionada, setFormula
         setColor(categoriaSeleccionada?.Color || "#000000");
         setIcono(categoriaSeleccionada?.Icono || "MapPin");
     }, [categoriaSeleccionada]);
+
+    const IconoDinamico = ({ nombre, ...props }) => {
+        if (!nombre) return <lucideIcons.MapPin {...props} />;
+
+        let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+
+        let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
+
+        if (!IconoComponente) {
+            if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
+            else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
+            else if (nombre.startsWith('Md') || nombreBase.startsWith('Md')) IconoComponente = mdIcons[nombre] || mdIcons[nombreBase];
+            else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
+            else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
+        }
+
+        if (!IconoComponente) {
+            IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
+        }
+
+        if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
+        return <IconoComponente {...props} />;
+    };
 
     const manejarGuardar = async (e) => {
         e.preventDefault();
@@ -55,12 +84,19 @@ export default function Form_categoria_admin({ categoriaSeleccionada, setFormula
                     </div>
                 </div>
                 <div className="flex flex-col gap-4">
-                    <label className="text-xs font-bold uppercase tracking-widest text-primary">Icono <span className="text-xs font-normal uppercase text-secundary">(Nombre de Lucide icons)</span></label>
-                    <input type="text" required value={icono} name="icono"
-                        onChange={(e) => setIcono(e.target.value)}
-                        placeholder="Ej: Pizza, Coffee, Burger"
-                        className="w-full px-5 py-3 rounded-2xl border-2 border-borde dark:border-white/10 dark:bg-dark-tarjeta focus:border-primary focus:outline-none transition-all text-sm"
-                    />
+                    <label className="text-xs font-bold uppercase tracking-widest text-primary">Icono <span className="text-xs font-normal uppercase text-secundary">(En inglés)</span></label>
+                    <div className="flex gap-4 items-center">
+                        <div className="flex-1">
+                            <input type="text" required value={icono} name="icono"
+                                onChange={(e) => setIcono(e.target.value)}
+                                placeholder="Ej: Pizza, Coffee, Sushi"
+                                className="w-full px-5 py-3 rounded-2xl border-2 border-borde dark:border-white/10 dark:bg-dark-tarjeta focus:border-primary focus:outline-none transition-all text-sm"
+                            />
+                        </div>
+                        <div className="size-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary flex-shrink-0 shadow-inner">
+                            <IconoDinamico nombre={icono} size={24} />
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="flex gap-4 pt-6">

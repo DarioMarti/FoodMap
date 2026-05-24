@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
 import { actualizarMarcadorAdmin, crearMarcadorAdmin } from "../../servicios/administrador/crud_admin";
 import * as lucideIcons from 'lucide-react';
+import * as tbIcons from 'react-icons/tb';
+import * as biIcons from 'react-icons/bi';
+import * as mdIcons from 'react-icons/md';
+import * as giIcons from 'react-icons/gi';
+import * as piIcons from 'react-icons/pi';
 import Etiqueta_marcador from './etiqueta_marcador';
 
-export default function Form_marcador_admin({ marcadorSeleccionado, setFormularioMarcadorActivo, className, mostrarNotificacion, recargarTabla, categoriasBD }) {
+export default function Form_marcador_admin({ marcadorSeleccionado, setFormularioMarcadorActivo, className, mostrarNotificacion, recargarTabla, categoriasBD, usuarios }) {
     const [nombre, setNombre] = useState(marcadorSeleccionado?.Titulo || marcadorSeleccionado?.Nombre || "");
     const [descripcion, setDescripcion] = useState(marcadorSeleccionado?.Descripcion || "");
     const [puntuacion, setPuntuacion] = useState(marcadorSeleccionado?.Puntuacion || "");
     const [latitud, setLatitud] = useState(marcadorSeleccionado?.Latitud || "");
     const [longitud, setLongitud] = useState(marcadorSeleccionado?.Longitud || "");
     const [direccion, setDireccion] = useState(marcadorSeleccionado?.Direccion || "");
+    const [usuarioId, setUsuarioId] = useState(marcadorSeleccionado?.Usuario_id || (usuarios && usuarios.length > 0 ? usuarios[0].id : ""));
 
     const [etiquetasMarcador, setEtiquetasMarcador] = useState([]);
     const [esPrincipal, setEsPrincipal] = useState(false);
@@ -25,11 +31,12 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
         setEsPrincipal(false);
 
         if (marcadorSeleccionado?.id) {
-            fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_todas_etiquetas.php?id_marcador=${marcadorSeleccionado.id}`)
+            fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_todas_etiquetas.php?id_marcador=${marcadorSeleccionado.id}`, { credentials: 'include' })
                 .then(res => res.json())
                 .then(data => {
-                    setEtiquetasMarcador(data || []);
-                });
+                    setEtiquetasMarcador(Array.isArray(data) ? data : []);
+                })
+                .catch(() => setEtiquetasMarcador([]));
         } else {
             setEtiquetasMarcador([]);
         }
@@ -39,14 +46,31 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
     }, [marcadorSeleccionado, categoriasBD]);
 
     const IconoDinamico = ({ nombre, ...props }) => {
-        const nombreReal = nombre === "Hamburger" ? "Burger" : nombre;
-        const IconoComponente = lucideIcons[nombreReal];
+        if (!nombre) return <lucideIcons.MapPin {...props} />;
+
+        let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+        if (nombreBase === "Hamburger") nombreBase = "Burger";
+
+        let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
+
+        if (!IconoComponente) {
+            if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
+            else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
+            else if (nombre.startsWith('Md') || nombreBase.startsWith('Md')) IconoComponente = mdIcons[nombre] || mdIcons[nombreBase];
+            else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
+            else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
+        }
+
+        if (!IconoComponente) {
+            IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
+        }
+
         if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
         return <IconoComponente {...props} />;
     };
 
     const agregarEtiqueta = () => {
-        if (esPrincipal && etiquetasMarcador.some(e => e.esPrincipal || e.EsPrincipal)) {
+        if (esPrincipal && etiquetasMarcador.some(e => e.esPrincipal === true || e.EsPrincipal == 1)) {
             mostrarNotificacion("Ya existe una etiqueta principal para este marcador.", "error");
             return;
         }
@@ -75,7 +99,12 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
     const manejarGuardar = async (e) => {
         e.preventDefault();
 
-        if (etiquetasMarcador.length > 0 && !etiquetasMarcador.some(e => e.esPrincipal || e.EsPrincipal)) {
+        if (etiquetasMarcador.length === 0) {
+            mostrarNotificacion("Debes añadir al menos una etiqueta al marcador.", "error");
+            return;
+        }
+
+        if (!etiquetasMarcador.some(e => e.esPrincipal === true || e.EsPrincipal == 1)) {
             mostrarNotificacion("Debes asignar al menos una etiqueta como principal.", "error");
             return;
         }
@@ -104,12 +133,26 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
             <input type="hidden" name="id" value={marcadorSeleccionado?.id || ""} />
 
             <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-4 col-span-2">
+                <div className="space-y-4 col-span-2 md:col-span-1">
                     <label className="text-xs font-bold uppercase tracking-widest text-primary">Nombre del Restaurante</label>
                     <input type="text" required value={nombre} name="nombre"
                         onChange={(e) => setNombre(e.target.value)}
                         className="w-full mt-4 px-5 py-4 rounded-2xl border-2 border-borde dark:border-white/10 dark:bg-dark-tarjeta focus:border-primary focus:outline-none transition-all text-sm"
                     />
+                </div>
+
+                <div className="space-y-4 col-span-2 md:col-span-1">
+                    <label className="text-xs font-bold uppercase tracking-widest text-primary">Propietario del marcador</label>
+                    <select
+                        name="usuario_id"
+                        value={usuarioId}
+                        onChange={(e) => setUsuarioId(e.target.value)}
+                        className="w-full mt-4 px-5 py-4 rounded-2xl border-2 border-borde dark:border-white/10 dark:bg-dark-tarjeta focus:border-primary focus:outline-none transition-all text-sm"
+                    >
+                        {usuarios?.map(u => (
+                            <option key={u.id} value={u.id}>{u.Nombre} - {u.Email}</option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="space-y-4 col-span-2 md:col-span-1">
@@ -171,7 +214,7 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
                     </div>
                     <div className='flex gap-2 items-center mt-2'>
                         <input checked={esPrincipal} onChange={(e) => setEsPrincipal(e.target.checked)}
-                            disabled={!esPrincipal && etiquetasMarcador.some(e => e.esPrincipal || e.EsPrincipal)}
+                            disabled={!esPrincipal && etiquetasMarcador.some(e => e.esPrincipal === true || e.EsPrincipal == 1)}
                             className='accent-primary cursor-pointer size-4' type="checkbox" id="es_principal_admin" />
                         <label htmlFor="es_principal_admin" className="text-sm">Es principal</label>
                     </div>
@@ -179,6 +222,7 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
                         {etiquetasMarcador.map((item, index) => (
                             <div key={index} className="flex items-center gap-1 group relative">
                                 <Etiqueta_marcador
+                                    type="button"
                                     style={{
                                         backgroundColor: `${item.Color}33`,
                                         borderColor: item.Color,
@@ -186,7 +230,7 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
                                     }}
                                     icon={<IconoDinamico nombre={item.Icono} size={16} />}
                                     texto={item.Nombre}
-                                    esPrincipal={item.esPrincipal || item.EsPrincipal}
+                                    esPrincipal={item.esPrincipal === true || item.EsPrincipal == 1}
                                 />
                                 <button type="button" onClick={() => eliminarEtiqueta(item.id || item.Categoria_id)} className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full p-0.5 hidden group-hover:block cursor-pointer">
                                     <lucideIcons.X size={12} />

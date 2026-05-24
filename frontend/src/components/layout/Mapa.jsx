@@ -3,8 +3,15 @@ import { MapContainer, TileLayer, Marker, ZoomControl, useMapEvents } from 'reac
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import Boton_cuadrado from '../ui/Boton_cuadrado';
+import { obtener_sesion_usuario } from '../../servicios/usuario/obtener_sesion_usuario';
 import * as lucideIcons from 'lucide-react';
+import * as tbIcons from 'react-icons/tb';
+import * as biIcons from 'react-icons/bi';
+import * as mdIcons from 'react-icons/md';
+import * as giIcons from 'react-icons/gi';
+import * as piIcons from 'react-icons/pi';
+import "leaflet/dist/leaflet.css";
+import Boton_cuadrado from '../ui/Boton_cuadrado';
 import Tarjeta_foto_marcador, { Tarjeta_foto_marcador_añadir } from '../ui/tarjetas_fotos_marcador';
 import Marcador from '../ui/Marcador';
 import Etiqueta_marcador from '../ui/etiqueta_marcador';
@@ -23,7 +30,28 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 //icono dinamico
 const IconoDinamico = ({ nombre, ...props }) => {
-    const IconoComponente = lucideIcons[nombre];
+    if (!nombre) return <lucideIcons.MapPin {...props} />;
+    
+    let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+    if (nombreBase === "Hamburger") nombreBase = "Burger";
+    
+    // 1. Buscar en Lucide (exacto o capitalizado)
+    let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
+    
+    // 2. Si escriben el nombre exacto de react-icons (ej: TbSushi, MdOutlineRamenDining)
+    if (!IconoComponente) {
+        if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
+        else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
+        else if (nombre.startsWith('Md') || nombreBase.startsWith('Md')) IconoComponente = mdIcons[nombre] || mdIcons[nombreBase];
+        else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
+        else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
+    }
+    
+    // 3. Si escribieron "Sushi" a secas, probar suerte con los prefijos
+    if (!IconoComponente) {
+        IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
+    }
+    
     if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
     return <IconoComponente {...props} />;
 };
@@ -46,9 +74,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
     const [usuarioUbicacion, setUsuarioUbicacion] = useState([40.4167, -3.7032]);
     const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
-    const urlClaro = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-    const urlOscuro = "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
-    const atribucion = '&copy; Stadia Maps, &copy; OpenStreetMap contributors';
+    const atribucion = '&copy; OpenStreetMap contributors &copy; CARTO';
     let lugarSeleccionadoEstrellas = 1;
 
     // Funciones
@@ -296,8 +322,8 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 {formularioActivo && posicionClick && <Marker position={posicionClick} />}
 
                 <TileLayer
-                    url={darkMode ? urlOscuro : urlClaro}
-                    attribution={atribucion}
+                    url={"https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"}
+                    attribution='&copy; OpenStreetMap &copy; CARTO'
                 />
 
                 <ZoomControl position="bottomright" />

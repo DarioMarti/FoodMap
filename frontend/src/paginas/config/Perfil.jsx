@@ -137,14 +137,14 @@ export default function Perfil() {
                                     {usuario?.nombre.charAt(0).toUpperCase() + usuario?.nombre.slice(1)}
                                 </strong>
                             </div>
-                            <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Editar</button>
+                            <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline cursor-pointer">Editar</button>
                         </div>
                         <div className="flex justify-between px-4 md:px-8 py-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Nick de usuario</span>
                                 <strong className="text-lg md:text-xl font-medium dark:text-white text-text-main">{usuario?.nick ? "@" + usuario.nick : "No especificado"}</strong>
                             </div>
-                            <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Editar</button>
+                            <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline cursor-pointer">Editar</button>
                         </div>
                         <div className="h-px bg-borde dark:bg-white/5 w-full"></div>
                         <div className="flex justify-between px-4 md:px-8 py-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
@@ -159,7 +159,7 @@ export default function Perfil() {
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Ciudad</span>
                                 <strong className="text-lg md:text-xl font-medium dark:text-white text-text-main">{usuario?.ciudad ? usuario.ciudad : "No especificado"}</strong>
                             </div>
-                            <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline">Editar</button>
+                            <button onClick={() => setEditando(true)} className="text-primary font-semibold text-sm hover:underline cursor-pointer">Editar</button>
                         </div>
                     </div>
                 </div>

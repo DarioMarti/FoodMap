@@ -24,6 +24,10 @@ try {
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($usuario && password_verify($password, $usuario["Contrasena"])) {
+        if ($usuario["Activo"] == 0) {
+            echo json_encode(["ok" => false, "error" => "Tu cuenta ha sido desactivada."]);
+            exit;
+        }
 
         $_SESSION["usuario"] = [
             "id" => $usuario["id"],

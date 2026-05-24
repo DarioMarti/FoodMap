@@ -2,7 +2,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
-session_start();
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
@@ -34,6 +33,7 @@ try {
     $latitud = $_POST['latitud'] ?? '';
     $longitud = $_POST['longitud'] ?? '';
     $direccion = $_POST['direccion'] ?? '';
+    $id_usuario = !empty($_POST['usuario_id']) ? $_POST['usuario_id'] : null;
 
     if (!$id) {
         echo json_encode(['success' => false, 'mensaje' => 'Faltan datos']);
@@ -42,9 +42,15 @@ try {
 
     $conn->beginTransaction();
 
-    $sql = "UPDATE marcador SET Titulo = ?, Descripcion = ?, Puntuacion = ?, Latitud = ?, Longitud = ?, Direccion = ? WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([$nombre, $descripcion, $puntuacion, $latitud, $longitud, $direccion, $id]);
+    if ($id_usuario) {
+        $sql = "UPDATE marcador SET Titulo = ?, Descripcion = ?, Puntuacion = ?, Latitud = ?, Longitud = ?, Direccion = ?, Usuario_id = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$nombre, $descripcion, $puntuacion, $latitud, $longitud, $direccion, $id_usuario, $id]);
+    } else {
+        $sql = "UPDATE marcador SET Titulo = ?, Descripcion = ?, Puntuacion = ?, Latitud = ?, Longitud = ?, Direccion = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$nombre, $descripcion, $puntuacion, $latitud, $longitud, $direccion, $id]);
+    }
 
     $etiquetasJson = $_POST['etiquetas'] ?? '[]';
     $etiquetas = json_decode($etiquetasJson, true);

@@ -1,4 +1,9 @@
 import * as lucideIcons from 'lucide-react';
+import * as tbIcons from 'react-icons/tb';
+import * as biIcons from 'react-icons/bi';
+import * as mdIcons from 'react-icons/md';
+import * as giIcons from 'react-icons/gi';
+import * as piIcons from 'react-icons/pi';
 import Toggle from "../../components/ui/Toggle";
 import Boton_main from "../../components/ui/Boton_main";
 import { useEffect, useState } from 'react';
@@ -7,7 +12,25 @@ import CategoriaBoton from "../../components/ui/Categoria_boton";
 
 // Icono dinamico
 const IconoDinamico = ({ nombre, ...props }) => {
-    const IconoComponente = lucideIcons[nombre];
+    if (!nombre) return <lucideIcons.MapPin {...props} />;
+    const nombreCapitalizado = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+    let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+    if (nombreBase === "Hamburger") nombreBase = "Burger";
+    
+    let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
+    
+    if (!IconoComponente) {
+        if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
+        else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
+        else if (nombre.startsWith('Md') || nombreBase.startsWith('Md')) IconoComponente = mdIcons[nombre] || mdIcons[nombreBase];
+        else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
+        else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
+    }
+    
+    if (!IconoComponente) {
+        IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
+    }
+    
     if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
     return <IconoComponente {...props} />;
 };
@@ -83,6 +106,7 @@ export default function Marcadores() {
                                 const val = e.target.checked;
                                 setMostrarEtiquetas(val);
                                 localStorage.setItem("mostrar-etiquetas", val);
+                                window.dispatchEvent(new Event("preferenciasVisualesCambiada"));
                             }}
                         />
                     </div>
@@ -96,6 +120,7 @@ export default function Marcadores() {
                                 const val = e.target.checked;
                                 setMarcadoresGrandes(val);
                                 localStorage.setItem("marcadores-grandes", val);
+                                window.dispatchEvent(new Event("preferenciasVisualesCambiada"));
                             }}
                         />
                     </div>
@@ -109,6 +134,7 @@ export default function Marcadores() {
                                 const val = e.target.checked;
                                 setMostrarIcono(val);
                                 localStorage.setItem("mostrar-icono", val);
+                                window.dispatchEvent(new Event("preferenciasVisualesCambiada"));
                             }}
                         />
                     </div>

@@ -3,6 +3,11 @@ import { Users, MapPin, Search, Plus, Trash2, Edit, Check, Star, Shield, X, Aler
 import { obtenerTodosUsuarios, obtenerTodasEtiquetas, obtenerTodosMarcadores, desactivarUsuarioAdmin, reactivarUsuarioAdmin, eliminarMarcadorAdmin, actualizarMarcadorAdmin, actualizarCategoriaAdmin, eliminarCategoriaAdmin } from '../servicios/administrador/crud_admin';
 import Etiqueta_marcador from '../components/ui/etiqueta_marcador';
 import * as lucideIcons from 'lucide-react';
+import * as tbIcons from 'react-icons/tb';
+import * as biIcons from 'react-icons/bi';
+import * as mdIcons from 'react-icons/md';
+import * as giIcons from 'react-icons/gi';
+import * as piIcons from 'react-icons/pi';
 import Formulario_admin_edit from '../components/ui/Form_usuario_admin';
 import Notificacion from '../components/ui/Notificacion';
 import { mostrarNotificacion } from '../servicios/mostrar_notificacion';
@@ -126,9 +131,25 @@ export default function Administrador() {
 
 
     const IconoDinamico = ({ nombre, ...props }) => {
-        const nombreReal = nombre === "Hamburger" ? "Burger" : nombre;
-        const IconoComponente = lucideIcons[nombreReal];
-
+        if (!nombre) return <lucideIcons.MapPin {...props} />;
+        
+        let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+        if (nombreBase === "Hamburger") nombreBase = "Burger";
+        
+        let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
+        
+        if (!IconoComponente) {
+            if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
+            else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
+            else if (nombre.startsWith('Md') || nombreBase.startsWith('Md')) IconoComponente = mdIcons[nombre] || mdIcons[nombreBase];
+            else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
+            else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
+        }
+        
+        if (!IconoComponente) {
+            IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
+        }
+        
         if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
         return <IconoComponente {...props} />;
     };
@@ -136,7 +157,7 @@ export default function Administrador() {
 
     const mostrarEtiquetas = async () => {
         const datos = await obtenerTodasEtiquetas();
-        setEtiquetas(datos);
+        setEtiquetas(Array.isArray(datos) ? datos : []);
     }
 
     const mostrarMarcadores = async () => {
@@ -145,7 +166,7 @@ export default function Administrador() {
     }
     const mostrarUsuarios = async () => {
         const datos = await obtenerTodosUsuarios();
-        setUsuarios(datos);
+        setUsuarios(Array.isArray(datos) ? datos : []);
     }
 
     const manejarFormularioEditar = (id) => {
@@ -332,9 +353,17 @@ export default function Administrador() {
                                                 <td className="py-4 px-6 font-semibold opacity-70">#{u.id}</td>
                                                 <td className="py-4 px-6">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="size-10 bg-primary/10 rounded-full flex items-center justify-center font-bold text-primary text-sm uppercase">
-                                                            {u.Nombre.charAt(0)}
-                                                        </div>
+                                                        {u.Foto_perfil ? (
+                                                            <img
+                                                                src={u.Foto_perfil.startsWith('http') ? u.Foto_perfil : `http://localhost/foodmap/backend/uploads/img/${u.Foto_perfil}`}
+                                                                alt={u.Nombre}
+                                                                className="size-10 rounded-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <div className="size-10 bg-primary/10 rounded-full flex items-center justify-center font-bold text-primary text-sm uppercase">
+                                                                {u.Nombre.charAt(0)}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-6">{u.Nombre}</td>
@@ -399,6 +428,7 @@ export default function Administrador() {
                                     <tr className="bg-background dark:bg-background-oscuro text-text-tertiary text-xs uppercase font-bold tracking-wider border-b border-borde dark:border-white/5">
                                         <th className="py-5 px-6">ID</th>
                                         <th className="py-5 px-6">Restaurante</th>
+                                        <th className="py-5 px-6">Creador</th>
                                         <th className="py-5 px-6">Categoría</th>
                                         <th className="py-5 px-6">Dirección</th>
                                         <th className="py-5 px-6">Valoración</th>
@@ -413,6 +443,9 @@ export default function Administrador() {
                                                 <td className="py-4 px-6 font-semibold opacity-70">#{m.id}</td>
                                                 <td className="py-4 px-6">
                                                     <strong className="block text-sm dark:text-white text-text-main">{m.Titulo}</strong>
+                                                </td>
+                                                <td className="py-4 px-6 text-sm font-medium text-primary">
+                                                    {m.Nombre_Usuario || 'Desconocido'}
                                                 </td>
                                                 <td className="py-4 px-6">
                                                     <Etiqueta_marcador
@@ -529,6 +562,7 @@ export default function Administrador() {
                     mostrarNotificacion={(mensaje, tipo) => mostrarNotificacion(mensaje, tipo, notificacion, setNotificacion)}
                     recargarTabla={mostrarMarcadores}
                     categoriasBD={etiquetas}
+                    usuarios={usuarios}
                 />
             )}
 

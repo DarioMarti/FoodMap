@@ -4,7 +4,7 @@ export default function CategoriaBoton({ cat, IconoDinamico, mostrarEtiquetas, m
         <button
             key={cat.id}
             style={{ backgroundColor: cat.Color }}
-            className={`flex items-center gap-3 px-4 py-2.5 border-2 border-borde dark:border-borde-dark rounded-2xl transition-all cursor-pointer shadow-sm hover:shadow-md`}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl transition-all cursor-pointer shadow-sm hover:shadow-md`}
         >
             <div style={{ color: '#ffffff' }} className={`transition-all`}>
                 {mostrarIconos && <IconoDinamico nombre={cat.Icono} size={20} />}

@@ -3,7 +3,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
 
-session_start();
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Credentials: true");
@@ -41,7 +40,7 @@ if ($latitud === '' || $longitud === '' || !is_numeric($latitud) || !is_numeric(
 }
 
 
-    $id_usuario = $_SESSION['usuario']['id'] ?? 1;
+    $id_usuario = !empty($_POST['usuario_id']) ? $_POST['usuario_id'] : ($_SESSION['usuario']['id'] ?? 1);
     $id_mapa = 1;
 
     $conn->beginTransaction();
