@@ -3,9 +3,9 @@ import Boton_main from "../../components/ui/Boton_main";
 
 export default function Ayuda() {
     const faqs = [
-        { q: '¿Cómo añado un nuevo marcador?', a: 'Mantén pulsado cualquier punto del mapa para añadir un marcador personalizado o usa el buscador para encontrar un sitio específico.' },
-        { q: '¿Puedo compartir mis mapas con amigos?', a: 'Sí, desde la sección de Marcadores puedes exportar tus listas o activar tu Perfil Público para que otros las vean.' },
-        { q: '¿Cómo activo el modo oscuro?', a: 'Ve a Ajustes > Apariencia y selecciona el tema Oscuro o Sistema para que se adapte automáticamente.' },
+        { pregunta: '¿Cómo añado un nuevo marcador?', respuesta: 'Pulsa el botón de arriba (o del centro en móvil) para ir al mapa. Arriba a la izquierda hay un botón con el símbolo "+", clica en el y se abrirá un formulario. Rellena los campos. No olvides que como mínimo se debe seleccionar una etiqueta como principal.' },
+        { pregunta: '¿Puedo compartir mis mapas con amigos?', respuesta: 'No, por el momento no. Se contempla añadir esta funcionalidad en próximas actualizaciones.' },
+        { pregunta: '¿Cómo activo el modo oscuro?', respuesta: 'Ve a Ajustes > Apariencia y selecciona el tema Oscuro.' },
     ];
 
     return (
@@ -20,8 +20,8 @@ export default function Ayuda() {
                     {faqs.map((faq, index) => (
                         <div key={index}>
                             <div className="px-4 md:px-8 py-5 transition-colors cursor-pointer group">
-                                <strong className="text-xl font-semibold dark:text-white text-text-main block mb-2  transition-colors">{faq.q}</strong>
-                                <p className="text-lg text-text-tertiary leading-relaxed">{faq.a}</p>
+                                <strong className="text-xl font-semibold dark:text-white text-text-main block mb-2  transition-colors">{faq.pregunta}</strong>
+                                <p className="text-lg text-text-tertiary leading-relaxed">{faq.respuesta}</p>
                             </div>
                             {index < faqs.length - 1 && <span className="h-0.5 bg-borde w-full block  dark:border-1 dark:border-white/10 bg-white/10"></span>}
                         </div>

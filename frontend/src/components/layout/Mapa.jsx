@@ -31,13 +31,13 @@ L.Marker.prototype.options.icon = DefaultIcon;
 //icono dinamico
 const IconoDinamico = ({ nombre, ...props }) => {
     if (!nombre) return <lucideIcons.MapPin {...props} />;
-    
+
     let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
     if (nombreBase === "Hamburger") nombreBase = "Burger";
-    
+
     // 1. Buscar en Lucide (exacto o capitalizado)
     let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
-    
+
     // 2. Si escriben el nombre exacto de react-icons (ej: TbSushi, MdOutlineRamenDining)
     if (!IconoComponente) {
         if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
@@ -46,12 +46,12 @@ const IconoDinamico = ({ nombre, ...props }) => {
         else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
         else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
     }
-    
+
     // 3. Si escribieron "Sushi" a secas, probar suerte con los prefijos
     if (!IconoComponente) {
         IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
     }
-    
+
     if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
     return <IconoComponente {...props} />;
 };
@@ -185,7 +185,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
             setUsuarioUbicacion([40.4167, -3.7032]);
         }
 
-        fetch("http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php", { credentials: 'include' })
+        fetch(import.meta.env.VITE_API_URL + "/modelos/categorias/mostrar_categorias.php", { credentials: 'include' })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -215,8 +215,8 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                 }}
                 className="bg-primary-light dark:bg-primary-dark/30 border-2 border-primary hover:bg-primary/100 dark:hover:bg-primary-hover hover:text-background  text-primary size-14 absolute top-22 md:top-26 left-4 md:left-8 z-1000" icon={<lucideIcons.Plus size={26} />} />
 
-            <form onSubmit={manejarEnvio} className={`absolute w-[90%] max-h-[900px]  md:w-150 bottom-20 md:top-26 left-[5%] md:left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta dark:border-text-main p-6 rounded-xl dark:text-background
-                shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-[1200] max-h-[75vh] overflow-y-auto pb-20 ${formularioActivo ? 'block' : 'hidden'}`}>
+            <form onSubmit={manejarEnvio} className={`absolute w-[90%] max-h-[40vh] md:max-h-[900px] md:w-150 bottom-20 md:top-26 left-[5%] md:left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta dark:border-text-main p-6 rounded-xl dark:text-background
+                shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-[1200] overflow-y-auto pb-20 ${formularioActivo ? 'block' : 'hidden'}`}>
                 <button
                     onClick={() => {
                         manejarFormularioMarcador("crear", false, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetas, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando);
@@ -360,7 +360,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
 
             {
                 lugarSeleccionado && (
-                    <div className="h-[80vh] md:max-h-[35vh] overflow-y-auto absolute bottom-0 left-0 right-0 z-[1001] bg-background dark:bg-dark-tarjeta p-6 rounded-t-xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300">
+                    <div className="max-h-[45vh] md:max-h-[35vh] overflow-y-auto absolute bottom-24 md:bottom-0 left-0 right-0 z-[1001] bg-background dark:bg-dark-tarjeta p-6 rounded-t-xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300">
                         <div className="flex gap-2 absolute top-4 right-4 z-1000">
                             <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:border-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => { manejarFormularioMarcador("editar", false, true, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando); setPuntuacion(parseInt(lugarSeleccionado?.Puntuacion) || 1); }} icon={<lucideIcons.Pencil size={26} />} />
                             <Boton_cuadrado className="bg-primary-light border-2 border-primary hover:bg-primary hover:border-primary hover:text-background  text-primary size-14 dark:bg-text-main dark:hover:bg-primary dark:border-descripcion dark:text-background" onClick={() => setLugarSeleccionado(null)} icon={<lucideIcons.XIcon size={26} />} />
@@ -382,7 +382,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                                 {fotosMarcador.map((foto, index) => (
                                     <Tarjeta_foto_marcador
                                         key={index}
-                                        foto={`http://localhost/foodmap/backend/uploads/img/${foto.Url_archivo}`}
+                                        foto={import.meta.env.VITE_API_URL + `/uploads/img/${foto.Url_archivo}`}
                                     />
                                 ))}
                             </div>
@@ -405,8 +405,8 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
 
 
 
-            <form onSubmit={manejarEnvio} className={`absolute w-[90%] md:w-150 top-22 md:top-26 left-[5%] md:left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta dark:border-text-main p-6 rounded-xl dark:text-background
-                shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-[1200] max-h-[75vh] overflow-y-auto pb-20 ${formularioActivo_editar ? 'block' : 'hidden'}`}>
+            <form onSubmit={manejarEnvio} className={`absolute w-[90%] max-h-[40vh] md:max-h-[900px] md:w-150 top-22 md:top-26 left-[5%] md:left-30 flex flex-col gap-4 bg-background dark:bg-dark-tarjeta dark:border-text-main p-6 rounded-xl dark:text-background
+                shadow-[0_10px_40px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 z-[1200] overflow-y-auto pb-20 ${formularioActivo_editar ? 'block' : 'hidden'}`}>
                 <button
                     onClick={() => {
                         manejarFormularioMarcador("editar", false, false, setFormularioEditarActivo, setFormularioActivo, setEtiquetasMarcador, setEtiquetaSeleccionada, esPrincipal, setEsPrincipal, setIsEditando);
@@ -486,7 +486,7 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
                     />
                     {fotosMarcador.map((foto, index) => {
                         const urlFoto = foto.Url_archivo
-                            ? `http://localhost/foodmap/backend/uploads/img/${foto.Url_archivo}`
+                            ? import.meta.env.VITE_API_URL + `/uploads/img/${foto.Url_archivo}`
                             : URL.createObjectURL(foto);
                         return (
                             <Tarjeta_foto_marcador

@@ -2,7 +2,7 @@
 export async function obtener_sesion_usuario() {
     try {
 
-        const peticion = await fetch("http://localhost/foodmap/backend/modelos/sesion/obtener_sesion.php", {
+        const peticion = await fetch(import.meta.env.VITE_API_URL + "/modelos/sesion/obtener_sesion.php", {
             method: "POST",
             credentials: 'include'
         });

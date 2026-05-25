@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';    
 
-header("Access-Control-Allow-Origin: http://localhost:5173");
+$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -33,6 +33,11 @@ try {
 
     if (!$nombre || !$email || !$password) {
         echo json_encode(['success' => false, 'mensaje' => 'Nombre, email y contraseña son obligatorios para crear un usuario']);
+        exit;
+    }
+
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
+        echo json_encode(['success' => false, 'mensaje' => 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.']);
         exit;
     }
 

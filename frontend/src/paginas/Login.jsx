@@ -22,9 +22,20 @@ const Login = () => {
             setFormularioMostrado("login");
         }
     };
+    const validarPassword = (password) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        return regex.test(password);
+    };
+
     const registro_usuario = async (e) => {
         e.preventDefault();
         const data = new FormData(e.target);
+
+        if (!validarPassword(data.get('password'))) {
+            alert("La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula y un número.");
+            return;
+        }
+
         const respuesta = await registrar_usuario(data);
         if (respuesta.ok) {
             window.location.href = "/";
@@ -41,10 +52,18 @@ const Login = () => {
     const inicio_sesion = async (e) => {
         e.preventDefault();
         const data = new FormData(e.target);
-        const respuesta = await iniciar_sesion(data);
-        if (respuesta.ok) {
-            window.location.href = "/";
-        } else {
+        try {
+            const respuesta = await iniciar_sesion(data);
+            if (respuesta.ok) {
+                window.location.href = "/";
+            } else {
+                setMensajeError(true);
+                setTimeout(() => {
+                    setMensajeError(false);
+                }, 5000);
+            }
+        } catch (error) {
+            console.error("Error conectando con el servidor:", error);
             setMensajeError(true);
             setTimeout(() => {
                 setMensajeError(false);
@@ -95,13 +114,14 @@ const Login = () => {
 
                     <p className="text-right text-[14px] text-[#6c757d] mb-[35px] mt-[10px] font-medium cursor-pointer self-end hover:text-[#EA2678]">Forget your password?</p>
 
+                    {mensajeError && <p className="text-red-500 text-[14px] mb-[15px] font-bold text-center">Error al iniciar sesión. Revisa que el correo y la contraseña sean correctos.</p>}
+
                     <button type="submit" className="bg-primary w-full text-white cursor-pointer py-[18px] rounded-full border-none font-bold text-lg hover:bg-primary-hover ">
                         Iniciar sesión
                     </button>
                     <p className="text-center text-text-main  mt-5 px-[60px] py-[18px]  md:hidden tracking-wider">
                         ¿No tienes una cuenta? <span onClick={() => cambiarFormulario(formularioMostrado)} className="text-primary font-bold cursor-pointer hover:text-primary-hover uppercase tracking-wider">Registrarse</span>
                     </p>
-                    {mensajeError && <p className="text-red-500 text-[14px] mt-[10px]">Error al iniciar sesión. Revisa que el correo y la contraseña sean correctos</p>}
                 </form>
 
                 {/* Formulario de registro */}

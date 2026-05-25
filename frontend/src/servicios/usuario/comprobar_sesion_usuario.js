@@ -2,7 +2,7 @@
 export async function comprobar_sesion_usuario() {
     try {
 
-        const peticion = await fetch("http://localhost/foodmap/backend/modelos/sesion/comprobar_sesion.php", {
+        const peticion = await fetch(import.meta.env.VITE_API_URL + "/modelos/sesion/comprobar_sesion.php", {
             method: "POST",
             credentials: 'include'
         });

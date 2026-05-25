@@ -8,7 +8,7 @@ export const iniciarChat = async (setMiUsuario, setContactos, socket) => {
     }
 
     // Obtener lista de amigos y grupos
-    const resp = await fetch('http://localhost/foodmap/backend/modelos/chat/obtener_contactos.php', { credentials: 'include' });
+    const resp = await fetch(import.meta.env.VITE_API_URL + '/modelos/chat/obtener_contactos.php', { credentials: 'include' });
     const data = await resp.json();
     if (data.ok) {
         setContactos(data);
@@ -17,10 +17,7 @@ export const iniciarChat = async (setMiUsuario, setContactos, socket) => {
 
 export const manejarNuevoMensaje = (mensaje, conversacion_activa, miUsuario, setMensajes) => {
     // Solo lo añadimos si pertenece a la conversación que tenemos abierta
-    const esParaEsteChat = conversacion_activa && (
-        (conversacion_activa.esGrupo && mensaje.grupo_id === conversacion_activa.id) ||
-        (!conversacion_activa.esGrupo && mensaje.emisor_id === conversacion_activa.id)
-    );
+    const esParaEsteChat = conversacion_activa && (mensaje.emisor_id === conversacion_activa.id);
 
     if (esParaEsteChat || mensaje.emisor_id === miUsuario?.id) {
         setMensajes((prev) => [...prev, mensaje]);
@@ -28,14 +25,13 @@ export const manejarNuevoMensaje = (mensaje, conversacion_activa, miUsuario, set
 };
 
 
-export const activarConversacion = async (contacto, esGrupo, set_conversacion_activa, setMensajes, setContactos) => {
-    const idActivo = { ...contacto, esGrupo };
-    set_conversacion_activa(idActivo);
+export const activarConversacion = async (contacto, set_conversacion_activa, setMensajes, setContactos) => {
+    set_conversacion_activa(contacto);
 
-    if (!esGrupo && setContactos) {
+    if (setContactos) {
         const formData = new FormData();
         formData.append('emisor_id', contacto.id);
-        fetch('http://localhost/foodmap/backend/modelos/chat/marcar_leidos.php', {
+        fetch(import.meta.env.VITE_API_URL + '/modelos/chat/marcar_leidos.php', {
             method: 'POST',
             credentials: 'include',
             body: formData
@@ -51,9 +47,7 @@ export const activarConversacion = async (contacto, esGrupo, set_conversacion_ac
         }));
     }
 
-    const url = esGrupo
-        ? `http://localhost/foodmap/backend/modelos/chat/obtener_mensajes.php?grupo_id=${contacto.id}`
-        : `http://localhost/foodmap/backend/modelos/chat/obtener_mensajes.php?otro_id=${contacto.id}`;
+    const url = import.meta.env.VITE_API_URL + `/modelos/chat/obtener_mensajes.php?otro_id=${contacto.id}`;
     try {
         const resp = await fetch(url, { credentials: 'include' });
         const data = await resp.json();
@@ -71,8 +65,7 @@ export const enviarMensaje = (contenido, conversacion_activa, miUsuario, socket,
     const dataMensaje = {
         contenido: contenido,
         emisor_id: miUsuario.id,
-        receptor_id: conversacion_activa.esGrupo ? null : conversacion_activa.id,
-        grupo_id: conversacion_activa.esGrupo ? conversacion_activa.id : null,
+        receptor_id: conversacion_activa.id,
         fecha_envio: new Date().toISOString(),
         nombre_usuario: miUsuario.nombre
     };

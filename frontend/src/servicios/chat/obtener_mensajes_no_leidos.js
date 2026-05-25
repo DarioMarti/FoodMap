@@ -1,6 +1,6 @@
 export const obtener_mensajes_no_leidos = async () => {
     try {
-        const res = await fetch("http://localhost/foodmap/backend/modelos/chat/obtener_mensajes_no_leidos_totales.php", {
+        const res = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/obtener_mensajes_no_leidos_totales.php", {
             credentials: "include"
         });
         const data = await res.json();

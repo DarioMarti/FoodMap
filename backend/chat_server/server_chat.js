@@ -15,12 +15,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: [
-            "http://localhost:5173",
-            "http://localhost:5174",
-            "http://localhost:5175",
-            "http://localhost:5176"
-        ],
+        origin: "*", // Permitir peticiones desde cualquier origen (el VPS)
         methods: ["GET", "POST"]
     }
 });
@@ -31,10 +26,10 @@ const model = genAI.getGenerativeModel({
 });
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'foodmap'
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'foodmap'
 });
 
 db.connect((err) => {
@@ -53,22 +48,18 @@ io.on('connection', (socket) => {
         console.log(`Usuario ${usuario_id} unido a su sala privada`);
     });
 
-    //Sistema de chat entre amigos y grupos
+    //Sistema de chat entre amigos
     socket.on('enviar_mensaje', (data) => {
-        const { contenido, emisor_id, receptor_id, grupo_id } = data;
+        const { contenido, emisor_id, receptor_id } = data;
 
-        const query = 'INSERT INTO mensaje (Contenido, Usuario_id, Usuario_receptor_id, Grupo_id) VALUES (?, ?, ?, ?)';
-        db.query(query, [contenido, emisor_id, receptor_id, grupo_id], (err, result) => {
+        const query = 'INSERT INTO mensaje (Contenido, Usuario_id, Usuario_receptor_id) VALUES (?, ?, ?)';
+        db.query(query, [contenido, emisor_id, receptor_id], (err, result) => {
             if (err) {
                 console.error('Error al guardar mensaje:', err);
                 return;
             }
 
-            if (grupo_id) {
-                io.to(`grupo_${grupo_id}`).emit('nuevo_mensaje', data);
-            } else {
-                io.to(`usuario_${receptor_id}`).emit('nuevo_mensaje', data);
-            }
+            io.to(`usuario_${receptor_id}`).emit('nuevo_mensaje', data);
         });
     });
 

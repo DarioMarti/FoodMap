@@ -16,9 +16,24 @@ export default function Form_usuario_admin({ usuarioSeleccionado, setFormularioE
         setPassword("");
     }, [usuarioSeleccionado]);
 
+    const validarPassword = (pass) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        return regex.test(pass);
+    };
+
     const manejarGuardar = async (e) => {
         e.preventDefault();
         const data = new FormData(e.target);
+        
+        // Solo validar si es creación, o si es edición y han escrito algo
+        const passValue = data.get('password');
+        if (!usuarioSeleccionado?.id || passValue) {
+            if (!validarPassword(passValue)) {
+                mostrarNotificacion("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.", "error");
+                return;
+            }
+        }
+
         let respuesta;
 
         if (usuarioSeleccionado?.id) {

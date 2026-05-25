@@ -65,7 +65,7 @@ export default function Marcadores() {
     }, []);
 
     const cargarCategorias = async (userId) => {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php?usuario_id=${userId}`, {
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + `/modelos/categorias/mostrar_categorias.php?usuario_id=${userId}`, {
             credentials: 'include'
         });
         const data = await respuesta.json();

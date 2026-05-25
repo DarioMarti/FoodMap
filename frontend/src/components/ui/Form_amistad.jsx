@@ -11,7 +11,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
         e.preventDefault();
         const formData = new FormData();
         formData.append("nombre", nombre_usuario);
-        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/usuario/mostrar_usuarios.php", {
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/mostrar_usuarios.php", {
             credentials: 'include',
             method: "POST",
             body: formData,
@@ -30,7 +30,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
     const aceptar_solicitud = async (amigo_id) => {
         const formData = new FormData();
         formData.append("amigo_id", amigo_id);
-        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/chat/aceptar_solicitud.php", {
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/aceptar_solicitud.php", {
             credentials: 'include',
             method: "POST",
             body: formData,
@@ -48,7 +48,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
     const enviar_solicitud = async (amigo_id) => {
         const formData = new FormData();
         formData.append("amigo_id", amigo_id);
-        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/chat/enviar_solicitud.php", {
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/enviar_solicitud.php", {
             credentials: 'include',
             method: "POST",
             body: formData,
@@ -68,7 +68,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
     const bloquear_usuario = async (id_amigo) => {
         const formData = new FormData();
         formData.append("id", id_amigo);
-        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/chat/bloquear_usuario.php", {
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/bloquear_usuario.php", {
             credentials: 'include',
             method: "POST",
             body: formData,
@@ -87,7 +87,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
     const desbloquear_usuario = async (id_amigo) => {
         const formData = new FormData();
         formData.append("id", id_amigo);
-        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/chat/desbloquear_usuario.php", {
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/desbloquear_usuario.php", {
             credentials: 'include',
             method: "POST",
             body: formData,
@@ -109,7 +109,6 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
 
     return (
         <>
-            {/* Fondo desenfocado (Overlay) */}
             {estado && (
                 <div
                     className="fixed inset-0 z-[4999] bg-black/50 backdrop-blur-sm transition-opacity"
@@ -119,7 +118,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
 
             <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col md:flex-row items-center md:items-start z-[5000] w-[95vw] sm:w-[80vw] md:w-auto max-h-[90vh] ${estado ? 'flex' : 'hidden'}`}>
 
-                <button onClick={handleSolicitudes} className="md:hidden self-end mb-2 bg-dark-tarjeta text-text-main p-2 rounded-full shadow-lg">
+                <button onClick={handleSolicitudes} className="md:hidden self-end mb-2 bg-background dark:bg-dark-tarjeta text-text-main dark:text-background p-2 rounded-full shadow-lg">
                     <lucideIcons.X className="size-6" />
                 </button>
 
@@ -128,8 +127,8 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                         onClick={() => setTabActiva("buscar")}
                         title="Buscar Amigos"
                         className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "buscar"
-                            ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
-                            : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
+                            ? "bg-white dark:bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
+                            : "bg-background-claro dark:bg-dark-tarjeta/80 text-text-tertiary dark:text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-borde dark:md:border-primary-dark/60 z-10"
                             }`}
                     >
                         <lucideIcons.UserSearch className="size-5 md:size-6" />
@@ -139,8 +138,8 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                         onClick={() => setTabActiva("solicitudes")}
                         title="Solicitudes Pendientes"
                         className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "solicitudes"
-                            ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
-                            : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
+                            ? "bg-white dark:bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
+                            : "bg-background-claro dark:bg-dark-tarjeta/80 text-text-tertiary dark:text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-borde dark:md:border-primary-dark/60 z-10"
                             }`}
                     >
                         <div className="relative">
@@ -161,15 +160,15 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                         onClick={() => setTabActiva("Contactos")}
                         title="Mis Amigos"
                         className={`transition-all cursor-pointer flex items-center justify-center h-14 md:h-20 flex-1 md:flex-none md:w-14 rounded-t-xl md:rounded-t-none md:rounded-l-2xl ${tabActiva === "Contactos"
-                            ? "bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
-                            : "bg-dark-tarjeta/80 text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-primary-dark/60 z-10"
+                            ? "bg-white dark:bg-dark-tarjeta text-primary md:w-16 border-t-4 md:border-t-0 md:border-l-4 border-primary z-10 shadow-lg"
+                            : "bg-background-claro dark:bg-dark-tarjeta/80 text-text-tertiary dark:text-primary-dark/60 border-t-4 md:border-t-0 md:border-l-4 border-transparent md:border-borde dark:md:border-primary-dark/60 z-10"
                             }`}
                     >
                         <lucideIcons.Contact className="size-5 md:size-6" />
                     </button>
                 </div>
 
-                <div className="bg-dark-tarjeta p-4 md:p-8 rounded-2xl rounded-t-none md:rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] w-full md:min-w-[700px] h-[75vh] md:h-auto md:min-h-120 overflow-y-auto flex-1 flex flex-col">
+                <div className="bg-white dark:bg-dark-tarjeta p-4 md:p-8 rounded-2xl rounded-t-none md:rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] w-full md:min-w-[700px] h-[75vh] md:h-auto md:min-h-120 overflow-y-auto flex-1 flex flex-col">
 
                     {tabActiva === "buscar" && (
                         <div className="animate-in fade-in slide-in-from-right-4 duration-300">
@@ -183,7 +182,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                                     value={nombre_usuario}
                                     onChange={(e) => setNombre_usuario(e.target.value)}
                                     placeholder="Escribe el nombre de usuario..."
-                                    className="bg-background-oscuro/50 border border-text-tertiary text-lg rounded-xl px-4 py-3 w-full text-text-main dark:text-background focus:outline-none focus:border-primary transition-colors"
+                                    className="bg-background-input dark:bg-background-oscuro/50 border border-borde dark:border-text-tertiary text-lg rounded-xl px-4 py-3 w-full text-text-main dark:text-background focus:outline-none focus:border-primary transition-colors"
                                 />
                                 <button onClick={buscar_usuarios} className="bg-primary text-white px-6 py-3 border border-primary rounded-xl text-lg font-semibold cursor-pointer hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all active:scale-95">
                                     Buscar
@@ -268,7 +267,7 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                                     {solicitudes.map((solicitud, index) => (
                                         <div
                                             key={solicitud.id}
-                                            className={`flex items-center justify-between py-4 px-6 ${index % 2 === 0 ? "bg-text-tertiary/10" : "bg-transparent"
+                                            className={`flex items-center justify-between py-4 px-6 ${index % 2 === 0 ? "bg-background-claro dark:bg-text-tertiary/10" : "bg-transparent"
                                                 } text-text-main dark:text-background hover:bg-primary/5 transition-colors`}
                                         >
                                             <div className="flex items-center gap-3">

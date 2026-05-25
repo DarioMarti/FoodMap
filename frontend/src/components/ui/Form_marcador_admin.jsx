@@ -31,7 +31,7 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
         setEsPrincipal(false);
 
         if (marcadorSeleccionado?.id) {
-            fetch(`http://localhost/foodmap/backend/modelos/marcadores/obtener_todas_etiquetas.php?id_marcador=${marcadorSeleccionado.id}`, { credentials: 'include' })
+            fetch(import.meta.env.VITE_API_URL + `/modelos/marcadores/obtener_todas_etiquetas.php?id_marcador=${marcadorSeleccionado.id}`, { credentials: 'include' })
                 .then(res => res.json())
                 .then(data => {
                     setEtiquetasMarcador(Array.isArray(data) ? data : []);

@@ -10,7 +10,7 @@ export default function Tarjeta_chat({ isActiva, sigla, nombre, texto, hora, onC
                     {fotoPerfil ? (
                         <img 
                             className="w-12 h-12 rounded-full object-cover bg-amber-600" 
-                            src={fotoPerfil.startsWith('http') ? fotoPerfil : `http://localhost/foodmap/backend/uploads/img/${fotoPerfil}`} 
+                            src={fotoPerfil.startsWith('http') ? fotoPerfil : import.meta.env.VITE_API_URL + `/uploads/img/${fotoPerfil}`} 
                             alt={nombre} 
                         />
                     ) : (
@@ -19,9 +19,11 @@ export default function Tarjeta_chat({ isActiva, sigla, nombre, texto, hora, onC
                         </span>
                     )}
                 </span>
-                <div className="flex-1">
+                <div className="flex-1 flex flex-col justify-center">
                     <strong className="text-md font-semibold text-2xl text-text-main dark:text-background">{nombre}</strong>
-                    <p className="text-lg font-light mt-1 text-text-tertiary dark:text-background-oscur">{texto}</p>
+                    {texto && (
+                        <p className="text-lg font-light mt-1 text-text-tertiary dark:text-background-oscur">{texto}</p>
+                    )}
                 </div>
             </div>
             <div className=" h-24 p-3 rounded-2xl flex flex-col items-end gap-2">

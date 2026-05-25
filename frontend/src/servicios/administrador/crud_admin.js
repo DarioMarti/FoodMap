@@ -1,6 +1,6 @@
 export const obtenerTodasEtiquetas = async (id) => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php`, { credentials: 'include' });
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + `/modelos/categorias/mostrar_categorias.php`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {
@@ -10,7 +10,7 @@ export const obtenerTodasEtiquetas = async (id) => {
 
 export const obtenerTodosUsuarios = async () => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/usuario/mostrar_todos_usuarios.php`, { credentials: 'include' });
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + `/modelos/usuario/mostrar_todos_usuarios.php`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {
@@ -20,7 +20,7 @@ export const obtenerTodosUsuarios = async () => {
 
 export const obtenerTodosMarcadores = async () => {
     try {
-        const respuesta = await fetch(`http://localhost/foodmap/backend/modelos/marcadores/mostrar_todos_marcadores.php`, { credentials: 'include' });
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + `/modelos/marcadores/mostrar_todos_marcadores.php`, { credentials: 'include' });
         const datos = await respuesta.json();
         return datos;
     } catch (error) {
@@ -32,7 +32,7 @@ export const obtenerTodosMarcadores = async () => {
 
 export const actualizarUsuario = async (formData) => {
     const respuesta = await fetch(
-        `http://localhost/foodmap/backend/modelos/usuario/editar_usuario_admin.php`,
+        import.meta.env.VITE_API_URL + `/modelos/usuario/editar_usuario_admin.php`,
         { method: "POST", credentials: "include", body: formData }
     );
     return await respuesta.json();
@@ -40,7 +40,7 @@ export const actualizarUsuario = async (formData) => {
 
 export const crearUsuarioAdmin = async (formData) => {
     const respuesta = await fetch(
-        `http://localhost/foodmap/backend/modelos/usuario/crear_usuario_admin.php`,
+        import.meta.env.VITE_API_URL + `/modelos/usuario/crear_usuario_admin.php`,
         { method: "POST", credentials: "include", body: formData }
     );
     return await respuesta.json();
@@ -52,7 +52,7 @@ export const desactivarUsuarioAdmin = async (id) => {
     formData.append('id', id);
 
     const respuesta = await fetch(
-        `http://localhost/foodmap/backend/modelos/usuario/eliminar_usuario_admin.php`,
+        import.meta.env.VITE_API_URL + `/modelos/usuario/eliminar_usuario_admin.php`,
         { method: "POST", credentials: "include", body: formData }
     );
     return await respuesta.json();
@@ -63,7 +63,7 @@ export const reactivarUsuarioAdmin = async (id) => {
     formData.append('id', id);
 
     const respuesta = await fetch(
-        `http://localhost/foodmap/backend/modelos/usuario/reactivar_usuario_admin.php`,
+        import.meta.env.VITE_API_URL + `/modelos/usuario/reactivar_usuario_admin.php`,
         { method: "POST", credentials: "include", body: formData }
     );
     return await respuesta.json();
@@ -74,7 +74,7 @@ export const reactivarUsuarioAdmin = async (id) => {
 
 export const actualizarMarcadorAdmin = async (data) => {
     const respuesta = await fetch(
-        "http://localhost/foodmap/backend/modelos/marcadores/editar_marcador_admin.php",
+        import.meta.env.VITE_API_URL + "/modelos/marcadores/editar_marcador_admin.php",
         { method: "POST", credentials: "include", body: data }
     );
     return await respuesta.json();
@@ -84,7 +84,7 @@ export const eliminarMarcadorAdmin = async (id) => {
     const formData = new FormData();
     formData.append('id', id);
     const respuesta = await fetch(
-        "http://localhost/foodmap/backend/modelos/marcadores/eliminar_marcador_admin.php",
+        import.meta.env.VITE_API_URL + "/modelos/marcadores/eliminar_marcador_admin.php",
         { method: "POST", credentials: "include", body: formData }
     );
     return await respuesta.json();
@@ -92,7 +92,7 @@ export const eliminarMarcadorAdmin = async (id) => {
 
 export const crearMarcadorAdmin = async (data) => {
     const respuesta = await fetch(
-        "http://localhost/foodmap/backend/modelos/marcadores/crear_marcador_admin.php",
+        import.meta.env.VITE_API_URL + "/modelos/marcadores/crear_marcador_admin.php",
         { method: "POST", credentials: "include", body: data }
     );
     return await respuesta.json();
@@ -103,7 +103,7 @@ export const crearMarcadorAdmin = async (data) => {
 
 export const actualizarCategoriaAdmin = async (data) => {
     const respuesta = await fetch(
-        "http://localhost/foodmap/backend/modelos/categorias/editar_categoria_admin.php",
+        import.meta.env.VITE_API_URL + "/modelos/categorias/editar_categoria_admin.php",
         { method: "POST", credentials: "include", body: data }
     );
     return await respuesta.json();
@@ -113,7 +113,7 @@ export const eliminarCategoriaAdmin = async (id) => {
     const formData = new FormData();
     formData.append('id', id);
     const respuesta = await fetch(
-        "http://localhost/foodmap/backend/modelos/categorias/eliminar_categoria_admin.php",
+        import.meta.env.VITE_API_URL + "/modelos/categorias/eliminar_categoria_admin.php",
         { method: "POST", credentials: "include", body: formData }
     );
     return await respuesta.json();
@@ -121,7 +121,7 @@ export const eliminarCategoriaAdmin = async (id) => {
 
 export const crearCategoriaAdmin = async (data) => {
     const respuesta = await fetch(
-        "http://localhost/foodmap/backend/modelos/categorias/crear_categoria_admin.php",
+        import.meta.env.VITE_API_URL + "/modelos/categorias/crear_categoria_admin.php",
         { method: "POST", credentials: "include", body: data }
     );
     return await respuesta.json();

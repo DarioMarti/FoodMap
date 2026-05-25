@@ -70,7 +70,7 @@ export function Sidebar() {
 
         {usuario.foto && !esFotoDefault ? (
           <img
-            src={usuario.foto.startsWith('http') ? usuario.foto : `http://localhost/foodmap/backend/uploads/img/${usuario.foto}`}
+            src={usuario.foto.startsWith('http') ? usuario.foto : import.meta.env.VITE_API_URL + `/uploads/img/${usuario.foto}`}
             alt="Foto de perfil"
             className="w-12 h-12 rounded-full object-cover"
           />

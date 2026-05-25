@@ -20,7 +20,7 @@ export default function Chat_input({ onSend, className = "" }) {
     };
 
     return (
-        <div className={`flex items-center gap-4 px-4 py-3 ${className} `}>
+        <div className={`flex items-center gap-2 md:gap-4 px-0 md:px-2 py-3 ${className} `}>
             <div className="flex-1">
                 <textarea
                     rows={1}

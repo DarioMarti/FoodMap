@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
 // Cabeceras CORS
-header("Access-Control-Allow-Origin: http://localhost:5173");
+$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Content-Type: application/json");
@@ -26,6 +26,11 @@ try {
     // Validar que no vengan vacíos
     if (empty($contrasena_actual) || empty($contrasena_nueva)) {
         echo json_encode(["ok" => false, "error" => "Debes rellenar todos los campos de contraseña."]);
+        exit;
+    }
+
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $contrasena_nueva)) {
+        echo json_encode(["ok" => false, "error" => "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número."]);
         exit;
     }
 

@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 session_start();
 
-header("Access-Control-Allow-Origin: http://localhost:5173");
+$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -19,6 +19,11 @@ try {
     $nombre = $_POST['nombre'];
     $email = $_POST['email'];
     $passwordUser = $_POST['password'];
+
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $passwordUser)) {
+        echo json_encode(["ok" => false, "error" => "La contraseña no cumple los requisitos de seguridad."]);
+        exit;
+    }
 
     $passwordHash = password_hash($passwordUser, PASSWORD_DEFAULT);
 

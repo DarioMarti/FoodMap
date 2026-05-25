@@ -50,7 +50,7 @@ export default function MenuMovil() {
             </NavLink>
 
             <div className="w-1/5 flex justify-center">
-                <NavLink to="/mapa" className="bg-white rounded-full h-16 w-16 flex items-center justify-center -mt-8 shadow-lg border-[6px] border-background dark:border-primary cursor-pointer group transition-transform active:scale-95">
+                <NavLink to="/mapa" className="bg-white rounded-full h-16 w-16 flex items-center justify-center -mt-8 shadow-lg border-[6px] border-primary dark:border-primary cursor-pointer group transition-transform active:scale-95">
                     <MapPinned size={28} className="text-primary group-hover:scale-110 transition-transform" />
                 </NavLink>
             </div>

@@ -28,7 +28,7 @@ export default function Privacidad() {
             const formData = new FormData();
             formData.append("perfil_publico", valor ? 1 : 0);
 
-            const res = await fetch("http://localhost/foodmap/backend/modelos/usuario/actualizar_privacidad.php", {
+            const res = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/actualizar_privacidad.php", {
                 method: "POST",
                 credentials: 'include',
                 body: formData
@@ -46,10 +46,22 @@ export default function Privacidad() {
         setFormContrasena(!formContrasena);
     };
 
+    const validarPassword = (pass) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        return regex.test(pass);
+    };
+
     const cambiarContraseña = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        const res = await fetch("http://localhost/foodmap/backend/modelos/usuario/editar_contraseña.php", {
+
+        const nueva = formData.get('contrasena_nueva');
+        if (!validarPassword(nueva)) {
+            mostrarNotificacion("La contraseña nueva debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.", "error");
+            return;
+        }
+
+        const res = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/editar_contraseña.php", {
             method: "POST",
             credentials: 'include',
             body: formData

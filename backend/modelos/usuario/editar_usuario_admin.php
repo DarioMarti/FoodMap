@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
 
-header("Access-Control-Allow-Origin: http://localhost:5173");
+$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -51,22 +51,31 @@ try {
         }
     }
 
-    if ($password) {
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-        if ($nombreFoto) {
+    if ($nombreFoto) {
+        if ($password) {
+            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
+                echo json_encode(['success' => false, 'mensaje' => 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.']);
+                exit;
+            }
+            $hash = password_hash($password, PASSWORD_DEFAULT);
             $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Contrasena = ?, Rol = ?, Foto_perfil = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$nombre, $ciudad, $hash, $rol, $nombreFoto, $usuarioId]);
         } else {
-            $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Contrasena = ?, Rol = ? WHERE id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([$nombre, $ciudad, $hash, $rol, $usuarioId]);
-        }
-    } else {
-        if ($nombreFoto) {
             $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Rol = ?, Foto_perfil = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$nombre, $ciudad, $rol, $nombreFoto, $usuarioId]);
+        }
+    } else {
+        if ($password) {
+            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
+                echo json_encode(['success' => false, 'mensaje' => 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.']);
+                exit;
+            }
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Contrasena = ?, Rol = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$nombre, $ciudad, $hash, $rol, $usuarioId]);
         } else {
             $sql = "UPDATE usuario SET Nombre = ?, Ciudad = ?, Rol = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);

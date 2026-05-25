@@ -32,7 +32,7 @@ export default function Notificacion({ mensaje, tipo = 'success' }) {
 
     return (
         <div className={`
-            flex items-center gap-4 px-6 py-4 rounded-2xl border backdrop-blur-md
+            flex items-center gap-4 px-6 py-4 rounded-2xl border backdrop-blur-md max-w-[90vw] md:max-w-xl mx-auto
             animate-in fade-in slide-in-from-top-4 duration-300
             ${config.bg} ${config.border} ${config.text} ${config.glow}
         `}>
@@ -42,7 +42,7 @@ export default function Notificacion({ mensaje, tipo = 'success' }) {
             </div>
 
             {/* Mensaje */}
-            <p className="text-lg font-semibold whitespace-nowrap">
+            <p className="text-sm md:text-lg font-semibold break-words">
                 {mensaje}
             </p>
 

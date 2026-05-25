@@ -6,7 +6,7 @@ export default function Ventana_filtros({ estado, marcadores, onFilterChange, pu
     const [seleccionadas, setSeleccionadas] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost/foodmap/backend/modelos/categorias/mostrar_categorias.php", { credentials: 'include' })
+        fetch(import.meta.env.VITE_API_URL + "/modelos/categorias/mostrar_categorias.php", { credentials: 'include' })
             .then((res) => res.json())
             .then((data) => {
                 if (Array.isArray(data)) {
@@ -37,7 +37,7 @@ export default function Ventana_filtros({ estado, marcadores, onFilterChange, pu
 
     return (
         <div
-            className={`w-[350px] bg-white dark:bg-dark-tarjeta rounded-3xl shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] border border-borde dark:border-descripcion/30 overflow-hidden absolute top-26 right-26 z-[2000] ${estado
+            className={`w-[90%] fixed inset-x-0 mx-auto top-24 h-fit max-h-120 md:max-h-full sm:w-[350px] sm:absolute sm:inset-auto sm:m-0 sm:top-26 sm:right-26 sm:left-auto sm:bottom-auto bg-white dark:bg-dark-tarjeta rounded-3xl shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] border border-borde dark:border-descripcion/30 overflow-y-auto overflow-x-hidden z-[2000] ${estado
                 ? "opacity-100 translate-y-0 scale-100"
                 : "opacity-0 -translate-y-10 scale-95 pointer-events-none"
                 }`}
@@ -119,7 +119,7 @@ export default function Ventana_filtros({ estado, marcadores, onFilterChange, pu
                                 <lucideIcons.Star
                                     className={`size-8 transition-transform ${isActive
                                         ? "text-yellow-500 fill-yellow-500"
-                                        : "text-gray-300 dark:text-descripcion fill-descripcion hover:fill-background-claro/20 hover:text-background-claro/20"
+                                        : "text-gray-300 dark:text-descripcion dark:fill-descripcion dark:hover:fill-background-claro/20 dark:hover:text-background-claro/20"
                                         }`}
                                 />
                             </button>

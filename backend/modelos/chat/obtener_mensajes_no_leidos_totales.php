@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
 
-header("Access-Control-Allow-Origin: http://localhost:5173");
+$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
@@ -32,8 +32,7 @@ try {
             WHERE m.Usuario_receptor_id = ? 
             AND m.Leido = 0
             AND a.Estado = 'aceptado'
-            AND b.id IS NULL
-            AND m.Grupo_id IS NULL";
+            AND b.id IS NULL";
             
     $stmt = $conn->prepare($sql);
     $stmt->execute([$mi_id]);

@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
 
-header("Access-Control-Allow-Origin: http://localhost:5173");
+$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
@@ -26,13 +26,11 @@ try {
         WHERE m.Usuario_id = u.id          
         AND m.Usuario_receptor_id = ?      
         AND m.Leido = 0                    
-        AND m.Grupo_id IS NULL             
     ) AS mensajes_no_leidos,
     (
         SELECT m2.Contenido
         FROM mensaje m2
-        WHERE m2.Grupo_id IS NULL
-        AND ((m2.Usuario_id = u.id AND m2.Usuario_receptor_id = ?)
+        WHERE ((m2.Usuario_id = u.id AND m2.Usuario_receptor_id = ?)
           OR (m2.Usuario_id = ? AND m2.Usuario_receptor_id = u.id))
         ORDER BY m2.Fecha_envio DESC
         LIMIT 1
@@ -40,8 +38,7 @@ try {
     (
         SELECT TIME_FORMAT(m3.Fecha_envio, '%H:%i')
         FROM mensaje m3
-        WHERE m3.Grupo_id IS NULL
-        AND ((m3.Usuario_id = u.id AND m3.Usuario_receptor_id = ?)
+        WHERE ((m3.Usuario_id = u.id AND m3.Usuario_receptor_id = ?)
           OR (m3.Usuario_id = ? AND m3.Usuario_receptor_id = u.id))
         ORDER BY m3.Fecha_envio DESC
         LIMIT 1
@@ -60,15 +57,9 @@ AND u.id != ? AND a.Estado = 'aceptado' AND b.id IS NULL";
     $stmt->execute([$mi_id, $mi_id, $mi_id, $mi_id, $mi_id, $mi_id, $mi_id, $mi_id, $mi_id, $mi_id]);
     $amigos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Sentencia para obtener los grupos
-    $sql_grupos = "SELECT id, Nombre, Imagen_url FROM grupo";
-    $stmt_grupos = $conn->query($sql_grupos);
-    $grupos = $stmt_grupos->fetchAll(PDO::FETCH_ASSOC);
-
     echo json_encode([
         "ok" => true,
-        "amigos" => $amigos,
-        "grupos" => $grupos
+        "amigos" => $amigos
     ]);
 
 } catch (Exception $e) {

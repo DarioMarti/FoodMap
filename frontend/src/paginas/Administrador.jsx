@@ -355,7 +355,7 @@ export default function Administrador() {
                                                     <div className="flex items-center gap-3">
                                                         {u.Foto_perfil ? (
                                                             <img
-                                                                src={u.Foto_perfil.startsWith('http') ? u.Foto_perfil : `http://localhost/foodmap/backend/uploads/img/${u.Foto_perfil}`}
+                                                                src={u.Foto_perfil.startsWith('http') ? u.Foto_perfil : import.meta.env.VITE_API_URL + `/uploads/img/${u.Foto_perfil}`}
                                                                 alt={u.Nombre}
                                                                 className="size-10 rounded-full object-cover"
                                                             />

@@ -35,7 +35,7 @@ export default function Config({ darkMode, setDarkMode, setPrimaryColor, fontSiz
     }
 
     async function cerrarSesion() {
-        const respuesta = await fetch("http://localhost/foodmap/backend/modelos/sesion/cerrar_sesion.php", {
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/sesion/cerrar_sesion.php", {
             credentials: 'include'
         });
 

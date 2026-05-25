@@ -13,7 +13,7 @@ export default function Perfil() {
     const editar_usuario = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("http://localhost/foodmap/backend/modelos/usuario/editar_usuario.php", {
+            const res = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/editar_usuario.php", {
                 method: "POST",
                 credentials: 'include',
                 body: new FormData(e.target)
@@ -37,7 +37,7 @@ export default function Perfil() {
         formData.append('foto', file);
 
         try {
-            const res = await fetch("http://localhost/foodmap/backend/modelos/usuario/actualizar_foto.php", {
+            const res = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/actualizar_foto.php", {
                 method: "POST",
                 credentials: 'include',
                 body: formData
@@ -86,7 +86,7 @@ export default function Perfil() {
                         <div className="relative group">
                             <img
                                 className="size-18 md:size-32 rounded-full object-cover ring-4 ring-primary shadow-2xl duration-300"
-                                src={usuario?.foto?.startsWith('http') ? usuario.foto : `http://localhost/foodmap/backend/uploads/img/${usuario?.foto}`}
+                                src={usuario?.foto?.startsWith('http') ? usuario.foto : import.meta.env.VITE_API_URL + `/uploads/img/${usuario?.foto}`}
                                 alt="Foto de perfil"
                             />
                             <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
@@ -106,11 +106,11 @@ export default function Perfil() {
                             </p>
                             <div className="flex gap-10 mt-6">
                                 <div className="flex flex-col">
-                                    <strong className="text-2xl font-bold tracking-tight">27</strong>
+                                    <strong className="text-2xl font-bold tracking-tight">{usuario?.total_marcadores || 0}</strong>
                                     <p className="text-xs uppercase tracking-[0.2em] font-semibold text-text-tertiary">marcadores</p>
                                 </div>
                                 <div className="flex flex-col">
-                                    <strong className="text-2xl font-bold tracking-tight">125</strong>
+                                    <strong className="text-2xl font-bold tracking-tight">{usuario?.total_amigos || 0}</strong>
                                     <p className="text-xs uppercase tracking-[0.2em] font-semibold text-text-tertiary">amigos</p>
                                 </div>
                             </div>
