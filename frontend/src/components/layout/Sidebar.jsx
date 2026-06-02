@@ -7,12 +7,15 @@ import { obtener_mensajes_no_leidos } from '../../servicios/chat/obtener_mensaje
 import { comprobar_sesion_usuario } from '../../servicios/usuario/comprobar_sesion_usuario';
 
 export function Sidebar() {
+
+  //Estados
   const [usuariologueado, setUsuariologueado] = useState(false);
   const [usuario, setUsuario] = useState([]);
   const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0);
   const siglaInicial = usuario.nombre ? usuario.nombre.charAt(0).toUpperCase() : 'U';
   const esFotoDefault = usuario.foto === "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
+  //Funciones
   const comprobar_sesion = async () => {
     const respuesta = await comprobar_sesion_usuario();
     if (respuesta.login) {

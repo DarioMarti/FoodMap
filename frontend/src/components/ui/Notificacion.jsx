@@ -3,7 +3,6 @@ import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 
 export default function Notificacion({ mensaje, tipo = 'success' }) {
 
-    // Configuración de colores e iconos según el tipo
     const estilos = {
         success: {
             bg: 'bg-emerald-500/10',
@@ -36,17 +35,14 @@ export default function Notificacion({ mensaje, tipo = 'success' }) {
             animate-in fade-in slide-in-from-top-4 duration-300
             ${config.bg} ${config.border} ${config.text} ${config.glow}
         `}>
-            {/* Icono */}
             <div className="flex-shrink-0">
                 {config.icon}
             </div>
 
-            {/* Mensaje */}
             <p className="text-sm md:text-lg font-semibold break-words">
                 {mensaje}
             </p>
 
-            {/* Decoración lateral */}
             <div className={`absolute right-0 top-0 bottom-0 w-1 rounded-r-2xl ${config.text.split(' ')[0].replace('text', 'bg')}`}></div>
         </div>
     );

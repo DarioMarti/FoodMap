@@ -12,6 +12,7 @@ $nombre = $_POST['nombre'] ?? "";
 try {
     $conn = conectar();
 
+    //Muestra los usuario según condiciones
     $sql = "SELECT u.id, u.Nombre, u.Foto_perfil,
                 CASE WHEN s.id IS NOT NULL THEN 1 ELSE 0 END AS solicitud_enviada,
                 CASE WHEN r.id IS NOT NULL THEN 1 ELSE 0 END AS solicitud_recibida,

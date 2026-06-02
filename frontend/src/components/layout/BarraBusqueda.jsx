@@ -5,16 +5,12 @@ import NavItem from '../ui/NavItem';
 
 export function BarraBusqueda({ buscarMarcadores, toggleFiltros }) {
 
+  //Estado
   const [nombre, setNombre] = useState("");
 
-  const buscarMarcadoresPorNombre = (e) => {
-
-    setNombre(e.target.value);
-
-  };
-  const activarBusqueda = () => {
-    buscarMarcadores(nombre);
-  };
+  //Funciones
+  const buscarMarcadoresPorNombre = (e) => { setNombre(e.target.value); };
+  const activarBusqueda = () => { buscarMarcadores(nombre); };
 
   return (
     <div className="absolute top-0 left-0 right-0 py-4 px-4 md:py-6 md:px-8 flex items-center gap-2 md:gap-4 z-40 pointer-events-none">

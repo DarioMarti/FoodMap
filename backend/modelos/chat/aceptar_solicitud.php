@@ -10,11 +10,6 @@ header("Content-Type: application/json");
 //Comprueba si el usuario esta logueado
 requerirLogin();
 
-if (!isset($_SESSION['usuario'])) {
-    echo json_encode(["ok" => false, "error" => "Sesión no iniciada"]);
-    exit;
-}
-
 $mi_id = $_SESSION['usuario']['id'];
 $amigo_id = $_POST['amigo_id'] ?? null;
 

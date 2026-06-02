@@ -8,7 +8,6 @@ header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Content-Type: application/json");
 
-// Manejo de preflight request de CORS
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
@@ -19,11 +18,10 @@ requerirLogin();
 try {
     $conn = conectar();
     $usuarioId = $_SESSION['usuario']['id'];
-
     $contrasena_actual = $_POST['contrasena_actual'] ?? '';
     $contrasena_nueva = $_POST['contrasena_nueva'] ?? '';
 
-    // Validar que no vengan vacíos
+    // Comprobaciones de los campos recibidos
     if (empty($contrasena_actual) || empty($contrasena_nueva)) {
         echo json_encode(["ok" => false, "error" => "Debes rellenar todos los campos de contraseña."]);
         exit;
@@ -34,7 +32,7 @@ try {
         exit;
     }
 
-    // 1. Obtener la contraseña actual cifrada de la base de datos
+    // Obtiene de forma segura la contraseña actual cifrada de la base de datos
     $sql = "SELECT Contrasena FROM usuario WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$usuarioId]);
@@ -45,16 +43,16 @@ try {
         exit;
     }
 
-    // 2. Comprobar que la contraseña actual escrita coincida con el hash de la BD
+    // Comprueba que la contraseña actual escrita coincida con el hash de la base de datos
     if (!password_verify($contrasena_actual, $usuario['Contrasena'])) {
         echo json_encode(["ok" => false, "error" => "La contraseña actual introducida no es correcta."]);
         exit;
     }
 
-    // 3. Encriptar (hashear) la nueva contraseña
+    // Encripta la nueva contraseña
     $hash_nueva = password_hash($contrasena_nueva, PASSWORD_DEFAULT);
 
-    // 4. Guardar la nueva contraseña en la base de datos
+    // Actualiza la nueva contraseña en la base de datos
     $sql_update = "UPDATE usuario SET Contrasena = ? WHERE id = ?";
     $stmt_update = $conn->prepare($sql_update);
     $stmt_update->execute([$hash_nueva, $usuarioId]);

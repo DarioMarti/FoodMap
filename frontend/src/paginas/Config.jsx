@@ -8,43 +8,21 @@ import Apariencia from "./config/Apariencia";
 import Marcadores from "./config/Marcadores";
 import Ayuda from "./config/Ayuda";
 import { ArrowRight } from 'lucide-react';
+import { cambiarSeccion as handlerCambiarSeccion } from "../servicios/config/cambiarSeccion";
+import { manejarMenuLateral as handlerManejarMenuLateral } from "../servicios/config/manejarMenuLateral";
+import { cerrarSesion as handlerCerrarSesion } from "../servicios/config/cerrarSesion";
 
 export default function Config({ darkMode, setDarkMode, setPrimaryColor, fontSize, setFontSize }) {
 
-
+    //Estados
     const [seccion, setSeccion] = useState("Perfil");
     const [vistaMovil, setVistaMovil] = useState(false);
     const [vistaBloque, setVistaBloque] = useState(false);
 
-    function cambiarSeccion(seccion) {
-        setSeccion(seccion);
-        if (vistaMovil) {
-            manejarMenuLateral();
-        }
-    }
-
-    function manejarMenuLateral() {
-        let menuLateral = document.getElementById("menuLateralConfig");
-        if (vistaBloque) {
-            setVistaBloque(false);
-            menuLateral.style.transform = "translateX(0)";
-        } else {
-            setVistaBloque(true);
-            menuLateral.style.transform = "translateX(-100%)";
-        }
-    }
-
-    async function cerrarSesion() {
-        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/sesion/cerrar_sesion.php", {
-            credentials: 'include'
-        });
-
-        const data = await respuesta.json();
-
-        if (data.ok) {
-            window.location.href = "/";
-        }
-    }
+    //Funciones
+    const manejarMenuLateral = () => handlerManejarMenuLateral(vistaBloque, setVistaBloque);
+    const cambiarSeccion = (nuevaSeccion) => handlerCambiarSeccion(nuevaSeccion, setSeccion, vistaMovil, manejarMenuLateral);
+    const cerrarSesion = async () => await handlerCerrarSesion();
 
 
     useEffect(() => {

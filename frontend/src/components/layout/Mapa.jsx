@@ -3,13 +3,7 @@ import { MapContainer, TileLayer, Marker, ZoomControl, useMapEvents } from 'reac
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import { obtener_sesion_usuario } from '../../servicios/usuario/obtener_sesion_usuario';
 import * as lucideIcons from 'lucide-react';
-import * as tbIcons from 'react-icons/tb';
-import * as biIcons from 'react-icons/bi';
-import * as mdIcons from 'react-icons/md';
-import * as giIcons from 'react-icons/gi';
-import * as piIcons from 'react-icons/pi';
 import "leaflet/dist/leaflet.css";
 import Boton_cuadrado from '../ui/Boton_cuadrado';
 import Tarjeta_foto_marcador, { Tarjeta_foto_marcador_añadir } from '../ui/tarjetas_fotos_marcador';
@@ -18,6 +12,12 @@ import Etiqueta_marcador from '../ui/etiqueta_marcador';
 import { agregarMarcador, editarMarcador, alPincharMapa, DetectarCordenadas, obtenerMarcadores, manejarFormularioMarcador, agregarEtiqueta, obtenerTodasEtiquetas, obtenerFotografias, eliminarMarcador } from '../../servicios/mapa/marcador_servicio.js';
 import { LocalizacionUsuario } from '../../servicios/mapa/localizar_usuario.jsx';
 import TarjetaConfirmacion from '../ui/tarjeta_confirmacion';
+import { IconoDinamico } from '../../servicios/administrador/IconoDinamico';
+import { manejarEnvio as handlerManejarEnvio } from '../../servicios/mapa/manejarEnvio';
+import { darPuntuacion as handlerDarPuntuacion } from '../../servicios/mapa/darPuntuacion';
+import { manejarEliminarMarcador as handlerManejarEliminarMarcador } from '../../servicios/mapa/manejarEliminarMarcador';
+import { elimiarMarcador as handlerElimiarMarcador } from '../../servicios/mapa/elimiarMarcador';
+import { alElegirFoto as handlerAlElegirFoto, alEliminarFoto as handlerAlEliminarFoto, alElegirFotoEditar as handlerAlElegirFotoEditar, alEliminarFotoEditar as handlerAlEliminarFotoEditar } from '../../servicios/mapa/manejarFotos';
 
 let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -28,35 +28,9 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-//icono dinamico
-const IconoDinamico = ({ nombre, ...props }) => {
-    if (!nombre) return <lucideIcons.MapPin {...props} />;
-
-    let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
-    if (nombreBase === "Hamburger") nombreBase = "Burger";
-
-    // 1. Buscar en Lucide (exacto o capitalizado)
-    let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
-
-    // 2. Si escriben el nombre exacto de react-icons (ej: TbSushi, MdOutlineRamenDining)
-    if (!IconoComponente) {
-        if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
-        else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
-        else if (nombre.startsWith('Md') || nombreBase.startsWith('Md')) IconoComponente = mdIcons[nombre] || mdIcons[nombreBase];
-        else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
-        else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
-    }
-
-    // 3. Si escribieron "Sushi" a secas, probar suerte con los prefijos
-    if (!IconoComponente) {
-        IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
-    }
-
-    if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
-    return <IconoComponente {...props} />;
-};
-
 export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, categoriasFiltro, puntuacionMinima }) {
+
+    //Estados
     const [lugarSeleccionado, setLugarSeleccionado] = useState(null);
     const [formularioActivo, setFormularioActivo] = useState(false);
     const [formularioActivo_editar, setFormularioEditarActivo] = useState(false);
@@ -74,107 +48,20 @@ export default function Mapa({ darkMode, mostrarNotificacion, nombreBusqueda, ca
     const [usuarioUbicacion, setUsuarioUbicacion] = useState([40.4167, -3.7032]);
     const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
-    const atribucion = '&copy; OpenStreetMap contributors &copy; CARTO';
-    let lugarSeleccionadoEstrellas = 1;
-
-    // Funciones
-
-    const manejarEnvio = async (e) => {
-        e.preventDefault();
-        const listaEtiquetasActual = isEditando ? etiquetasMarcador : etiquetas;
-        const tienePrincipal = listaEtiquetasActual.some(e => e.esPrincipal || e.EsPrincipal);
-        if (!tienePrincipal) {
-            mostrarNotificacion("Debes asignar al menos una etiqueta como principal.", "error");
-            return;
-        }
-        const formData = new FormData(e.target);
-        if (isEditando) {
-            formData.append('id', lugarSeleccionado.id);
-            formData.append('etiquetas', JSON.stringify(etiquetasMarcador));
-            const fotosExistentes = [];
-            fotosMarcador.forEach((foto, index) => {
-                if (foto instanceof File) {
-                    formData.append('fotos[]', foto);
-                } else if (foto.Url_archivo) {
-                    fotosExistentes.push(foto.Url_archivo);
-                }
-            });
-            formData.append('fotosExistentes', JSON.stringify(fotosExistentes));
-        } else {
-            formData.append('etiquetas', JSON.stringify(etiquetas));
-            fotos.forEach((foto, index) => {
-                formData.append('fotos[]', foto);
-            });
-        }
-
-        if (!isEditando && !posicionClick) {
-            mostrarNotificacion("Debes hacer clic en el mapa para ubicar el marcador.", "error");
-            return;
-        }
-
-        try {
-            if (isEditando) {
-                const resultado = await editarMarcador(formData);
-                mostrarNotificacion(resultado.mensaje || "¡Marcador editado con éxito!", "success");
-            } else {
-                const resultado = await agregarMarcador(formData);
-                mostrarNotificacion("¡Marcador guardado con éxito!", "success");
-            }
-            e.target.reset();
-            setEtiquetas([]);
-            setFotos([]);
-            setFotosMarcador([]);
-            setFormularioActivo(false);
-            setFormularioEditarActivo(false);
-            setLugarSeleccionado(null);
-            setPuntuacion(0);
-            setPosicionClick(null);
-        } catch (error) {
-            mostrarNotificacion("Error al guardar el marcador", "error");
-        }
-        obtenerMarcadores(setMarcadores, nombreBusqueda);
-    };
-
-    const darPuntuacion = (puntuacion) => {
-        let estrellas = [];
-        for (let i = 1; i <= puntuacion; i++) {
-            estrellas.push(<lucideIcons.Star className="w-5 h-5 fill-current" key={i} />);
-        }
-        console.log(puntuacion)
-        return estrellas;
-    }
-
-    const manejarEliminarMarcador = () => {
-        setMostrarConfirmacion(!mostrarConfirmacion);
-    };
-    const elimiarMarcador = async (id) => {
-        const respuesta = await eliminarMarcador(id);
-
-        if (respuesta?.ok) {
-            mostrarNotificacion(respuesta.message, "success");
-            setFormularioEditarActivo(false);
-            setLugarSeleccionado(null);
-            obtenerMarcadores(setMarcadores, nombreBusqueda);
-            manejarEliminarMarcador();
-        } else {
-            mostrarNotificacion("Error al eliminar el marcador", "error");
-        }
-    }
-
-    const alElegirFoto = (e) => {
-        const nuevosArchivos = Array.from(e.target.files);
-        setFotos([...fotos, ...nuevosArchivos]);
-    };
-    const alEliminarFoto = (indexAEliminar) => {
-        setFotos(prev => prev.filter((_, index) => index !== indexAEliminar));
-    };
-    const alElegirFotoEditar = (e) => {
-        const nuevosArchivos = Array.from(e.target.files);
-        setFotosMarcador([...fotosMarcador, ...nuevosArchivos]);
-    };
-    const alEliminarFotoEditar = (indexAEliminar) => {
-        setFotosMarcador(prev => prev.filter((_, index) => index !== indexAEliminar));
-    };
+    //Funciones
+    const manejarEnvio = (e) => handlerManejarEnvio(
+        e, isEditando, etiquetasMarcador, etiquetas, mostrarNotificacion, lugarSeleccionado,
+        fotosMarcador, fotos, posicionClick, setEtiquetas, setFotos, setFotosMarcador,
+        setFormularioActivo, setFormularioEditarActivo, setLugarSeleccionado, setPuntuacion,
+        setPosicionClick, setMarcadores, nombreBusqueda
+    );
+    const darPuntuacion = (puntuacion) => handlerDarPuntuacion(puntuacion);
+    const manejarEliminarMarcador = () => handlerManejarEliminarMarcador(mostrarConfirmacion, setMostrarConfirmacion);
+    const elimiarMarcador = (id) => handlerElimiarMarcador(id, mostrarNotificacion, setFormularioEditarActivo, setLugarSeleccionado, setMarcadores, nombreBusqueda, manejarEliminarMarcador);
+    const alElegirFoto = (e) => handlerAlElegirFoto(e, fotos, setFotos);
+    const alEliminarFoto = (index) => handlerAlEliminarFoto(index, setFotos);
+    const alElegirFotoEditar = (e) => handlerAlElegirFotoEditar(e, fotosMarcador, setFotosMarcador);
+    const alEliminarFotoEditar = (index) => handlerAlEliminarFotoEditar(index, setFotosMarcador);
 
     useEffect(() => {
         const compartir = localStorage.getItem("compartir-ubicacion") !== "false";

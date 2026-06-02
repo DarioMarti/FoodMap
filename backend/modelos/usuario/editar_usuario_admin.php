@@ -23,18 +23,13 @@ try {
 
     header("Content-Type: application/json");
 
-    if (!isset($_SESSION['usuario'])) {
-        echo json_encode(['success' => false, 'mensaje' => 'No estás autenticado']);
-        exit;
-    }
-
     $usuarioId = $_POST['id'] ?? null;
     $nombre = $_POST['nombre'] ?? null;
     $ciudad = $_POST['ciudad'] ?? null;
     $password = $_POST['password'] ?? null;
     $rol = $_POST['rol'] ?? null;
 
-    // 1. Procesar la foto de perfil si se ha seleccionado una nueva
+    // Procesa la foto de perfil si se ha seleccionado una nueva
     $nombreFoto = null;
     if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
         $extension = pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION);
@@ -50,6 +45,7 @@ try {
             $nombreFoto = null;
         }
     }
+
 
     if ($nombreFoto) {
         if ($password) {

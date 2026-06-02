@@ -18,10 +18,7 @@ export default function Apariencia({ darkMode, setDarkMode, setPrimaryColor, fon
         return guardado ? JSON.parse(guardado).primary : '#EA2678';
     });
 
-    const handleColorClick = (paleta) => {
-        setColorActual(paleta.primary);
-        setPrimaryColor(paleta);
-    };
+    const handleColorClick = (paleta) => { setColorActual(paleta.primary); setPrimaryColor(paleta); };
 
     return (
         <div className="h-full flex flex-col overflow-hidden dark:bg-background-oscuro bg-background dark:bg-background-oscuro md:pb-0 pb-20">

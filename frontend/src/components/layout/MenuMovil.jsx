@@ -5,14 +5,6 @@ import { obtener_mensajes_no_leidos } from '../../servicios/chat/obtener_mensaje
 
 export default function MenuMovil() {
     const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0);
-    const temaGuardado = localStorage.getItem('user-theme-palette');
-
-    if (temaGuardado) {
-        const paleta = JSON.parse(temaGuardado);
-        const colorPrimario = paleta.primary;
-        console.log("El color principal actual es: " + colorPrimario);
-
-    }
 
     useEffect(() => {
         const fetchNoLeidos = async () => {
@@ -30,7 +22,6 @@ export default function MenuMovil() {
     return (
         <div className="fixed bottom-0 left-0 w-full bg-primary flex justify-around items-center h-16 text-white md:hidden z-[9999] shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
 
-            {/* Botón Chats */}
             <NavLink to="/chat" className="flex flex-col items-center justify-center gap-1 w-1/5 cursor-pointer hover:text-white/80 transition-colors">
                 <div className="relative">
                     <MessageSquare size={24} />
@@ -43,7 +34,6 @@ export default function MenuMovil() {
                 <span className="text-[10px] font-semibold">Chats</span>
             </NavLink>
 
-            {/* Botón IA */}
             <NavLink to="/asistente_ia" className="flex flex-col items-center justify-center gap-1 w-1/5 cursor-pointer hover:text-white/80 transition-colors">
                 <Bot size={24} />
                 <span className="text-[10px] font-semibold">IA</span>
@@ -55,13 +45,11 @@ export default function MenuMovil() {
                 </NavLink>
             </div>
 
-            {/* Botón Perfil */}
             <NavLink to="/chat" state={{ abrirSolicitudes: true }} className="flex flex-col items-center justify-center gap-1 w-1/5 cursor-pointer hover:text-white/80 transition-colors" >
                 <User size={24} />
                 <span className="text-[10px] font-semibold">Amigos</span>
             </NavLink>
 
-            {/* Botón Ajustes */}
             <NavLink to="/config" className="flex flex-col items-center justify-center gap-1 w-1/5 cursor-pointer hover:text-white/80 transition-colors">
                 <Settings size={24} />
                 <span className="text-[10px] font-semibold">Ajustes</span>

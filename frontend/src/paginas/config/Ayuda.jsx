@@ -1,5 +1,4 @@
-import { HelpCircle, MessageCircle, FileText, ExternalLink, Info } from 'lucide-react';
-import Boton_main from "../../components/ui/Boton_main";
+import { FileText, ExternalLink, Info } from 'lucide-react';
 
 export default function Ayuda() {
     const faqs = [

@@ -20,10 +20,7 @@ header("Content-Type: application/json");
 
 try {
     $conn = conectar();
-    if (!isset($_SESSION['usuario'])) {
-        echo json_encode(['success' => false, 'mensaje' => 'No estás autenticado']);
-        exit;
-    }
+
 
     $nombre = $_POST['nombre'] ?? '';
     $email = $_POST['email'] ?? '';
@@ -31,6 +28,8 @@ try {
     $password = $_POST['password'] ?? '';
     $rol = $_POST['rol'] ?? 'user';
 
+
+    //Comprobaciones de los campos recibidos
     if (!$nombre || !$email || !$password) {
         echo json_encode(['success' => false, 'mensaje' => 'Nombre, email y contraseña son obligatorios para crear un usuario']);
         exit;
@@ -66,6 +65,8 @@ try {
         }
     }
 
+
+    //Encripta la contraseña
     $hash = password_hash($password, PASSWORD_DEFAULT);
 
     if ($nombreFoto) {

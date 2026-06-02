@@ -10,11 +10,6 @@ header("Content-Type: application/json");
 //Comprueba si el usuario esta logueado
 requerirLogin();
 
-if (!isset($_SESSION["usuario"])) {
-    echo json_encode(["ok" => false, "error" => "No hay sesión"]);
-    exit;
-}
-
 $mi_id = $_SESSION["usuario"]["id"];
 $otro_id = $_GET['otro_id'] ?? null;
 
@@ -22,10 +17,8 @@ try {
     $conn = conectar();
 
     // Mensajes privados
-    $sql = "SELECT id, Contenido, Usuario_id, Usuario_receptor_id, Fecha_envio 
-            FROM mensaje 
-            WHERE (Usuario_id = ? AND Usuario_receptor_id = ?) 
-            OR (Usuario_id = ? AND Usuario_receptor_id = ?) 
+    $sql = "SELECT id, Contenido, Usuario_id, Usuario_receptor_id, Fecha_envio FROM mensaje 
+            WHERE (Usuario_id = ? AND Usuario_receptor_id = ?) OR (Usuario_id = ? AND Usuario_receptor_id = ?) 
             ORDER BY Fecha_envio ASC";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$mi_id, $otro_id, $otro_id, $mi_id]);

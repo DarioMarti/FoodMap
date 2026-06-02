@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import Chat_mensaje from "../components/ui/Chat_mensaje";
 import Chat_input from "../components/ui/Chat_input";
 import io from 'socket.io-client';
+import { handleEnviar as handlerEnviar } from '../servicios/asistenteIA/handleEnviar';
+import { manejarRespuesta as handlerManejarRespuesta } from '../servicios/asistenteIA/manejarRespuesta';
 
 const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000';
 const socket = io(socketUrl);
@@ -9,51 +11,24 @@ const socket = io(socketUrl);
 
 export default function Asistente_IA() {
 
-    const [mensajes, setMensajes] = useState([{ texto: "¡Hola! Soy el asistente de FoodMap 🍔. ¿En qué puedo ayudarte hoy?", isBot: true, isMe: false }
-    ]);
+    //Estados
+    const [mensajes, setMensajes] = useState([{ texto: "¡Hola! Soy el asistente de FoodMap. ¿En qué puedo ayudarte hoy?", isBot: true, isMe: false }]);
     const [cargando, setCargando] = useState(false);
     const scrollRef = useRef(null);
 
     useEffect(() => {
         socket.on('respuesta_asistente', (data) => {
-            setCargando(false);
-
-            const fechaValida = data.fecha ? new Date(data.fecha) : new Date();
-            const horaFormateada = isNaN(fechaValida.getTime())
-                ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                : fechaValida.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            setMensajes(prev => [...prev, {
-                texto: data.texto,
-                isBot: true,
-                isMe: false,
-                hora: horaFormateada
-            }]);
+            handlerManejarRespuesta(data, setCargando, setMensajes);
         });
         return () => socket.off('respuesta_asistente');
     }, []);
 
-    //Scroll al recibir nuevos mensajes
+    //Hace scroll al recibir nuevos mensajes
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [mensajes]);
 
-    const handleEnviar = (contenido) => {
-        const horaActual = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        setMensajes(prev => [...prev, {
-            texto: contenido,
-            isMe: true,
-            isBot: false,
-            hora: horaActual
-        }]);
-
-        setCargando(true);
-        socket.emit('pregunta_asistente', {
-            mensaje: contenido,
-            historial: []
-        });
-    };
+    const handleEnviar = (contenido) => handlerEnviar(contenido, setMensajes, setCargando, socket);
 
 
 

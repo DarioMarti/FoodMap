@@ -20,19 +20,23 @@ try {
     $email = $_POST['email'];
     $passwordUser = $_POST['password'];
 
+    //Hace comprobaciones en la contraseña
     if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $passwordUser)) {
         echo json_encode(["ok" => false, "error" => "La contraseña no cumple los requisitos de seguridad."]);
         exit;
     }
 
+    //Encripta la contraseña
     $passwordHash = password_hash($passwordUser, PASSWORD_DEFAULT);
 
+    //Busca el usuario por email
     $sql = "SELECT * FROM usuario WHERE Email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$email]);
     $stmt->execute([$email]);
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    //Si no encuentra el usuario crea uno nuevo
     if (!$usuario) {
         $rutaRelativa = null;
 
@@ -68,14 +72,8 @@ try {
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($usuario) {
-            $_SESSION["usuario"] = [
-                "id" => $usuario["id"],
-                "nombre" => $usuario["Nombre"],
-                "email" => $usuario["Email"],
-                "rol" => $usuario["Rol"] ?? "User",
-                "foto" => $usuario["Foto_perfil"] ?? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-                "perfil_publico" => 1
-            ];
+            require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/modelos/sesion/crear_sesion.php';
+            crearSesionUsuario($usuario);
 
             echo json_encode(["ok" => true, "mensaje" => "Usuario registrado exitosamente"]);
         } else {

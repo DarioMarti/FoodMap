@@ -17,11 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['usuario'])) {
-    echo json_encode([]);
-    exit;
-}
-
 $id_usuario = $_SESSION['usuario']['id'];
 
 function obtener_marcadores($id_usuario, $nombre = null)

@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 export default function Chat_mensaje({ texto, hora, isMe, isBot }) {
     const formatearHora = (fechaString) => {
         if (!fechaString) return '';
-        if (fechaString.includes(':') && fechaString.length <= 5) return fechaString; // Ya está formateada como HH:MM
+        if (fechaString.includes(':') && fechaString.length <= 5) return fechaString;
         try {
             const fecha = new Date(fechaString);
             if (isNaN(fecha.getTime())) return fechaString;

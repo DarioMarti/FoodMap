@@ -16,8 +16,7 @@ try {
     $usuario_id = $_GET['usuario_id'] ?? $_POST['usuario_id'] ?? null;
 
     if ($usuario_id) {
-        $sql = "SELECT c.id, c.Nombre, c.Color, c.Icono, COUNT(mc.Marcador_id) as count 
-                FROM categoria c
+        $sql = "SELECT c.id, c.Nombre, c.Color, c.Icono, COUNT(mc.Marcador_id) as count FROM categoria c
                 JOIN marcador_categoria mc ON c.id = mc.Categoria_id
                 JOIN marcador m ON mc.Marcador_id = m.id
                 WHERE m.Usuario_id = :usuario_id

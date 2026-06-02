@@ -6,83 +6,27 @@ import { useState, useEffect } from "react";
 import { obtener_sesion_usuario } from "../../servicios/usuario/obtener_sesion_usuario";
 import Notificacion from "../../components/ui/Notificacion";
 import * as lucideIcons from 'lucide-react';
+import { cambiarPerfilPublico as handlerCambiarPerfilPublico } from '../../servicios/privacidad/cambiarPerfilPublico';
+import { manejarFormContrasena as handlerManejarFormContrasena } from '../../servicios/privacidad/manejarFormContrasena';
+import { cambiarContrasena as handlerCambiarContrasena } from '../../servicios/privacidad/cambiarContrasena';
+import { mostrarNotificacion as handlerMostrarNotificacion } from '../../servicios/privacidad/mostrarNotificacion';
 
 export default function Privacidad() {
+
+    //Estados
     const [usuario, setUsuario] = useState(null);
     const [notificacion, setNotificacion] = useState({ visible: false, mensaje: "", tipo: "" });
     const [formContrasena, setFormContrasena] = useState(false);
-
-
-    // Configuración de privacidad
     const [perfilPublico, setPerfilPublico] = useState(true);
-    const [compartirUbicacion, setCompartirUbicacion] = useState(() => {
-        return localStorage.getItem("compartir-ubicacion") !== "false";
-    });
-    const [mostrarValoraciones, setMostrarValoraciones] = useState(() => {
-        return localStorage.getItem("mostrar-valoraciones") !== "false";
-    });
+    const [compartirUbicacion, setCompartirUbicacion] = useState(() => { return localStorage.getItem("compartir-ubicacion") !== "false"; });
+    const [mostrarValoraciones, setMostrarValoraciones] = useState(() => { return localStorage.getItem("mostrar-valoraciones") !== "false"; });
 
-    const cambiarPerfilPublico = async (valor) => {
-        setPerfilPublico(valor);
-        try {
-            const formData = new FormData();
-            formData.append("perfil_publico", valor ? 1 : 0);
 
-            const res = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/actualizar_privacidad.php", {
-                method: "POST",
-                credentials: 'include',
-                body: formData
-            });
-            const data = await res.json();
-            if (data.success && data.usuario) {
-                setUsuario(data.usuario);
-            }
-        } catch (error) {
-            console.error("Error al actualizar la privacidad del perfil:", error);
-        }
-    };
-
-    const manejarFormContrasena = () => {
-        setFormContrasena(!formContrasena);
-    };
-
-    const validarPassword = (pass) => {
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-        return regex.test(pass);
-    };
-
-    const cambiarContraseña = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-
-        const nueva = formData.get('contrasena_nueva');
-        if (!validarPassword(nueva)) {
-            mostrarNotificacion("La contraseña nueva debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.", "error");
-            return;
-        }
-
-        const res = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/editar_contraseña.php", {
-            method: "POST",
-            credentials: 'include',
-            body: formData
-        });
-        const data = await res.json();
-        if (data.ok) {
-            mostrarNotificacion(data.mensaje, "success");
-            manejarFormContrasena();
-            e.target.reset();
-        } else {
-            mostrarNotificacion(data.error, "error");
-        }
-    };
-
-    const mostrarNotificacion = (mensaje, tipo) => {
-        setNotificacion({ visible: true, mensaje, tipo });
-
-        setTimeout(() => {
-            setNotificacion({ ...notificacion, visible: false });
-        }, 3000);
-    };
+    //Funnciones
+    const cambiarPerfilPublico = (valor) => { handlerCambiarPerfilPublico(valor, setPerfilPublico, setUsuario); };
+    const manejarFormContrasena = () => { handlerManejarFormContrasena(formContrasena, setFormContrasena); };
+    const mostrarNotificacion = (mensaje, tipo) => { handlerMostrarNotificacion(mensaje, tipo, setNotificacion); };
+    const cambiarContraseña = (e) => { handlerCambiarContrasena(e, mostrarNotificacion, manejarFormContrasena); };
 
     useEffect(() => {
         const obtenerSesionUsuario = async () => {

@@ -2,22 +2,12 @@ import { useState, useEffect } from "react";
 import * as lucideIcons from "lucide-react";
 
 export default function Ventana_filtros({ estado, marcadores, onFilterChange, puntuacionMinima = 0, setPuntuacionMinima }) {
+
+    //Estados
     const [categorias, setCategorias] = useState([]);
     const [seleccionadas, setSeleccionadas] = useState([]);
 
-    useEffect(() => {
-        fetch(import.meta.env.VITE_API_URL + "/modelos/categorias/mostrar_categorias.php", { credentials: 'include' })
-            .then((res) => res.json())
-            .then((data) => {
-                if (Array.isArray(data)) {
-                    setCategorias(data);
-                } else {
-                    console.error("Error del servidor (no autorizado o formato incorrecto):", data);
-                }
-            })
-            .catch((err) => console.error("Error al cargar categorías:", err));
-    }, []);
-
+    //Funciones
     const toggleCategoria = (id) => {
         let nuevasSeleccionadas;
         if (seleccionadas.includes(id)) {
@@ -34,6 +24,21 @@ export default function Ventana_filtros({ estado, marcadores, onFilterChange, pu
         onFilterChange([]);
         if (setPuntuacionMinima) setPuntuacionMinima(0);
     };
+
+    useEffect(() => {
+        fetch(import.meta.env.VITE_API_URL + "/modelos/categorias/mostrar_categorias.php", { credentials: 'include' })
+            .then((res) => res.json())
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setCategorias(data);
+                } else {
+                    console.error("Error del servidor (no autorizado o formato incorrecto):", data);
+                }
+            })
+            .catch((err) => console.error("Error al cargar categorías:", err));
+    }, []);
+
+
 
     return (
         <div

@@ -1,78 +1,25 @@
 import React, { useState } from 'react';
 import logotipo from '../assets/foodmap_logo_blanco.svg';
-import * as lucideIcons from 'lucide-react';
-import { registrar_usuario } from '../servicios/usuario/handler_registrar_usuario';
-import { iniciar_sesion } from '../servicios/usuario/handler_iniciar_sesion';
-import { mostrarNotificacion } from '../servicios/mostrar_notificacion';
 import Notificacion from '../components/ui/Notificacion';
+import { handleFotoChange as handlerFotoChange } from '../servicios/login/handleFotoChange';
+import { cambiarFormulario as handlerCambiarFormulario } from '../servicios/login/cambiarFormulario';
+import { registro_usuario as handlerRegistroUsuario } from '../servicios/login/registro_usuario';
+import { inicio_sesion as handlerInicioSesion } from '../servicios/login/inicio_sesion';
 
 const Login = () => {
+
+    //Estados
     const [formularioMostrado, setFormularioMostrado] = useState("login");
     const [fotoPreview, setFotoPreview] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png");
     const [mensajeError, setMensajeError] = useState(false);
     const [notificacion, setNotificacion] = useState({ mensaje: "", tipo: "", visible: false });
 
-    const handleFotoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setFotoPreview(URL.createObjectURL(file));
-        }
-    };
-    const cambiarFormulario = (formulario) => {
-        if (formulario === "login") {
-            setFormularioMostrado("register");
-        } else {
-            setFormularioMostrado("login");
-        }
-    };
-    const validarPassword = (password) => {
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-        return regex.test(password);
-    };
+    //Funciones
+    const handleFotoChange = (e) => { handlerFotoChange(e, setFotoPreview); };
+    const cambiarFormulario = (formulario) => { handlerCambiarFormulario(formulario, setFormularioMostrado); };
+    const registro_usuario = (e) => { handlerRegistroUsuario(e, notificacion, setNotificacion, setMensajeError); };
+    const inicio_sesion = (e) => { handlerInicioSesion(e, setMensajeError); };
 
-    const registro_usuario = async (e) => {
-        e.preventDefault();
-        const data = new FormData(e.target);
-
-        if (!validarPassword(data.get('password'))) {
-            mostrarNotificacion("La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula y un número.", "error", notificacion, setNotificacion);
-            return;
-        }
-
-        const respuesta = await registrar_usuario(data);
-        if (respuesta.ok) {
-            window.location.href = "/";
-        } else {
-            mostrarNotificacion(respuesta.error || "Error al registrar usuario", "error", notificacion, setNotificacion);
-            setMensajeError(true);
-            setTimeout(() => {
-                setMensajeError(false);
-            }, 5000);
-
-        }
-    }
-
-    const inicio_sesion = async (e) => {
-        e.preventDefault();
-        const data = new FormData(e.target);
-        try {
-            const respuesta = await iniciar_sesion(data);
-            if (respuesta.ok) {
-                window.location.href = "/";
-            } else {
-                setMensajeError(true);
-                setTimeout(() => {
-                    setMensajeError(false);
-                }, 5000);
-            }
-        } catch (error) {
-            console.error("Error conectando con el servidor:", error);
-            setMensajeError(true);
-            setTimeout(() => {
-                setMensajeError(false);
-            }, 5000);
-        }
-    }
 
     return (
         <div className="relative flex items-end justify-center w-full h-[100dvh] bg-gradient-to-br from-primary/90 via-primary/70 to-primary/60 font-['Outfit'] overflow-hidden">
@@ -90,7 +37,7 @@ const Login = () => {
 
             <main className="flex w-full md:w-[90%] max-w-[1400px] justify-around items-center z-10">
 
-                {/* Bloque izquierdo (solo desktop) */}
+                {/* Bloque izquierdo (solo pc) */}
                 <div className="w-[55%] p-10 md:mb-[30%] hidden lg:flex flex-col">
                     <img className="w-[120px] mb-10" src={logotipo} alt="Logo" />
                     <h1 className="text-[54px] text-white py-[10px] font-extrabold leading-[1.1]">Hey, Hola!</h1>

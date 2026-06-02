@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
-import { actualizarMarcadorAdmin, crearMarcadorAdmin } from "../../servicios/administrador/crud_admin";
-import * as lucideIcons from 'lucide-react';
-import * as tbIcons from 'react-icons/tb';
-import * as biIcons from 'react-icons/bi';
-import * as mdIcons from 'react-icons/md';
-import * as giIcons from 'react-icons/gi';
-import * as piIcons from 'react-icons/pi';
+import { agregarEtiqueta as handlerAgregarEtiqueta } from "../../servicios/form_marcador_admin/agregarEtiqueta";
+import { eliminarEtiqueta as handlerEliminarEtiqueta } from "../../servicios/form_marcador_admin/eliminarEtiqueta";
+import { manejarGuardar as handlerManejarGuardar } from "../../servicios/form_marcador_admin/manejarGuardar";
 import Etiqueta_marcador from './etiqueta_marcador';
+import { IconoDinamico } from '../../servicios/administrador/IconoDinamico';
 
 export default function Form_marcador_admin({ marcadorSeleccionado, setFormularioMarcadorActivo, className, mostrarNotificacion, recargarTabla, categoriasBD, usuarios }) {
+
+    //Estados
     const [nombre, setNombre] = useState(marcadorSeleccionado?.Titulo || marcadorSeleccionado?.Nombre || "");
     const [descripcion, setDescripcion] = useState(marcadorSeleccionado?.Descripcion || "");
     const [puntuacion, setPuntuacion] = useState(marcadorSeleccionado?.Puntuacion || "");
@@ -16,10 +15,15 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
     const [longitud, setLongitud] = useState(marcadorSeleccionado?.Longitud || "");
     const [direccion, setDireccion] = useState(marcadorSeleccionado?.Direccion || "");
     const [usuarioId, setUsuarioId] = useState(marcadorSeleccionado?.Usuario_id || (usuarios && usuarios.length > 0 ? usuarios[0].id : ""));
-
     const [etiquetasMarcador, setEtiquetasMarcador] = useState([]);
     const [esPrincipal, setEsPrincipal] = useState(false);
     const [etiquetaSeleccionada, setEtiquetaSeleccionada] = useState({ id: "1", nombre: "" });
+
+    //Funciones
+    const agregarEtiqueta = () => { handlerAgregarEtiqueta(esPrincipal, etiquetasMarcador, categoriasBD, etiquetaSeleccionada, setEtiquetasMarcador, setEsPrincipal, mostrarNotificacion); };
+    const eliminarEtiqueta = (idAEliminar) => { handlerEliminarEtiqueta(idAEliminar, etiquetasMarcador, setEtiquetasMarcador); };
+    const manejarGuardar = (e) => { handlerManejarGuardar(e, etiquetasMarcador, marcadorSeleccionado, setFormularioMarcadorActivo, mostrarNotificacion, recargarTabla); };
+
 
     useEffect(() => {
         setNombre(marcadorSeleccionado?.Titulo || marcadorSeleccionado?.Nombre || "");
@@ -45,88 +49,9 @@ export default function Form_marcador_admin({ marcadorSeleccionado, setFormulari
         }
     }, [marcadorSeleccionado, categoriasBD]);
 
-    const IconoDinamico = ({ nombre, ...props }) => {
-        if (!nombre) return <lucideIcons.MapPin {...props} />;
 
-        let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
-        if (nombreBase === "Hamburger") nombreBase = "Burger";
 
-        let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
 
-        if (!IconoComponente) {
-            if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
-            else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
-            else if (nombre.startsWith('Md') || nombreBase.startsWith('Md')) IconoComponente = mdIcons[nombre] || mdIcons[nombreBase];
-            else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
-            else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
-        }
-
-        if (!IconoComponente) {
-            IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
-        }
-
-        if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
-        return <IconoComponente {...props} />;
-    };
-
-    const agregarEtiqueta = () => {
-        if (esPrincipal && etiquetasMarcador.some(e => e.esPrincipal === true || e.EsPrincipal == 1)) {
-            mostrarNotificacion("Ya existe una etiqueta principal para este marcador.", "error");
-            return;
-        }
-        const categoria = categoriasBD?.find(c => String(c.id) === String(etiquetaSeleccionada.id));
-        if (categoria) {
-            if (etiquetasMarcador.some(e => String(e.id) === String(categoria.id) || String(e.Categoria_id) === String(categoria.id))) {
-                mostrarNotificacion("Esta etiqueta ya está añadida.", "error");
-                return;
-            }
-            const nuevaEtiqueta = {
-                id: categoria.id,
-                Nombre: categoria.Nombre,
-                esPrincipal: esPrincipal,
-                Color: categoria.Color,
-                Icono: categoria.Icono
-            };
-            setEtiquetasMarcador([...etiquetasMarcador, nuevaEtiqueta]);
-            setEsPrincipal(false);
-        }
-    };
-
-    const eliminarEtiqueta = (idAEliminar) => {
-        setEtiquetasMarcador(etiquetasMarcador.filter(e => String(e.id) !== String(idAEliminar) && String(e.Categoria_id) !== String(idAEliminar)));
-    };
-
-    const manejarGuardar = async (e) => {
-        e.preventDefault();
-
-        if (etiquetasMarcador.length === 0) {
-            mostrarNotificacion("Debes añadir al menos una etiqueta al marcador.", "error");
-            return;
-        }
-
-        if (!etiquetasMarcador.some(e => e.esPrincipal === true || e.EsPrincipal == 1)) {
-            mostrarNotificacion("Debes asignar al menos una etiqueta como principal.", "error");
-            return;
-        }
-
-        const data = new FormData(e.target);
-        data.append('etiquetas', JSON.stringify(etiquetasMarcador));
-
-        let respuesta;
-        if (marcadorSeleccionado?.id) {
-            respuesta = await actualizarMarcadorAdmin(data);
-        } else {
-            respuesta = await crearMarcadorAdmin(data);
-        }
-
-        if (respuesta?.success) {
-            setFormularioMarcadorActivo(false);
-            mostrarNotificacion(respuesta.mensaje, "success");
-            recargarTabla();
-        } else {
-            mostrarNotificacion(respuesta.mensaje, "error");
-        }
-    };
 
     return (
         <form onSubmit={manejarGuardar} className={` w-[800px] max-h-[90vh] overflow-y-auto absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-white dark:bg-dark-tarjeta border border-borde dark:border-text-tertiary/30 shadow-2xl rounded-2xl p-10 ${className}`}>

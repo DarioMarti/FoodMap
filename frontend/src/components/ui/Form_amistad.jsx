@@ -1,105 +1,25 @@
 import * as lucideIcons from 'lucide-react';
 import Boton_cuadrado from './Boton_cuadrado';
 import { useState, useEffect } from 'react';
+import { buscar_usuarios as handlerBuscarUsuarios } from "../../servicios/form_amistad/buscar_usuarios";
+import { aceptar_solicitud as handlerAceptarSolicitud } from "../../servicios/form_amistad/aceptar_solicitud";
+import { enviar_solicitud as handlerEnviarSolicitud } from "../../servicios/form_amistad/enviar_solicitud";
+import { bloquear_usuario as handlerBloquearUsuario } from "../../servicios/form_amistad/bloquear_usuario";
+import { desbloquear_usuario as handlerDesbloquearUsuario } from "../../servicios/form_amistad/desbloquear_usuario";
 
 export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, actualizarContactos, contactos, solicitudes, obtener_solicitudes, handleSolicitudes, handleSeleccionarChat }) {
+
+    //Estados
     const [tabActiva, setTabActiva] = useState("buscar");
     const [nombre_usuario, setNombre_usuario] = useState("");
     const [usuarios, setUsuarios] = useState([]);
 
-    const buscar_usuarios = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append("nombre", nombre_usuario);
-        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/mostrar_usuarios.php", {
-            credentials: 'include',
-            method: "POST",
-            body: formData,
-        });
-
-        if (respuesta.ok) {
-            const data = await respuesta.json();
-            setUsuarios(data);
-            console.log(usuarios);
-        }
-
-    };
-
-
-
-    const aceptar_solicitud = async (amigo_id) => {
-        const formData = new FormData();
-        formData.append("amigo_id", amigo_id);
-        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/aceptar_solicitud.php", {
-            credentials: 'include',
-            method: "POST",
-            body: formData,
-        });
-
-        if (respuesta.ok) {
-            obtener_solicitudes();
-            mostrarNotificacion("Solicitud aceptada exitosamente", "success");
-            actualizarContactos();
-        } else {
-            mostrarNotificacion("Error al aceptar la solicitud", "error");
-        }
-    };
-
-    const enviar_solicitud = async (amigo_id) => {
-        const formData = new FormData();
-        formData.append("amigo_id", amigo_id);
-        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/enviar_solicitud.php", {
-            credentials: 'include',
-            method: "POST",
-            body: formData,
-        });
-
-        if (respuesta.ok) {
-            const data = await respuesta.json();
-            if (data.ok) {
-                mostrarNotificacion(data.mensaje, "success");
-                setUsuarios(prev => prev.map(u => u.id === amigo_id ? { ...u, solicitud_enviada: 1 } : u));
-            } else {
-                mostrarNotificacion(data.error || "Error al enviar", "error");
-            }
-        }
-    };
-
-    const bloquear_usuario = async (id_amigo) => {
-        const formData = new FormData();
-        formData.append("id", id_amigo);
-        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/bloquear_usuario.php", {
-            credentials: 'include',
-            method: "POST",
-            body: formData,
-        });
-
-        if (respuesta.ok) {
-            obtener_solicitudes();
-            mostrarNotificacion("Usuario bloqueado exitosamente", "success");
-            actualizarContactos();
-            setUsuarios(prev => prev.map(u => u.id === id_amigo ? { ...u, yo_lo_bloquee: 1, ya_amigos: 0, solicitud_enviada: 0, solicitud_recibida: 0 } : u));
-        } else {
-            mostrarNotificacion("Error al bloquear al usuario", "error");
-        }
-    };
-
-    const desbloquear_usuario = async (id_amigo) => {
-        const formData = new FormData();
-        formData.append("id", id_amigo);
-        const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/desbloquear_usuario.php", {
-            credentials: 'include',
-            method: "POST",
-            body: formData,
-        });
-
-        if (respuesta.ok) {
-            mostrarNotificacion("Usuario desbloqueado exitosamente", "success");
-            setUsuarios(prev => prev.map(u => u.id === id_amigo ? { ...u, yo_lo_bloquee: 0 } : u));
-        } else {
-            mostrarNotificacion("Error al desbloquear al usuario", "error");
-        }
-    };
+    //Funciones
+    const buscar_usuarios = (e) => { handlerBuscarUsuarios(e, nombre_usuario, setUsuarios); };
+    const aceptar_solicitud = (amigo_id) => { handlerAceptarSolicitud(amigo_id, obtener_solicitudes, mostrarNotificacion, actualizarContactos); };
+    const enviar_solicitud = (amigo_id) => { handlerEnviarSolicitud(amigo_id, mostrarNotificacion, setUsuarios); };
+    const bloquear_usuario = (id_amigo) => { handlerBloquearUsuario(id_amigo, obtener_solicitudes, mostrarNotificacion, actualizarContactos, setUsuarios); };
+    const desbloquear_usuario = (id_amigo) => { handlerDesbloquearUsuario(id_amigo, mostrarNotificacion, setUsuarios); };
 
 
     useEffect(() => {
@@ -150,7 +70,6 @@ export default function Form_amistad({ estado, miUsuario, mostrarNotificacion, a
                                 </span>
                             )}
                         </div>
-                        {/* Botón X de cerrar en desktop */}
                         <span onClick={(e) => { e.stopPropagation(); handleSolicitudes(); }} className="hidden md:flex absolute items-center justify-center size-8 top-4 right-6 bg-error hover:bg-error/80 transition-colors cursor-pointer text-white rounded-full text-xs z-50">
                             <lucideIcons.X className="size-4" />
                         </span>

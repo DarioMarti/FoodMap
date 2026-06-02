@@ -4,55 +4,18 @@ import Toggle from "../../components/ui/Toggle";
 import InputGeneral from "../../components/ui/input_general";
 import { useState, useEffect } from "react";
 import { obtener_sesion_usuario } from "../../servicios/usuario/obtener_sesion_usuario";
+import { editar_usuario as handlerEditarUsuario } from "../../servicios/perfil/editar_usuario";
+import { actualizar_foto as handlerActualizarFoto } from "../../servicios/perfil/actualizar_foto";
 
 export default function Perfil() {
+
+    //Estados
     const [editando, setEditando] = useState(false);
     const [usuario, setUsuario] = useState(null);
 
-
-    const editar_usuario = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/editar_usuario.php", {
-                method: "POST",
-                credentials: 'include',
-                body: new FormData(e.target)
-            });
-            const respuesta = await res.json();
-            if (respuesta.usuario) {
-                setUsuario(respuesta.usuario);
-                setEditando(false);
-                window.dispatchEvent(new Event("actualizar_sesion"));
-            }
-        } catch (error) {
-            console.error("Error al editar usuario:", error);
-        }
-    }
-
-    const actualizar_foto = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append('foto', file);
-
-        try {
-            const res = await fetch(import.meta.env.VITE_API_URL + "/modelos/usuario/actualizar_foto.php", {
-                method: "POST",
-                credentials: 'include',
-                body: formData
-            });
-            const respuesta = await res.json();
-            if (respuesta.ok) {
-                setUsuario(respuesta.usuario);
-                window.dispatchEvent(new Event("actualizar_sesion"));
-            } else {
-                console.error("Error al actualizar foto:", respuesta.error);
-            }
-        } catch (error) {
-            console.error("Error de red:", error);
-        }
-    };
+    //Funciones
+    const editar_usuario = (e) => { handlerEditarUsuario(e, setUsuario, setEditando); };
+    const actualizar_foto = (e) => { handlerActualizarFoto(e, setUsuario); };
 
     useEffect(() => {
         const obtenerSesionUsuario = async () => {
@@ -80,7 +43,6 @@ export default function Perfil() {
             </div>
 
             <article className="p-5 md:p-10 flex-1 overflow-y-auto">
-                {/* Profile Card */}
                 <div className="p-4 md:p-12 dark:bg-dark-tarjeta bg-background-tarjetas rounded-3xl relative dark:text-white text-text-main shadow-xl border dark:border-white/10">
                     <div className="flex items-center gap-8">
                         <div className="relative group">
@@ -123,7 +85,6 @@ export default function Perfil() {
                     />
                 </div>
 
-                {/* Personal Information */}
                 <div className="mt-12 pb-15 md:pb-0">
                     <h2 className="text-2xl font-bold mb-6 px-2 dark:text-white text-text-main flex items-center gap-3">
                         <User className="text-primary" size={24} />

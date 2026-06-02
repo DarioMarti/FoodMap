@@ -127,3 +127,52 @@ export const crearCategoriaAdmin = async (data) => {
     return await respuesta.json();
 };
 
+
+// Confirmar de acciones
+
+export const confirmarEliminarUsuario = async (usuarioSeleccionado, notificacion, setNotificacion, mostrarNotificacion, mostrarUsuarios, setMostrarConfirmacionEliminar, setIdUsuarioAEliminar) => {
+    const respuesta = await desactivarUsuarioAdmin(usuarioSeleccionado.id);
+    if (respuesta?.success) {
+        mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
+        mostrarUsuarios();
+    } else {
+        mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
+    }
+    setMostrarConfirmacionEliminar(false);
+    setIdUsuarioAEliminar(null);
+};
+
+export const manejarReactivarUsuario = async (id, notificacion, setNotificacion, mostrarNotificacion, mostrarUsuarios) => {
+    const respuesta = await reactivarUsuarioAdmin(id);
+    if (respuesta?.success) {
+        mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
+        mostrarUsuarios();
+    } else {
+        mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
+    }
+};
+
+
+export const confirmarEliminarMarcador = async (idMarcadorAEliminar, notificacion, setNotificacion, mostrarNotificacion, mostrarMarcadores, setMostrarConfirmacionEliminarMarcador, setIdMarcadorAEliminar) => {
+    const respuesta = await eliminarMarcadorAdmin(idMarcadorAEliminar);
+    if (respuesta?.success) {
+        mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
+        mostrarMarcadores();
+    } else {
+        mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
+    }
+    setMostrarConfirmacionEliminarMarcador(false);
+    setIdMarcadorAEliminar(null);
+};
+
+export const confirmarEliminarCategoria = async (idCategoriaAEliminar, notificacion, setNotificacion, mostrarNotificacion, mostrarEtiquetas, setMostrarConfirmacionEliminarCategoria, setIdCategoriaAEliminar) => {
+    const respuesta = await eliminarCategoriaAdmin(idCategoriaAEliminar);
+    if (respuesta?.success) {
+        mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
+        mostrarEtiquetas();
+    } else {
+        mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
+    }
+    setMostrarConfirmacionEliminarCategoria(false);
+    setIdCategoriaAEliminar(null);
+};

@@ -4,7 +4,6 @@ import { renderToString } from 'react-dom/server';
 
 export default function Marcador({ position, icono, eventHandlers, color = 'primary' }) {
 
-    // 1. DISEÑO: Lo que quieres que se vea (Tu diseño de ahora)
     const iconoHtml = renderToString(
         <div className="relative group flex flex-col items-center">
             <div style={{ backgroundColor: color, borderColor: color }} className="w-10 h-10 rounded-full border-2 border-red-500 shadow-xl flex items-center justify-center">
@@ -14,15 +13,13 @@ export default function Marcador({ position, icono, eventHandlers, color = 'prim
         </div>
     );
 
-    // 2. ICONO: Convertimos ese diseño en algo que Leaflet entienda
     const customIcon = L.divIcon({
         html: iconoHtml,
-        className: '', // Limpiamos clases de Leaflet
+        className: '',
         iconSize: [40, 40],
-        iconAnchor: [20, 40] // Centramos la punta del pin en la coordenada
+        iconAnchor: [20, 40]
     });
 
-    // 3. RESULTADO: Devolvemos el componente Marker de react-leaflet
     return (
         <Marker position={position} icon={customIcon} eventHandlers={eventHandlers} />
     );

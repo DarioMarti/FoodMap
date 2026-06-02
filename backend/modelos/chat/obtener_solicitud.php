@@ -10,19 +10,12 @@ header("Content-Type: application/json");
 //Comprueba si el usuario esta logueado
 requerirLogin();
 
-if (!isset($_SESSION['usuario'])) {
-    echo json_encode(["ok" => false, "error" => "Sesión no iniciada"]);
-    exit;
-}
-
 $mi_id = $_SESSION['usuario']['id'];
 
 try {
     $conn = conectar();
 
-    $sql = "SELECT a.*, u.Nombre 
-            FROM amistades a 
-            JOIN usuario u ON a.Usuario_solicita_id = u.id 
+    $sql = "SELECT a.*, u.Nombre FROM amistades a JOIN usuario u ON a.Usuario_solicita_id = u.id 
             WHERE a.Usuario_receptor_id = ? AND a.Estado = 'pendiente'";
 
     $stmt = $conn->prepare($sql);

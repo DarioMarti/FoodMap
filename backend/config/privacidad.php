@@ -4,12 +4,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
+//Comprueba si se ha iniciado la sesión usuario
 function estaLogueado() {
     return isset($_SESSION['usuario']) && !empty($_SESSION['usuario']['id']);
 }
 
-
+//Comprueba si el usuario es administrador
 function esAdministrador() {
     if (!estaLogueado()) {
         return false;

@@ -8,11 +8,19 @@ import io from 'socket.io-client';
 import { iniciarChat, manejarNuevoMensaje, enviarMensaje as servicioEnviarMensaje, activarConversacion } from "../servicios/chat/enviar_mensajes";
 import Form_amistad from "../components/ui/Form_amistad";
 import Notificacion from "../components/ui/Notificacion.jsx";
+import { obtener_solicitudes as handlerObtenerSolicitudes } from "../servicios/chat/obtener_solicitudes";
+import { handleSeleccionarChat as handlerSeleccionarChat } from "../servicios/chat/handleSeleccionarChat";
+import { handleEnviar as handlerEnviar } from "../servicios/chat/handleEnviar";
+import { handleSolicitudes as handlerSolicitudesFn } from "../servicios/chat/handleSolicitudes";
+import { mostrarNotificacion as handlerMostrarNotificacion } from "../servicios/chat/mostrarNotificacion";
+import { actualizarContactos as handlerActualizarContactos } from "../servicios/chat/actualizarContactos";
 
 const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000';
 const socket = io(socketUrl);
 
 export default function Chat() {
+
+    //Estados
     const [conversacion_activa, set_conversacion_activa] = useState(null);
     const [vistaMovil, setVistaMovil] = useState(false);
     const [vistaChat, setVistaChat] = useState(false);
@@ -26,19 +34,13 @@ export default function Chat() {
     const location = useLocation();
 
 
-    const obtener_solicitudes = async () => {
-        try {
-            const respuesta = await fetch(import.meta.env.VITE_API_URL + "/modelos/chat/obtener_solicitud.php", {
-                credentials: 'include'
-            });
-            if (respuesta.ok) {
-                const data = await respuesta.json();
-                setSolicitudesLista(data.solicitudes || []);
-            }
-        } catch (error) {
-            console.error("Error al obtener solicitudes:", error);
-        }
-    };
+    //Funciones
+    const obtener_solicitudes = async () => handlerObtenerSolicitudes(setSolicitudesLista);
+    const handleSeleccionarChat = (contacto) => handlerSeleccionarChat(contacto, set_conversacion_activa, setMensajes, setContactos, setVistaChat);
+    const handleEnviar = (contenido) => handlerEnviar(contenido, conversacion_activa, miUsuario, socket, setMensajes, setContactos);
+    const handleSolicitudes = () => handlerSolicitudesFn(solicitudes, setSolicitudes);
+    const mostrarNotificacion = (mensaje, tipo) => handlerMostrarNotificacion(mensaje, tipo, setNotificacion);
+    const actualizarContactos = () => handlerActualizarContactos(setMiUsuario, setContactos, socket);
 
     useEffect(() => {
         iniciarChat(setMiUsuario, setContactos, socket);
@@ -78,46 +80,6 @@ export default function Chat() {
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [mensajes]);
-
-
-    const handleSeleccionarChat = (contacto) => {
-        activarConversacion(contacto, set_conversacion_activa, setMensajes, setContactos);
-        setVistaChat(true);
-    };
-
-    const handleEnviar = (contenido) => {
-        servicioEnviarMensaje(contenido, conversacion_activa, miUsuario, socket, setMensajes);
-
-        // Actualizar preview del contacto al enviar
-        if (conversacion_activa) {
-            const horaCorta = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-            setContactos(prev => ({
-                ...prev,
-                amigos: prev.amigos.map(a =>
-                    a.id === conversacion_activa.id
-                        ? { ...a, ultimo_mensaje: contenido, ultima_hora: horaCorta }
-                        : a
-                )
-            }));
-        }
-    };
-
-    const handleSolicitudes = () => {
-        setSolicitudes(!solicitudes);
-    };
-
-
-    const mostrarNotificacion = (mensaje, tipo) => {
-        setNotificacion({ visible: true, mensaje, tipo });
-
-        setTimeout(() => {
-            setNotificacion({ ...notificacion, visible: false });
-        }, 3000);
-    };
-
-    const actualizarContactos = () => {
-        iniciarChat(setMiUsuario, setContactos, socket);
-    };
 
 
     useEffect(() => {
@@ -199,7 +161,6 @@ export default function Chat() {
                         {conversacion_activa ? (
 
                             <div className="flex flex-col w-full h-full min-h-0">
-                                {/* Header del chat */}
                                 <div className="px-6 py-4 md:px-12 md:py-6 border-b border-borde dark:border-text-tertiary/20 shrink-0">
                                     <span className="flex items-center gap-4 md:gap-6">
                                         {vistaMovil && (

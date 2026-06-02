@@ -9,11 +9,6 @@ header("Content-Type: application/json");
 //Comprueba si el usuario esta logueado
 requerirLogin();
 
-if (!isset($_SESSION["usuario"])) {
-    echo json_encode(["ok" => false, "error" => "No hay sesión"]);
-    exit;
-}
-
 $mi_id     = $_SESSION["usuario"]["id"];
 $emisor_id = $_POST["emisor_id"] ?? null;  // el amigo cuyo chat abrimos
 

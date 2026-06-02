@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Users, MapPin, Search, Plus, Trash2, Edit, Check, Star, Shield, X, AlertCircle, UserCheck, BookmarkCheck, TagIcon } from 'lucide-react';
-import { obtenerTodosUsuarios, obtenerTodasEtiquetas, obtenerTodosMarcadores, desactivarUsuarioAdmin, reactivarUsuarioAdmin, eliminarMarcadorAdmin, actualizarMarcadorAdmin, actualizarCategoriaAdmin, eliminarCategoriaAdmin } from '../servicios/administrador/crud_admin';
+import { obtenerTodosUsuarios, obtenerTodasEtiquetas, obtenerTodosMarcadores, desactivarUsuarioAdmin, reactivarUsuarioAdmin, eliminarMarcadorAdmin, actualizarMarcadorAdmin, actualizarCategoriaAdmin, eliminarCategoriaAdmin, confirmarEliminarUsuario as handlerConfirmarEliminarUsuario, manejarReactivarUsuario as handlerManejarReactivarUsuario, confirmarEliminarMarcador as handlerConfirmarEliminarMarcador, confirmarEliminarCategoria as handlerConfirmarEliminarCategoria } from '../servicios/administrador/crud_admin';
 import Etiqueta_marcador from '../components/ui/etiqueta_marcador';
-import * as lucideIcons from 'lucide-react';
-import * as tbIcons from 'react-icons/tb';
-import * as biIcons from 'react-icons/bi';
-import * as mdIcons from 'react-icons/md';
-import * as giIcons from 'react-icons/gi';
-import * as piIcons from 'react-icons/pi';
 import Formulario_admin_edit from '../components/ui/Form_usuario_admin';
 import Notificacion from '../components/ui/Notificacion';
 import { mostrarNotificacion } from '../servicios/mostrar_notificacion';
 import TarjetaConfirmacion from '../components/ui/tarjeta_confirmacion';
 import Formulario_marcador_edit from '../components/ui/Form_marcador_admin';
 import Formulario_categoria_edit from '../components/ui/Form_categoria_admin';
+import { abrirConfirmacionEliminar as handlerAbrirConfirmacionEliminar, manejarFormularioEditar as handlerManejarFormularioEditar, abrirFormularioCrearUsuario as handlerAbrirFormularioCrearUsuario } from '../servicios/administrador/handlers_usuarios';
+import { manejarFormularioEditarMarcador as handlerManejarFormularioEditarMarcador, abrirConfirmacionEliminarMarcador as handlerAbrirConfirmacionEliminarMarcador, abrirFormularioCrearMarcador as handlerAbrirFormularioCrearMarcador } from '../servicios/administrador/handlers_marcadores';
+import { manejarFormularioEditarCategoria as handlerManejarFormularioEditarCategoria, abrirConfirmacionEliminarCategoria as handlerAbrirConfirmacionEliminarCategoria, abrirFormularioCrearCategoria as handlerAbrirFormularioCrearCategoria } from '../servicios/administrador/handlers_categorias';
+import { IconoDinamico } from '../servicios/administrador/IconoDinamico';
 
 
 
@@ -24,11 +22,7 @@ export default function Administrador() {
     const [marcadores, setMarcadores] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
     const [etiquetas, setEtiquetas] = useState([]);
-
     const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
-
-
-    // ---- ESTADOS DE INTERFAZ ----
     const [pestanaActiva, setPestanaActiva] = useState("usuarios");
     const [busqueda, setBusqueda] = useState("");
 
@@ -46,114 +40,20 @@ export default function Administrador() {
     const [mostrarConfirmacionEliminarCategoria, setMostrarConfirmacionEliminarCategoria] = useState(false);
     const [idCategoriaAEliminar, setIdCategoriaAEliminar] = useState(null);
 
-
-
-    const abrirConfirmacionEliminar = (id) => {
-        const usuario = usuarios.find(u => u.id === id);
-        setUsuarioSeleccionado(usuario);
-        setMostrarConfirmacionEliminar(true);
-    };
-
-
-    const confirmarEliminarUsuario = async () => {
-        const respuesta = await desactivarUsuarioAdmin(usuarioSeleccionado.id);
-        if (respuesta?.success) {
-            mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
-            mostrarUsuarios();
-        } else {
-            mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
-        }
-        setMostrarConfirmacionEliminar(false);
-        setIdUsuarioAEliminar(null);
-    };
-
-    const manejarReactivarUsuario = async (id) => {
-        const respuesta = await reactivarUsuarioAdmin(id); // <-- Le pasamos el ID directamente
-        if (respuesta?.success) {
-            mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
-            mostrarUsuarios(); // Recarga la tabla
-        } else {
-            mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
-        }
-    };
-
-    const manejarFormularioEditarMarcador = (id) => {
-        const marcador = marcadores.find(m => m.id === id);
-        setMarcadorSeleccionado(marcador);
-        setFormularioMarcadorActivo(true);
-    };
-
-    const abrirConfirmacionEliminarMarcador = (id) => {
-        setIdMarcadorAEliminar(id);
-        setMostrarConfirmacionEliminarMarcador(true);
-    };
-
-    const abrirFormularioCrearMarcador = () => {
-        setMarcadorSeleccionado(null);
-        setFormularioMarcadorActivo(true);
-    };
-
-    const confirmarEliminarMarcador = async () => {
-        const respuesta = await eliminarMarcadorAdmin(idMarcadorAEliminar);
-        if (respuesta?.success) {
-            mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
-            mostrarMarcadores();
-        } else {
-            mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
-        }
-        setMostrarConfirmacionEliminarMarcador(false);
-        setIdMarcadorAEliminar(null);
-    };
-
-    const manejarFormularioEditarCategoria = (id) => {
-        const categoria = etiquetas.find(c => c.id === id);
-        setCategoriaSeleccionada(categoria);
-        setFormularioCategoriaActivo(true);
-    };
-
-    const abrirConfirmacionEliminarCategoria = (id) => {
-        setIdCategoriaAEliminar(id);
-        setMostrarConfirmacionEliminarCategoria(true);
-    };
-
-    const confirmarEliminarCategoria = async () => {
-        const respuesta = await eliminarCategoriaAdmin(idCategoriaAEliminar);
-        if (respuesta?.success) {
-            mostrarNotificacion(respuesta.mensaje, "success", notificacion, setNotificacion);
-            mostrarEtiquetas(); // Llama a la función que ya tenías para recargar las categorías
-        } else {
-            mostrarNotificacion(respuesta.mensaje, "error", notificacion, setNotificacion);
-        }
-        setMostrarConfirmacionEliminarCategoria(false);
-        setIdCategoriaAEliminar(null);
-    };
-
-
-
-    const IconoDinamico = ({ nombre, ...props }) => {
-        if (!nombre) return <lucideIcons.MapPin {...props} />;
-        
-        let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
-        if (nombreBase === "Hamburger") nombreBase = "Burger";
-        
-        let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
-        
-        if (!IconoComponente) {
-            if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
-            else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
-            else if (nombre.startsWith('Md') || nombreBase.startsWith('Md')) IconoComponente = mdIcons[nombre] || mdIcons[nombreBase];
-            else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
-            else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
-        }
-        
-        if (!IconoComponente) {
-            IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
-        }
-        
-        if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
-        return <IconoComponente {...props} />;
-    };
-
+    // ---- FUNCIONES ----
+    const abrirConfirmacionEliminar = (id) => { handlerAbrirConfirmacionEliminar(id, usuarios, setUsuarioSeleccionado, setMostrarConfirmacionEliminar); };
+    const manejarFormularioEditarMarcador = (id) => { handlerManejarFormularioEditarMarcador(id, marcadores, setMarcadorSeleccionado, setFormularioMarcadorActivo); };
+    const abrirConfirmacionEliminarMarcador = (id) => { handlerAbrirConfirmacionEliminarMarcador(id, setIdMarcadorAEliminar, setMostrarConfirmacionEliminarMarcador); };
+    const abrirFormularioCrearMarcador = () => { handlerAbrirFormularioCrearMarcador(setMarcadorSeleccionado, setFormularioMarcadorActivo); };
+    const manejarFormularioEditarCategoria = (id) => { handlerManejarFormularioEditarCategoria(id, etiquetas, setCategoriaSeleccionada, setFormularioCategoriaActivo); };
+    const abrirConfirmacionEliminarCategoria = (id) => { handlerAbrirConfirmacionEliminarCategoria(id, setIdCategoriaAEliminar, setMostrarConfirmacionEliminarCategoria); };
+    const manejarFormularioEditar = (id) => { handlerManejarFormularioEditar(id, usuariosFiltrados, setUsuarioSeleccionado, setFormularioEditarActivo, formularioEditarActivo); }
+    const abrirFormularioCrearUsuario = () => { handlerAbrirFormularioCrearUsuario(setUsuarioSeleccionado, setFormularioEditarActivo); };
+    const abrirFormularioCrearCategoria = () => { handlerAbrirFormularioCrearCategoria(setCategoriaSeleccionada, setFormularioCategoriaActivo); };
+    const confirmarEliminarUsuario = () => handlerConfirmarEliminarUsuario(usuarioSeleccionado, notificacion, setNotificacion, mostrarNotificacion, mostrarUsuarios, setMostrarConfirmacionEliminar, setIdUsuarioAEliminar);
+    const manejarReactivarUsuario = (id) => handlerManejarReactivarUsuario(id, notificacion, setNotificacion, mostrarNotificacion, mostrarUsuarios);
+    const confirmarEliminarMarcador = () => handlerConfirmarEliminarMarcador(idMarcadorAEliminar, notificacion, setNotificacion, mostrarNotificacion, mostrarMarcadores, setMostrarConfirmacionEliminarMarcador, setIdMarcadorAEliminar);
+    const confirmarEliminarCategoria = () => handlerConfirmarEliminarCategoria(idCategoriaAEliminar, notificacion, setNotificacion, mostrarNotificacion, mostrarEtiquetas, setMostrarConfirmacionEliminarCategoria, setIdCategoriaAEliminar);
 
     const mostrarEtiquetas = async () => {
         const datos = await obtenerTodasEtiquetas();
@@ -169,22 +69,6 @@ export default function Administrador() {
         setUsuarios(Array.isArray(datos) ? datos : []);
     }
 
-    const manejarFormularioEditar = (id) => {
-        const usuario = usuariosFiltrados.find(u => u.id === id);
-        setUsuarioSeleccionado(usuario);
-        setFormularioEditarActivo(!formularioEditarActivo);
-    }
-
-    const abrirFormularioCrearUsuario = () => {
-        setUsuarioSeleccionado(null);
-        setFormularioEditarActivo(true);
-    };
-
-    const abrirFormularioCrearCategoria = () => {
-        setCategoriaSeleccionada(null); // Null significa que es nueva
-        setFormularioCategoriaActivo(true);
-    };
-
 
     useEffect(() => {
         mostrarUsuarios();
@@ -192,7 +76,8 @@ export default function Administrador() {
         mostrarEtiquetas();
     }, []);
 
-    //Filtros de secciones robustos y seguros (evitan crashes por campos nulos, números o indefinidos)
+
+    //Filtros para buscar usuarios
     const usuariosFiltrados = usuarios.filter(u =>
         (u.Nombre || '').toLowerCase().includes(busqueda.toLowerCase()) ||
         (u.Email || '').toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -200,6 +85,7 @@ export default function Administrador() {
         (u.Rol || '').toLowerCase().includes(busqueda.toLowerCase())
     );
 
+    //Filtros para buscar marcadores
     const marcadoresFiltrados = marcadores.filter(m =>
         (m.Titulo || '').toLowerCase().includes(busqueda.toLowerCase()) ||
         (m.Descripcion || '').toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -207,6 +93,7 @@ export default function Administrador() {
         String(m.Puntuacion || '').includes(busqueda)
     );
 
+    //Filtros para buscar etiquetas
     const etiquetasFiltradas = etiquetas.filter(e =>
         (e.Nombre || '').toLowerCase().includes(busqueda.toLowerCase()) ||
         (e.Color || '').toLowerCase().includes(busqueda.toLowerCase())
@@ -239,7 +126,6 @@ export default function Administrador() {
                 </div>
             </header>
 
-            {/* ---- CONTENIDO PRINCIPAL ---- */}
             <main className="p-8 md:p-10 flex-1 overflow-y-auto space-y-8">
 
                 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -282,7 +168,7 @@ export default function Administrador() {
                     </div>
                 </section>
 
-                {/* ---- FILTRO DE SECCIÓN Y BÚSQUEDA ---- */}
+                {/* ---- Filtro de sección y búsqueda ---- */}
                 <section className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-dark-tarjeta p-4 rounded-[2rem] border border-borde dark:border-white/5 shadow-sm">
                     <div className="flex bg-background dark:bg-background-oscuro p-1.5 rounded-2xl w-full sm:w-auto">
                         <button
@@ -332,7 +218,8 @@ export default function Administrador() {
                 <section className="bg-white dark:bg-dark-tarjeta border border-borde dark:border-white/5 rounded-3xl overflow-hidden shadow-xl">
                     <div className="overflow-x-auto w-full">
                         {pestanaActiva === "usuarios" ? (
-                            /* TABLA DE USUARIOS */
+
+                            /* Tabla de usuario */
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-background dark:bg-background-oscuro text-text-tertiary text-xs uppercase font-bold tracking-wider border-b border-borde dark:border-white/5">
@@ -422,7 +309,8 @@ export default function Administrador() {
                                 </tbody>
                             </table>
                         ) : pestanaActiva === "marcadores" ? (
-                            /* TABLA DE MARCADORES */
+
+                            /* Tabla de marcadores */
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-background dark:bg-background-oscuro text-text-tertiary text-xs uppercase font-bold tracking-wider border-b border-borde dark:border-white/5">
@@ -494,7 +382,8 @@ export default function Administrador() {
                                 </tbody>
                             </table>
                         ) : (
-                            /* TABLA DE ETIQUETAS */
+
+                            /* Tabla de etiquetas */
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-background dark:bg-background-oscuro text-text-tertiary text-xs uppercase font-bold tracking-wider border-b border-borde dark:border-white/5">

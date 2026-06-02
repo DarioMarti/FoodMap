@@ -1,5 +1,4 @@
 <?php
-// Permitir peticiones desde cualquier origen (CORS) con credenciales
 $origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");

@@ -16,9 +16,9 @@ const IconoDinamico = ({ nombre, ...props }) => {
     const nombreCapitalizado = nombre.charAt(0).toUpperCase() + nombre.slice(1);
     let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
     if (nombreBase === "Hamburger") nombreBase = "Burger";
-    
+
     let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
-    
+
     if (!IconoComponente) {
         if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
         else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
@@ -26,11 +26,11 @@ const IconoDinamico = ({ nombre, ...props }) => {
         else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
         else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
     }
-    
+
     if (!IconoComponente) {
         IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
     }
-    
+
     if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
     return <IconoComponente {...props} />;
 };
@@ -39,19 +39,21 @@ const IconoDinamico = ({ nombre, ...props }) => {
 
 export default function Marcadores() {
 
+    //Estados
     const [usuario, setUsuario] = useState({});
     const [categorias, setCategorias] = useState([]);
+    const [mostrarEtiquetas, setMostrarEtiquetas] = useState(() => { return localStorage.getItem("mostrar-etiquetas") !== "false"; });
+    const [marcadoresGrandes, setMarcadoresGrandes] = useState(() => { return localStorage.getItem("marcadores-grandes") === "true"; });
+    const [mostrarIconos, setMostrarIcono] = useState(() => { return localStorage.getItem("mostrar-iconos") === "true"; });
 
-    // Estados para los ajustes visuales, guardados en el navegador
-    const [mostrarEtiquetas, setMostrarEtiquetas] = useState(() => {
-        return localStorage.getItem("mostrar-etiquetas") !== "false";
-    });
-    const [marcadoresGrandes, setMarcadoresGrandes] = useState(() => {
-        return localStorage.getItem("marcadores-grandes") === "true";
-    });
-    const [mostrarIconos, setMostrarIcono] = useState(() => {
-        return localStorage.getItem("mostrar-iconos") === "true";
-    });
+    //Funciones
+    const cargarCategorias = async (userId) => {
+        const respuesta = await fetch(import.meta.env.VITE_API_URL + `/modelos/categorias/mostrar_categorias.php?usuario_id=${userId}`, {
+            credentials: 'include'
+        });
+        const data = await respuesta.json();
+        setCategorias(data);
+    };
 
     useEffect(() => {
         const obtenerSesionUsuario = async () => {
@@ -64,13 +66,7 @@ export default function Marcadores() {
         obtenerSesionUsuario();
     }, []);
 
-    const cargarCategorias = async (userId) => {
-        const respuesta = await fetch(import.meta.env.VITE_API_URL + `/modelos/categorias/mostrar_categorias.php?usuario_id=${userId}`, {
-            credentials: 'include'
-        });
-        const data = await respuesta.json();
-        setCategorias(data);
-    };
+
 
     return (
         <div className="h-full flex flex-col overflow-hidden dark:bg-background-oscuro bg-background">

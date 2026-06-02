@@ -3,7 +3,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
 
-$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
+$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173";
+header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -19,15 +20,11 @@ header("Content-Type: application/json");
 
 try {
     $conn = conectar();
-
-    if (!isset($_SESSION['usuario'])) {
-        echo json_encode(['success' => false, 'message' => 'No estás autenticado']);
-        exit;
-    }
-
     $usuarioId = $_SESSION['usuario']['id'];
-    
     $perfil_publico = null;
+
+
+    // Obtiene de forma segura el valor de perfil_publico
     if (isset($_POST['perfil_publico'])) {
         $perfil_publico = (int)$_POST['perfil_publico'];
     } else {
@@ -39,6 +36,7 @@ try {
             }
         }
     }
+
     if ($perfil_publico === null) {
         echo json_encode(['success' => false, 'message' => 'Parámetros incompletos']);
         exit;

@@ -20,12 +20,12 @@ if (!$id_amigo) {
 try {
     $conn = conectar();
 
-    // 1. Insertar en la tabla de BLOQUEOS
+    //Insertar en la tabla de bloqueos
     $sqlBloqueo = "INSERT INTO bloqueos (Usuario_bloqueador_id, Usuario_bloqueado_id) VALUES (?, ?)";
     $stmtBloqueo = $conn->prepare($sqlBloqueo);
     $stmtBloqueo->execute([$mi_id, $id_amigo]);
 
-    // 2. Borrar cualquier rastro de AMISTAD o SOLICITUD
+    //Borrar cualquier rastro de amistad o solicitud
     $sqlBorrar = "DELETE FROM amistades 
                   WHERE (Usuario_solicita_id = ? AND Usuario_receptor_id = ?) 
                      OR (Usuario_solicita_id = ? AND Usuario_receptor_id = ?)";

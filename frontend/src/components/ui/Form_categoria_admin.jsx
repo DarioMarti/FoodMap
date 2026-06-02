@@ -1,47 +1,17 @@
 import { useState, useEffect } from "react";
 import { actualizarCategoriaAdmin, crearCategoriaAdmin } from "../../servicios/administrador/crud_admin";
-import * as lucideIcons from 'lucide-react';
-import * as tbIcons from 'react-icons/tb';
-import * as biIcons from 'react-icons/bi';
-import * as mdIcons from 'react-icons/md';
-import * as giIcons from 'react-icons/gi';
-import * as piIcons from 'react-icons/pi';
+import { IconoDinamico } from '../../servicios/administrador/IconoDinamico';
 
 
 export default function Form_categoria_admin({ categoriaSeleccionada, setFormularioCategoriaActivo, className, mostrarNotificacion, recargarTabla }) {
 
+
+    //Estados
     const [nombre, setNombre] = useState(categoriaSeleccionada?.Nombre || "");
     const [color, setColor] = useState(categoriaSeleccionada?.Color || "#000000");
     const [icono, setIcono] = useState(categoriaSeleccionada?.Icono || "MapPin");
 
-    useEffect(() => {
-        setNombre(categoriaSeleccionada?.Nombre || "");
-        setColor(categoriaSeleccionada?.Color || "#000000");
-        setIcono(categoriaSeleccionada?.Icono || "MapPin");
-    }, [categoriaSeleccionada]);
-
-    const IconoDinamico = ({ nombre, ...props }) => {
-        if (!nombre) return <lucideIcons.MapPin {...props} />;
-
-        let nombreBase = nombre.split(/[-_ ]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
-
-        let IconoComponente = lucideIcons[nombre] || lucideIcons[nombreBase];
-
-        if (!IconoComponente) {
-            if (nombre.startsWith('Tb') || nombreBase.startsWith('Tb')) IconoComponente = tbIcons[nombre] || tbIcons[nombreBase];
-            else if (nombre.startsWith('Bi') || nombreBase.startsWith('Bi')) IconoComponente = biIcons[nombre] || biIcons[nombreBase];
-            else if (nombre.startsWith('Md') || nombreBase.startsWith('Md')) IconoComponente = mdIcons[nombre] || mdIcons[nombreBase];
-            else if (nombre.startsWith('Gi') || nombreBase.startsWith('Gi')) IconoComponente = giIcons[nombre] || giIcons[nombreBase];
-            else if (nombre.startsWith('Pi') || nombreBase.startsWith('Pi')) IconoComponente = piIcons[nombre] || piIcons[nombreBase];
-        }
-
-        if (!IconoComponente) {
-            IconoComponente = tbIcons[`Tb${nombreBase}`] || biIcons[`Bi${nombreBase}`] || mdIcons[`Md${nombreBase}`] || giIcons[`Gi${nombreBase}`] || piIcons[`Pi${nombreBase}`];
-        }
-
-        if (!IconoComponente) return <lucideIcons.MapPin {...props} />;
-        return <IconoComponente {...props} />;
-    };
+    //Funciones
 
     const manejarGuardar = async (e) => {
         e.preventDefault();
@@ -61,6 +31,12 @@ export default function Form_categoria_admin({ categoriaSeleccionada, setFormula
             mostrarNotificacion(respuesta.mensaje, "error");
         }
     };
+
+    useEffect(() => {
+        setNombre(categoriaSeleccionada?.Nombre || "");
+        setColor(categoriaSeleccionada?.Color || "#000000");
+        setIcono(categoriaSeleccionada?.Icono || "MapPin");
+    }, [categoriaSeleccionada]);
 
     return (
         <form onSubmit={manejarGuardar} className={` w-96 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-white dark:bg-dark-tarjeta border border-borde dark:border-text-tertiary/30 shadow-2xl rounded-2xl p-10 ${className}`}>

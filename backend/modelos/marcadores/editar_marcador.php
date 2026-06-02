@@ -17,10 +17,6 @@ header("Content-Type: application/json");
 
 try {
     $conn = conectar();
-    if (!isset($_SESSION['usuario']['id'])) {
-        echo json_encode(['success' => false, 'mensaje' => 'No estás autenticado']);
-        exit;
-    }
 
     $usuario_id = $_SESSION['usuario']['id'];
     $id = $_POST['id'] ?? null;
@@ -30,6 +26,7 @@ try {
     $latitud = $_POST['latitud'] ?? '';
     $longitud = $_POST['longitud'] ?? '';
 
+    //Comprueba que los campos recibidos sean validos
     if (!$id || $latitud === '' || $longitud === '' || !is_numeric($latitud) || !is_numeric($longitud)) {
         echo json_encode(['success' => false, 'mensaje' => 'Faltan datos requeridos']);
         exit;

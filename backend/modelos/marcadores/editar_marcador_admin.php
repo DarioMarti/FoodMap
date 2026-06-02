@@ -21,10 +21,6 @@ header("Content-Type: application/json");
 
 try {
     $conn = conectar();
-    if (!isset($_SESSION['usuario'])) {
-        echo json_encode(['success' => false, 'mensaje' => 'No estás autenticado']);
-        exit;
-    }
 
     $id = $_POST['id'] ?? null;
     $nombre = $_POST['nombre'] ?? '';
@@ -42,6 +38,7 @@ try {
 
     $conn->beginTransaction();
 
+    //Actualiza los campos del marcador
     if ($id_usuario) {
         $sql = "UPDATE marcador SET Titulo = ?, Descripcion = ?, Puntuacion = ?, Latitud = ?, Longitud = ?, Direccion = ?, Usuario_id = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);

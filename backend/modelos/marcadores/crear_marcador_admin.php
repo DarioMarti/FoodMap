@@ -2,8 +2,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
-
-
 $origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
@@ -34,11 +32,11 @@ try {
     $longitud = $_POST['longitud'] ?? '';
     $direccion = $_POST['direccion'] ?? '';
 
-if ($latitud === '' || $longitud === '' || !is_numeric($latitud) || !is_numeric($longitud)) {
-    echo json_encode(['success' => false, 'mensaje' => 'Las coordenadas de latitud y longitud son obligatorias y deben ser números válidos.']);
-    exit;
-}
-
+    // Comprueba que las coordenadas sean válidas
+    if ($latitud === '' || $longitud === '' || !is_numeric($latitud) || !is_numeric($longitud)) {
+        echo json_encode(['success' => false, 'mensaje' => 'Las coordenadas de latitud y longitud son obligatorias y deben ser números válidos.']);
+        exit;
+    }
 
     $id_usuario = !empty($_POST['usuario_id']) ? $_POST['usuario_id'] : ($_SESSION['usuario']['id'] ?? 1);
     $id_mapa = 1;

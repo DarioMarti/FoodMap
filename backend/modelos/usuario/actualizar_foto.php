@@ -3,7 +3,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/conexion.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/config/privacidad.php';
 
 
-$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173"; header("Access-Control-Allow-Origin: $origin");
+$origin = $_SERVER["HTTP_ORIGIN"] ?? "http://localhost:5173";
+header("Access-Control-Allow-Origin: $origin");
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 
@@ -15,11 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 header("Content-Type: application/json");
-
-if (!isset($_SESSION['usuario'])) {
-    echo json_encode(['ok' => false, 'error' => 'No estás autenticado']);
-    exit;
-}
 
 try {
     $conn = conectar();
@@ -34,7 +30,7 @@ try {
             mkdir($directorioDestino, 0777, true);
         }
 
-        // Generar nombre único para evitar sobrescribir y cache
+        // Generar nombre único para evitar sobrescribir
         $extension = pathinfo($foto['name'], PATHINFO_EXTENSION);
         $nombreArchivo = 'user_' . $usuarioId . '_' . time() . '.' . $extension;
         $rutaDestino = $directorioDestino . $nombreArchivo;

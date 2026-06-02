@@ -10,17 +10,11 @@ header("Content-Type: application/json");
 //Comprueba si el usuario esta logueado
 requerirLogin();
 
-if (!isset($_SESSION["usuario"])) {
-    echo json_encode(["ok" => false, "total" => 0]);
-    exit;
-}
-
 try {
     $conn = conectar();
     $mi_id = $_SESSION["usuario"]["id"];
 
-    $sql = "SELECT COUNT(*) as total 
-            FROM mensaje m
+    $sql = "SELECT COUNT(*) as total FROM mensaje m
             JOIN amistades a ON (
                 (a.Usuario_solicita_id = m.Usuario_id AND a.Usuario_receptor_id = m.Usuario_receptor_id) OR 
                 (a.Usuario_solicita_id = m.Usuario_receptor_id AND a.Usuario_receptor_id = m.Usuario_id)
@@ -30,9 +24,7 @@ try {
                 (b.Usuario_bloqueador_id = m.Usuario_receptor_id AND b.Usuario_bloqueado_id = m.Usuario_id)
             )
             WHERE m.Usuario_receptor_id = ? 
-            AND m.Leido = 0
-            AND a.Estado = 'aceptado'
-            AND b.id IS NULL";
+            AND m.Leido = 0 AND a.Estado = 'aceptado' AND b.id IS NULL";
             
     $stmt = $conn->prepare($sql);
     $stmt->execute([$mi_id]);

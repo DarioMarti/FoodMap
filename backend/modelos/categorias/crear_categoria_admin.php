@@ -21,10 +21,6 @@ header("Content-Type: application/json");
 
 try {
     $conn = conectar();
-    if (!isset($_SESSION['usuario'])) {
-        echo json_encode(['success' => false, 'mensaje' => 'No estás autenticado']);
-        exit;
-    }
 
     $nombre = $_POST['nombre'] ?? '';
     $color = $_POST['color'] ?? '#000000';
