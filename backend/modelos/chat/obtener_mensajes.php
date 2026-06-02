@@ -21,9 +21,8 @@ $otro_id = $_GET['otro_id'] ?? null;
 try {
     $conn = conectar();
 
-    // Mensajes privados: formateamos Fecha_envio para traer solo la hora
-    $sql = "SELECT id, Contenido, Usuario_id, Usuario_receptor_id, 
-                   TIME_FORMAT(Fecha_envio, '%H:%i') as Fecha_envio 
+    // Mensajes privados
+    $sql = "SELECT id, Contenido, Usuario_id, Usuario_receptor_id, Fecha_envio 
             FROM mensaje 
             WHERE (Usuario_id = ? AND Usuario_receptor_id = ?) 
             OR (Usuario_id = ? AND Usuario_receptor_id = ?) 

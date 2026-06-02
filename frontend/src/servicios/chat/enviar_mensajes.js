@@ -7,7 +7,6 @@ export const iniciarChat = async (setMiUsuario, setContactos, socket) => {
         socket.emit('unirse', sesion.usuario.id);
     }
 
-    // Obtener lista de amigos y grupos
     const resp = await fetch(import.meta.env.VITE_API_URL + '/modelos/chat/obtener_contactos.php', { credentials: 'include' });
     const data = await resp.json();
     if (data.ok) {
@@ -16,7 +15,6 @@ export const iniciarChat = async (setMiUsuario, setContactos, socket) => {
 };
 
 export const manejarNuevoMensaje = (mensaje, conversacion_activa, miUsuario, setMensajes) => {
-    // Solo lo añadimos si pertenece a la conversación que tenemos abierta
     const esParaEsteChat = conversacion_activa && (mensaje.emisor_id === conversacion_activa.id);
 
     if (esParaEsteChat || mensaje.emisor_id === miUsuario?.id) {

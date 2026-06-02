@@ -10,18 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 function conectar()
 {
     $servidor = "localhost";
-    
-    // Si la IP/host del servidor coincide con tu VPS o el dominio, usamos los datos de producción
-    if (isset($_SERVER['HTTP_HOST']) && (strpos($_SERVER['HTTP_HOST'], '212.227.146.174') !== false || strpos($_SERVER['HTTP_HOST'], 'thefoodmap.online') !== false)) {
-        $usuario = "admin_foodmap";
-        $contrasena = "tu_contrasena_segura";
-    } else {
-        // En cualquier otro caso (XAMPP local), usamos los datos por defecto
-        $usuario = "root";
-        $contrasena = "";
-    }
-    
+    $usuario = "admin_foodmap";
+    $contrasena = "password_severo26";
     $basededatos = "foodmap";
+    
     $pdo = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $contrasena);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     return $pdo;

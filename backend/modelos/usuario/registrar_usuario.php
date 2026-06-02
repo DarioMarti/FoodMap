@@ -27,18 +27,40 @@ try {
 
     $passwordHash = password_hash($passwordUser, PASSWORD_DEFAULT);
 
-    //Comprobar si existe el email
     $sql = "SELECT * FROM usuario WHERE Email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$email]);
     $stmt->execute([$email]);
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    //Si no existe el email, se registra al usuario
     if (!$usuario) {
-        $sql = "INSERT INTO usuario (Nombre, Email, Contrasena) VALUES (?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$nombre, $email, $passwordHash]);
+        $rutaRelativa = null;
+
+        if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+            $directorioSubida = $_SERVER['DOCUMENT_ROOT'] . '/foodmap/backend/archivos_subidos/';
+            if (!file_exists($directorioSubida)) {
+                mkdir($directorioSubida, 0777, true);
+            }
+
+            $nombreOriginal = basename($_FILES['foto_perfil']['name']);
+            $extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+            $nombreNuevo = uniqid('foto_', true) . '.' . $extension;
+            $rutaFisica = $directorioSubida . $nombreNuevo;
+
+            if (move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $rutaFisica)) {
+                $rutaRelativa = '/foodmap/backend/archivos_subidos/' . $nombreNuevo;
+            }
+        }
+
+        if ($rutaRelativa) {
+            $sql = "INSERT INTO usuario (Nombre, Email, Contrasena, Foto_perfil) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$nombre, $email, $passwordHash, $rutaRelativa]);
+        } else {
+            $sql = "INSERT INTO usuario (Nombre, Email, Contrasena) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$nombre, $email, $passwordHash]);
+        }
 
         $sql = "SELECT * FROM usuario WHERE Email = ?";
         $stmt = $conn->prepare($sql);
@@ -60,7 +82,6 @@ try {
             echo json_encode(["ok" => false, "error" => "No se pudo recuperar el usuario tras el registro"]);
         }
     } else {
-        // Solo enviamos esto si el usuario SI existía (correo duplicado)
         echo json_encode(["ok" => false, "error" => "El correo ya está registrado"]);
     }
 

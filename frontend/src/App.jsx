@@ -29,9 +29,7 @@ function App() {
       return paletaPorDefecto;
     }
   }); const [fontSize, setFontSize] = useState(localStorage.getItem('user-font-size') || '16');
-  const [usuario_logueado, set_usuario_logueado] = useState(false);
-
-
+  const [usuario_logueado, set_usuario_logueado] = useState(null);
 
   useEffect(() => {
     if (darkMode) {
@@ -47,9 +45,9 @@ function App() {
     const comprobar_sesion = async () => {
       const respuesta = await comprobar_sesion_usuario();
       if (respuesta.login) {
-        set_usuario_logueado(true);
+        set_usuario_logueado(respuesta.usuario);
       } else {
-        set_usuario_logueado(false);
+        set_usuario_logueado(null);
       }
     }
     comprobar_sesion();
@@ -79,7 +77,10 @@ function App() {
           <Route path="/mapa" element={<Mapa darkMode={darkMode} />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/asistente_ia" element={<Asistente_IA />} />
-          <Route path="/administrador" element={<Administrador />} />
+          <Route 
+            path="/administrador" 
+            element={usuario_logueado?.Rol === 'Administrador' ? <Administrador /> : <Navigate to="/" />} 
+          />
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/config" element={<Config darkMode={darkMode} setDarkMode={setDarkMode} setPrimaryColor={setPrimaryColor} fontSize={fontSize} setFontSize={setFontSize} />} />
         </Routes>

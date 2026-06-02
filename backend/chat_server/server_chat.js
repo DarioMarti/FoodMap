@@ -27,8 +27,8 @@ const model = genAI.getGenerativeModel({
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
+    user: process.env.DB_USER || 'admin_foodmap',
+    password: process.env.DB_PASSWORD || 'password_severo26',
     database: process.env.DB_NAME || 'foodmap'
 });
 

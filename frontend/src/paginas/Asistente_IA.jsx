@@ -17,7 +17,7 @@ export default function Asistente_IA() {
     useEffect(() => {
         socket.on('respuesta_asistente', (data) => {
             setCargando(false);
-            
+
             const fechaValida = data.fecha ? new Date(data.fecha) : new Date();
             const horaFormateada = isNaN(fechaValida.getTime())
                 ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -59,10 +59,8 @@ export default function Asistente_IA() {
 
     return (
         <div className="flex flex-col h-full w-full min-h-0 bg-background dark:bg-dark-tarjeta overflow-hidden">
-            {/* Cuerpo del Chat */}
             <main className="flex-1 flex flex-col min-h-0">
 
-                {/* Zona de mensajes con scroll */}
                 <section className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-16">
                     <div className="flex flex-col gap-4">
                         {mensajes.map((msg, index) => (
@@ -81,12 +79,10 @@ export default function Asistente_IA() {
                             </div>
                         )}
 
-                        {/* Referencia para el auto-scroll */}
                         <div ref={scrollRef} className="h-4" />
                     </div>
                 </section>
 
-                {/* Zona del Input (Fija abajo) */}
                 <footer className="w-full p-4 pb-20 md:p-8 md:pb-8 shrink-0 bg-background dark:bg-dark-tarjeta border-t border-borde dark:border-text-tertiary/10">
                     <Chat_input onSend={handleEnviar} className="w-full mx-auto" />
                 </footer>

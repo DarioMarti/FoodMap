@@ -27,7 +27,7 @@ export default function Etiqueta_marcador({ icon = "Crown", texto = "Underfined"
     }, []);
 
     return (
-        <button style={style} className={`${className} dark:bg-${color_fondo}/30 dark:text-${color_borde} py-3 px-6 rounded-full shadow-sm transition-all flex items-center gap-2 relative overflow-hidden`} {...props}>
+        <button style={style} className={`${className} dark:bg-${color_fondo}/30 dark:text-${color_borde} py-3 px-6 rounded-full shadow-sm transition-all flex items-center gap-2 relative`} {...props}>
             {mostrarIcono && icon}
             {mostrarTexto && <span className="font-semibold text-sm">{texto}</span>}
             {esPrincipal && <Crown

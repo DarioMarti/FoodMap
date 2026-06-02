@@ -3,11 +3,14 @@ import logotipo from '../assets/foodmap_logo_blanco.svg';
 import * as lucideIcons from 'lucide-react';
 import { registrar_usuario } from '../servicios/usuario/handler_registrar_usuario';
 import { iniciar_sesion } from '../servicios/usuario/handler_iniciar_sesion';
+import { mostrarNotificacion } from '../servicios/mostrar_notificacion';
+import Notificacion from '../components/ui/Notificacion';
 
 const Login = () => {
     const [formularioMostrado, setFormularioMostrado] = useState("login");
     const [fotoPreview, setFotoPreview] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png");
     const [mensajeError, setMensajeError] = useState(false);
+    const [notificacion, setNotificacion] = useState({ mensaje: "", tipo: "", visible: false });
 
     const handleFotoChange = (e) => {
         const file = e.target.files[0];
@@ -32,7 +35,7 @@ const Login = () => {
         const data = new FormData(e.target);
 
         if (!validarPassword(data.get('password'))) {
-            alert("La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula y un número.");
+            mostrarNotificacion("La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula y un número.", "error", notificacion, setNotificacion);
             return;
         }
 
@@ -40,7 +43,7 @@ const Login = () => {
         if (respuesta.ok) {
             window.location.href = "/";
         } else {
-            alert(respuesta.error || "Error al registrar usuario");
+            mostrarNotificacion(respuesta.error || "Error al registrar usuario", "error", notificacion, setNotificacion);
             setMensajeError(true);
             setTimeout(() => {
                 setMensajeError(false);
@@ -73,8 +76,12 @@ const Login = () => {
 
     return (
         <div className="relative flex items-end justify-center w-full h-[100dvh] bg-gradient-to-br from-primary/90 via-primary/70 to-primary/60 font-['Outfit'] overflow-hidden">
+            <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[3000] pointer-events-none">
+                {notificacion.visible && (
+                    <Notificacion mensaje={notificacion.mensaje} tipo={notificacion.tipo} />
+                )}
+            </div>
 
-            {/* Logo y título para móvil */}
             <div className="absolute top-12 left-1/2 -translate-x-1/2 lg:hidden flex flex-col items-center w-full px-6 text-center">
                 <img className="w-20 mb-4 drop-shadow-md" src={logotipo} alt="Logo" />
                 <h1 className="text-white text-4xl font-extrabold drop-shadow-sm">Welcome!</h1>
@@ -128,7 +135,7 @@ const Login = () => {
                 <form onSubmit={registro_usuario} className={`rounded-t-[40px] bg-background p-8 md:p-[50px] flex flex-col items-center w-[90%] md:w-auto md:min-w-[550px] h-[74dvh] md:h-[calc(100vh-150px)] transition-all duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] md:shadow-[-10px_0_40px_rgba(0,0,0,0.1)] overflow-y-auto ${formularioMostrado === "register" ? "flex" : "hidden"}`}>
                     <h2 className="text-[#1a1a1a] text-3xl font-bold mb-2 md:mb-[10px]">Crear cuenta</h2>
 
-                    <input type="file" id="fotoPerfil" accept="image/*" className="hidden" onChange={handleFotoChange} />
+                    <input type="file" id="fotoPerfil" name="foto_perfil" accept="image/*" className="hidden" onChange={handleFotoChange} />
                     <label
                         htmlFor="fotoPerfil"
                         className="w-[110px] min-h-[110px] rounded-full bg-background bg-cover bg-center my-[15px] flex items-center justify-center border-[3px] border-borde-dark cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg"
@@ -148,7 +155,6 @@ const Login = () => {
                     <div className="relative w-full my-[5px]">
                         <label className="absolute left-[30px] top-0 bg-background px-[10px] text-[14px] font-bold text-primary z-10" htmlFor="registerPassword">Contraseña</label>
                         <input className="w-full px-[25px] py-[15px] rounded-full my-[10px] border-2 border-borde focus:border-primary-active focus:outline-none" id="registerPassword" type="password" name="password" placeholder="••••••••" />
-                        <lucideIcons.Eye className="absolute right-[18px] top-[26px] cursor-pointer" />
                     </div>
 
                     <div className="w-full mt-4 space-y-3">
