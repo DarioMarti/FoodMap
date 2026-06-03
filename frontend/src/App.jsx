@@ -51,6 +51,7 @@ function App() {
       }
     }
     comprobar_sesion();
+    console.log('El usuario es:: ', usuario_logueado);
   }, []);
 
   useEffect(() => {
@@ -77,9 +78,9 @@ function App() {
           <Route path="/mapa" element={<Mapa darkMode={darkMode} />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/asistente_ia" element={<Asistente_IA />} />
-          <Route 
-            path="/administrador" 
-            element={usuario_logueado?.Rol === 'Administrador' ? <Administrador /> : <Navigate to="/" />} 
+          <Route
+            path="/administrador"
+            element={usuario_logueado?.rol === 'admin' ? <Administrador /> : <Navigate to="/" />}
           />
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/config" element={<Config darkMode={darkMode} setDarkMode={setDarkMode} setPrimaryColor={setPrimaryColor} fontSize={fontSize} setFontSize={setFontSize} />} />
