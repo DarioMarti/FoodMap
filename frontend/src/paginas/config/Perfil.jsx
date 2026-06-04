@@ -92,7 +92,7 @@ export default function Perfil() {
                     </h2>
                     <div className="flex flex-col dark:bg-dark-tarjeta bg-white border border-borde dark:border-white/5 rounded-3xl overflow-hidden shadow-sm">
                         <div className="flex justify-between px-4 md:px-8 items-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                            <div className="flex flex-col">
+                            <div className="flex flex-col pt-4">
                                 <span className="text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">Nombre completo</span>
                                 <strong className="text-lg md:text-xl font-medium dark:text-white text-text-main">
                                     {usuario?.nombre.charAt(0).toUpperCase() + usuario?.nombre.slice(1)}
