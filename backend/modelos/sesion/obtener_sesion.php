@@ -9,7 +9,18 @@ header("Content-Type: application/json");
 if (isset($_SESSION['usuario'])) {
     try {
         $conn = conectar();
-        $id = $_SESSION['usuario']['id'];
+        $id = $_SESSION['usuario']['id'] ?? null;
+        
+        // Parche para sesiones activas que no tienen el id guardado correctamente
+        if (!$id && !empty($_SESSION['usuario']['email'])) {
+            $stmtUser = $conn->prepare("SELECT * FROM usuario WHERE Email = ?");
+            $stmtUser->execute([$_SESSION['usuario']['email']]);
+            $u = $stmtUser->fetch(PDO::FETCH_ASSOC);
+            if ($u) {
+                $id = $u['id'] ?? $u['Id'] ?? $u['ID'] ?? $u['Id_usuario'] ?? $u['id_usuario'] ?? null;
+                $_SESSION['usuario']['id'] = $id;
+            }
+        }
         
         $sqlAmigos = "SELECT COUNT(*) as total FROM amistades WHERE (Usuario_solicita_id = ? OR Usuario_receptor_id = ?) AND Estado = 'aceptado'";
         $stmtAmigos = $conn->prepare($sqlAmigos);
@@ -20,7 +31,9 @@ if (isset($_SESSION['usuario'])) {
         $stmtMarcadores = $conn->prepare($sqlMarcadores);
         $stmtMarcadores->execute([$id]);
         $_SESSION['usuario']['total_marcadores'] = $stmtMarcadores->fetch(PDO::FETCH_ASSOC)['total'];
-    } catch(Exception $e) {}
+    } catch(Exception $e) {
+        error_log("Error in obtener_sesion: " . $e->getMessage() . "\n", 3, $_SERVER['DOCUMENT_ROOT'] . "/foodmap/error_log.txt");
+    }
 
     echo json_encode([
         "logged" => true,

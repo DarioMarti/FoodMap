@@ -4,7 +4,7 @@ function crearSesionUsuario($usuario) {
         session_start();
     }
     $_SESSION["usuario"] = [
-        "id" => $usuario["id"] ?? null,
+        "id" => $usuario["id"] ?? $usuario["Id"] ?? $usuario["ID"] ?? $usuario["Id_usuario"] ?? $usuario["id_usuario"] ?? null,
         "nombre" => $usuario["Nombre"] ?? $usuario["nombre"] ?? "",
         "nick" => $usuario["Nick"] ?? $usuario["nick"] ?? "undefined",
         "email" => $usuario["Email"] ?? $usuario["email"] ?? "",
