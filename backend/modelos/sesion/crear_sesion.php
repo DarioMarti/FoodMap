@@ -3,8 +3,15 @@ function crearSesionUsuario($usuario) {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
+    $id = null;
+    foreach ($usuario as $key => $value) {
+        if (strtolower($key) === 'id' || strtolower($key) === 'id_usuario') {
+            $id = $value;
+            break;
+        }
+    }
     $_SESSION["usuario"] = [
-        "id" => $usuario["id"] ?? $usuario["Id"] ?? $usuario["ID"] ?? $usuario["Id_usuario"] ?? $usuario["id_usuario"] ?? null,
+        "id" => $id,
         "nombre" => $usuario["Nombre"] ?? $usuario["nombre"] ?? "",
         "nick" => $usuario["Nick"] ?? $usuario["nick"] ?? "undefined",
         "email" => $usuario["Email"] ?? $usuario["email"] ?? "",

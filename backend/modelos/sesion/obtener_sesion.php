@@ -17,14 +17,19 @@ if (isset($_SESSION['usuario'])) {
             $stmtUser->execute([$_SESSION['usuario']['email']]);
             $u = $stmtUser->fetch(PDO::FETCH_ASSOC);
             if ($u) {
-                $id = $u['id'] ?? $u['Id'] ?? $u['ID'] ?? $u['Id_usuario'] ?? $u['id_usuario'] ?? null;
+                foreach ($u as $key => $value) {
+                    if (strtolower($key) === 'id' || strtolower($key) === 'id_usuario') {
+                        $id = $value;
+                        break;
+                    }
+                }
                 $_SESSION['usuario']['id'] = $id;
             }
         }
         
-        $sqlAmigos = "SELECT COUNT(*) as total FROM amistades WHERE (Usuario_solicita_id = ? OR Usuario_receptor_id = ?) AND Estado = 'aceptado'";
+        $sqlAmigos = "SELECT COUNT(DISTINCT CASE WHEN Usuario_solicita_id = ? THEN Usuario_receptor_id ELSE Usuario_solicita_id END) as total FROM amistades WHERE (Usuario_solicita_id = ? OR Usuario_receptor_id = ?) AND Estado = 'aceptado'";
         $stmtAmigos = $conn->prepare($sqlAmigos);
-        $stmtAmigos->execute([$id, $id]);
+        $stmtAmigos->execute([$id, $id, $id]);
         $_SESSION['usuario']['total_amigos'] = $stmtAmigos->fetch(PDO::FETCH_ASSOC)['total'];
 
         $sqlMarcadores = "SELECT COUNT(*) as total FROM marcador WHERE Usuario_id = ?";
